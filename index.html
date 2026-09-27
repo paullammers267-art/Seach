@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beförderungsunternehmen finden</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Beförderungsunternehmen in der Umgebung</h1>
+    <form id="search-form" class="controls" autocomplete="off">
+      <input id="address" type="search" placeholder="Ort oder Adresse, z. B. Köln Hbf" aria-label="Ort oder Adresse">
+      <button type="submit">Suchen</button>
+      <button type="button" id="locate" title="Meinen Standort verwenden">📍 Mein Standort</button>
+      <label>Umkreis
+        <select id="radius">
+          <option value="2000">2 km</option>
+          <option value="5000" selected>5 km</option>
+          <option value="10000">10 km</option>
+          <option value="20000">20 km</option>
+          <option value="50000">50 km</option>
+        </select>
+      </label>
+    </form>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div id="filters" class="filters" aria-label="Kategorien"></div>
+      <div class="list-head">
+        <span id="status">Standort wählen, um die Suche zu starten.</span>
+        <button type="button" id="export" disabled>CSV exportieren</button>
+      </div>
+      <input id="text-filter" type="search" placeholder="Ergebnisse filtern (Name, Straße …)" aria-label="Ergebnisse filtern">
+      <ol id="results" class="results"></ol>
+    </aside>
+    <div id="map" class="map"></div>
+  </main>
+
+  <footer class="footer">
+    Daten © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a>
+    (Overpass API, Nominatim). Einträge können unvollständig sein.
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="categories.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "befoerderungsunternehmen-finder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zeigt Beförderungsunternehmen in der Umgebung auf einer Karte an (OpenStreetMap)",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT"
+}
