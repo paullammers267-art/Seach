@@ -28,6 +28,13 @@ npx serve .          # oder: python3 -m http.server 8000
 
 Dann http://localhost:3000 (bzw. :8000) aufrufen. Alternativ lässt sich der Ordner direkt über GitHub Pages veröffentlichen.
 
+## Online stellen (GitHub Pages)
+
+Im Repository unter **Settings → Pages → Build and deployment**: Source „Deploy from a branch“,
+Branch `claude/befoerderungsunternehmen-software-qhqg0h`, Ordner `/ (root)` → Save.
+Nach 1–2 Minuten ist die App erreichbar unter
+`https://paullammers267-art.github.io/Seach/` (z. B. direkt für Ahaus: `…/Seach/?q=Ahaus&r=20000`).
+
 ## Tests
 
 ```bash
