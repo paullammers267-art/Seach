@@ -632,3 +632,49 @@ img, svg, video { max-width: 100%; }
 @media (max-width: 360px) { .food-add .btn { font-size: .7rem; } }
 dialog .dialog-actions { flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; }
 dialog .dialog-actions .btn { padding-left: 12px; padding-right: 12px; }
+
+/* ---------- Runde 8: Medikamente, Fristen, Zähler, Werkzeuge, Atemübung, Erfolge ---------- */
+.ok-text { color: var(--ok); }
+.dose { font: inherit; color: var(--text); width: 100%; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; background: none; border: 0; border-bottom: 1px solid var(--border); padding: 9px 2px; }
+.dose:last-child { border-bottom: 0; }
+.dose .tcheck { display: grid; place-items: center; }
+.dose.taken .grow { text-decoration: line-through; color: var(--muted); }
+.dose.taken .tcheck { background: var(--primary); }
+.dose.due b { color: var(--today); }
+.med-card { display: grid; gap: 3px; width: 100%; text-align: left; font: inherit; color: var(--text); cursor: pointer; }
+#btnMedNew { width: 100%; margin: 4px 0 8px; }
+.ev-row.dl.due { border-left-color: var(--soon); }
+.ev-row.dl.overdue { border-left-color: var(--expired); }
+.meter-card .statgrid { margin-top: 10px; }
+.meter-card .statgrid i { font-style: normal; }
+.tarif { margin-top: 8px; }
+.tarif label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); font-weight: 600; flex: 1; }
+.stopwatch { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; margin: 4px 0 10px; }
+#view-tools .card label { display: grid; gap: 4px; font-size: .85rem; font-weight: 600; color: var(--muted); margin-top: 6px; }
+.cv-result { margin-top: 10px; font-size: 1.05rem; min-height: 1.4em; }
+.cv-result.pop { animation: pop .35s ease; }
+@keyframes pop { 0% { transform: scale(.85); opacity: .3; } 100% { transform: scale(1); opacity: 1; } }
+#tmList .timer { margin-top: 8px; }
+.saldo { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; font-size: .9rem; margin: 2px 0 8px; }
+.saving { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.saving-head { display: flex; justify-content: space-between; gap: 8px; }
+.saving .meter { margin: 6px 0 2px; }
+.ach-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ach { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: grid; gap: 3px; opacity: .65; }
+.ach.done { opacity: 1; border-color: var(--primary); }
+.ach-emoji { font-size: 1.8rem; }
+.statgrid.review { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 12px; }
+.statgrid.review b { font-size: 1.05rem; }
+.home-card.backup { border-color: var(--soon); }
+/* Atemübung */
+dialog.breath { background: linear-gradient(180deg, var(--surface), var(--bg)); }
+.br-stage { flex: 1; display: grid; place-items: center; position: relative; }
+.br-circle { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5eead4, var(--primary)); box-shadow: 0 0 60px color-mix(in srgb, var(--primary) 50%, transparent); transform: scale(1); transition-property: transform; transition-timing-function: ease-in-out; }
+.br-circle.in { transform: scale(2.1); }
+.br-circle.out { transform: scale(1); }
+.br-text { position: absolute; display: grid; justify-items: center; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.br-text b { font-size: 1.3rem; }
+.br-text span { font-size: 2.2rem; font-weight: 800; }
+.ach { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 360px) { .ach-grid { grid-template-columns: minmax(0, 1fr); } .statgrid.review { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.meter-card .statgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }

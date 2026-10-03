@@ -33,6 +33,27 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 ## 🎨 Darstellung
 - Hell, Dunkel oder automatisch (Mehr → Darstellung)
 
+## 💊 Medikamente
+- Einnahmeplan mit Uhrzeiten und Wochentagen, abhaken (auch auf „Heute“), Erinnerung zur Uhrzeit
+- Vorrat wird mitgezählt, Warnung „bald nachkaufen“ mit einem Tipp auf die Einkaufsliste
+
+## 📄 Fristen & Dokumente
+- Ausweis, Reisepass, Führerschein, TÜV, Garantie, Versicherung, Kündigungsfristen, Impfungen
+- Ablauf direkt eingeben oder aus Ausstellungsdatum + Laufzeit berechnen; Vorwarnung, Kalender-Eintrag
+
+## 🔢 Zählerstände
+- Strom, Gas, Wasser, Heizung: Verbrauch pro Tag, Trend, Hochrechnung aufs Jahr, Kosten mit eigenem Tarif
+
+## 🧰 Werkzeuge
+- Mehrere Küchen-Timer, Stoppuhr mit Runden, Küchen-Umrechner (Tasse/EL/TL ↔ Gramm je Zutat), Backofen °C/°F/Umluft
+- Rechnung teilen mit Trinkgeld (centgenau), Münze, Würfel, „Was koche ich?“, Auslosen aus eigener Liste
+
+## 🏆 Erfolge, Wochenrückblick & mehr
+- 14 Erfolge mit Fortschritt, Wochenrückblick im Vergleich zur Vorwoche (sonntags/montags auch auf „Heute“)
+- 🧘 Atemübungen (Box-Atmung, 4-7-8, ruhig atmen) mit animiertem Kreis
+- 💰 Einnahmen (z. B. „+1800 Gehalt“) mit Saldo, 🐷 Sparziele mit Monatsrate
+- 📋 Notiz-Vorlagen (Packlisten, Umzug, wichtige Nummern …), Startseite anpassen, Erinnerung an die Datensicherung
+
 ## ✅ Aufgaben
 - Eingabe in normaler Sprache: „Müll rausbringen jeden Dienstag“, „Steuer bis 31.10. wichtig“, „Mama anrufen morgen um 18 Uhr“
 - Wiederholungen (täglich, werktags, wöchentlich, alle 2 Wochen, monatlich), Kategorien, Wichtigkeit, Erinnerung zur Uhrzeit
@@ -100,6 +121,8 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `planner.js` | Kalender (Wiederholungen, Erinnerungen, iCal) und Ausgaben (Kategorien, Budget, CSV) |
 | `nutrition.js` | Lebensmittel-Datenbank, Kalorienziel, Nährwerttabelle/Open-Food-Facts/Text erkennen |
 | `nutrition-ui.js` | Kalorien-Oberfläche, Hell/Dunkel |
+| `extras.js` | Umrechner, Rechnung teilen, Medikamente, Fristen, Zählerstände, Sparziele, Atemübung, Erfolge |
+| `extras-ui.js` | Oberfläche dafür, Wochenrückblick, Startseite anpassen |
 | `alltag.js` | Oberfläche für Heute, Sport, Kalender, Ausgaben |
 | `life.js` | Aufgaben (Spracherkennung, Wiederholung), Gewohnheiten, Gesundheit, Wetter-Tipps |
 | `life-ui.js` | Oberfläche für Aufgaben, Gewohnheiten, Gesundheit, Notizen, Wetter, Suche |

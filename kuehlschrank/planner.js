@@ -157,6 +157,7 @@
     abos: { label: 'Abos & Verträge', emoji: '📺', words: ['netflix', 'spotify', 'disney', 'amazon prime', 'abo', 'versicherung', 'mitgliedschaft', 'youtube'] },
     geschenke: { label: 'Geschenke', emoji: '🎁', words: ['geschenk', 'geburtstag', 'weihnachten', 'blumen'] },
     sonstiges: { label: 'Sonstiges', emoji: '💶', words: [] },
+    einnahme: { label: 'Einnahme', emoji: '💰', words: ['gehalt', 'lohn', 'rente', 'kindergeld', 'einnahme', 'erstattung', 'zinsen', 'bafoeg', 'taschengeld'] },
   };
 
   function detectExpenseCategory(text) {
@@ -245,8 +246,10 @@
     return new Date(y, m - 1, 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
   }
 
+  const isIncome = (e) => e.category === 'einnahme';
+
   return {
-    EVENT_TYPES, REPEATS, occursOn, occurrences, monthGrid, ageOn, reminderTime, dueReminders, toICS, addDays,
+    isIncome, EVENT_TYPES, REPEATS, occursOn, occurrences, monthGrid, ageOn, reminderTime, dueReminders, toICS, addDays,
     EXPENSE_CATEGORIES, detectExpenseCategory, parseExpenseText, monthEntries, summarize, budgetStatus, toCSV, shiftMonth, monthLabel,
   };
 });

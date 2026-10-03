@@ -32,6 +32,7 @@
       <div id="searchResults"></div>
       <div id="homeTop"></div>
       <div id="homeFood"></div>
+      <div id="homeExtras"></div>
       <div id="homeCards"></div>
     </section>
 
@@ -181,7 +182,7 @@
     <section id="view-expenses" class="view">
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💶 Ausgaben</h2></div>
       <form id="expQuick" class="addrow" autocomplete="off">
-        <input id="expQuickInput" placeholder="z. B. 12,50 Tanken" inputmode="text">
+        <input id="expQuickInput" placeholder="z. B. 12,50 Tanken · +1800 Gehalt" inputmode="text">
         <button class="btn mic" type="button" id="micExp" aria-label="Spracheingabe" hidden>🎤</button>
         <button class="btn primary" type="submit" aria-label="Buchen">＋</button>
       </form>
@@ -192,8 +193,14 @@
       </div>
       <div class="card" id="expSummary"></div>
       <div id="expList"></div>
+      <div class="card" id="savingsCard">
+        <h2>🐷 Sparziele</h2>
+        <div id="savingsList"></div>
+        <button class="btn small" id="btnSavingNew">＋ Sparziel</button>
+      </div>
       <div class="row tight">
         <button class="btn" id="btnExpNew">＋ Ausgabe mit Details</button>
+        <button class="btn" id="btnIncomeNew">＋ Einnahme</button>
         <button class="btn" id="btnExpBudget">🎯 Budget</button>
         <button class="btn" id="btnExpCsv">⬇️ CSV (Excel)</button>
       </div>
@@ -243,6 +250,12 @@
         </div>
       </div>
       <div class="card">
+        <h2>🧘 Atemübung</h2>
+        <p class="muted small">Ein paar ruhige Minuten gegen Stress oder zum Einschlafen.</p>
+        <div class="chips" id="brPattern"></div>
+        <div class="row tight"><button class="btn primary" data-br="1">1 Min</button><button class="btn" data-br="3">3 Min</button><button class="btn" data-br="5">5 Min</button></div>
+      </div>
+      <div class="card">
         <h2>🙂 Wie geht's dir heute?</h2>
         <div class="moods" id="moodPick"></div>
         <div class="row tight">
@@ -259,6 +272,7 @@
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📝 Notizen</h2></div>
       <div class="addrow">
         <input id="noteSearch" type="search" placeholder="Notizen durchsuchen …" autocomplete="off">
+        <button class="btn" id="btnNoteTpl" aria-label="Vorlage">📋</button>
         <button class="btn primary" id="btnNoteNew" aria-label="Neue Notiz">＋</button>
       </div>
       <div id="noteList" class="notes"></div>
@@ -303,6 +317,93 @@
       </details>
     </section>
 
+    <!-- Medikamente -->
+    <section id="view-meds" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💊 Medikamente</h2></div>
+      <div class="card" id="medToday"></div>
+      <div id="medList"></div>
+      <button class="btn" id="btnMedNew">＋ Medikament hinzufügen</button>
+      <p class="muted small">Erinnerungen kommen, solange die App geöffnet ist. Diese Liste ersetzt keinen ärztlichen Medikationsplan.</p>
+    </section>
+
+    <!-- Fristen & Dokumente -->
+    <section id="view-deadlines" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📄 Fristen & Dokumente</h2></div>
+      <div id="dlList"></div>
+      <div class="chips" id="dlQuick"></div>
+    </section>
+
+    <!-- Zählerstände -->
+    <section id="view-meters" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🔢 Zählerstände</h2></div>
+      <div id="meterList"></div>
+      <div class="chips" id="meterAdd"></div>
+    </section>
+
+    <!-- Werkzeuge -->
+    <section id="view-tools" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🧰 Werkzeuge</h2></div>
+      <div class="card">
+        <h2>⏲️ Küchen-Timer</h2>
+        <div class="chips" id="tmQuick">
+          <button class="chip" data-min="1">1 Min</button><button class="chip" data-min="3">3</button><button class="chip" data-min="5">5</button>
+          <button class="chip" data-min="8">8 (Eier)</button><button class="chip" data-min="10">10</button><button class="chip" data-min="15">15</button>
+          <button class="chip" data-min="20">20</button><button class="chip" data-min="30">30</button><button class="chip" data-min="45">45</button><button class="chip" data-min="60">60</button>
+        </div>
+        <form id="tmForm" class="addrow" autocomplete="off">
+          <input id="tmName" placeholder="Name, z. B. Nudeln">
+          <input id="tmMin" inputmode="numeric" placeholder="Min" style="max-width:80px">
+          <button class="btn primary" type="submit">Start</button>
+        </form>
+        <div id="tmList"></div>
+      </div>
+      <div class="card">
+        <h2>⏱️ Stoppuhr</h2>
+        <div class="stopwatch" id="swTime">0:00,0</div>
+        <div class="row tight"><button class="btn primary" id="swStart">Start</button><button class="btn" id="swLap">Runde</button><button class="btn" id="swReset">Zurücksetzen</button></div>
+        <div id="swLaps" class="small muted"></div>
+      </div>
+      <div class="card">
+        <h2>⚖️ Küchen-Umrechner</h2>
+        <div class="row">
+          <label>Menge<input id="cvVal" inputmode="decimal" value="1"></label>
+          <label>von<select id="cvFrom"></select></label>
+          <label>in<select id="cvTo"></select></label>
+        </div>
+        <label>Zutat<select id="cvIng"></select></label>
+        <div class="cv-result" id="cvResult"></div>
+        <h3 class="section">🌡️ Backofen</h3>
+        <div class="row">
+          <label>°C (Ober-/Unterhitze)<input id="ovC" inputmode="numeric" placeholder="180"></label>
+          <label>°F<input id="ovF" inputmode="numeric" placeholder="356"></label>
+        </div>
+        <div class="small" id="ovResult"></div>
+      </div>
+      <div class="card">
+        <h2>🧾 Rechnung teilen</h2>
+        <div class="row">
+          <label>Betrag (€)<input id="spTotal" inputmode="decimal" placeholder="z. B. 86,40"></label>
+          <label>Personen<input id="spPeople" inputmode="numeric" value="2"></label>
+        </div>
+        <div class="chips" id="spTip"><button class="chip active" data-tip="0">kein Trinkgeld</button><button class="chip" data-tip="5">5 %</button><button class="chip" data-tip="10">10 %</button><button class="chip" data-tip="15">15 %</button></div>
+        <div class="cv-result" id="spResult"></div>
+      </div>
+      <div class="card">
+        <h2>🎲 Entscheidungshilfe</h2>
+        <div class="row tight"><button class="btn" id="rdCoin">🪙 Münze</button><button class="btn" id="rdDice">🎲 Würfel</button><button class="btn" id="rdCook">🍳 Was koche ich?</button></div>
+        <label>Oder aus eigener Liste (mit Komma getrennt)<input id="rdList" placeholder="z. B. Anna, Ben, Clara"></label>
+        <button class="btn small" id="rdPick">Auslosen</button>
+        <div class="cv-result" id="rdResult"></div>
+      </div>
+    </section>
+
+    <!-- Erfolge -->
+    <section id="view-achievements" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🏆 Erfolge & Rückblick</h2></div>
+      <div class="card" id="weekReview"></div>
+      <div id="achList" class="ach-grid"></div>
+    </section>
+
     <!-- Mehr -->
     <section id="view-settings" class="view">
       <div class="hub">
@@ -315,6 +416,16 @@
         <button class="hub-tile" data-goto="health"><span>❤️</span>Gesundheit<small id="hubHealth"></small></button>
         <button class="hub-tile" data-goto="notes"><span>📝</span>Notizen<small id="hubNotes"></small></button>
         <button class="hub-tile" data-goto="food"><span>🍽️</span>Kalorien<small id="hubFood"></small></button>
+        <button class="hub-tile" data-goto="meds"><span>💊</span>Medikamente<small id="hubMeds"></small></button>
+        <button class="hub-tile" data-goto="deadlines"><span>📄</span>Fristen<small id="hubDeadlines"></small></button>
+        <button class="hub-tile" data-goto="meters"><span>🔢</span>Zählerstände<small id="hubMeters"></small></button>
+        <button class="hub-tile" data-goto="tools"><span>🧰</span>Werkzeuge<small>Timer, Umrechner …</small></button>
+        <button class="hub-tile" data-goto="achievements"><span>🏆</span>Erfolge<small id="hubAch"></small></button>
+      </div>
+      <div class="card">
+        <h2>🏠 Startseite anpassen</h2>
+        <p class="muted small">Welche Karten sollen auf „Heute“ erscheinen?</p>
+        <div class="chips" id="homeCardToggles"></div>
       </div>
       <div class="card">
         <h2>🎨 Darstellung</h2>
@@ -383,6 +494,7 @@
           <button id="btnExport" class="btn">⬇️ Sicherung speichern</button>
           <label class="btn">⬆️ Sicherung laden<input id="importFile" type="file" accept="application/json" hidden></label>
         </div>
+        <p class="small" id="backupInfo"></p>
         <button id="btnClear" class="btn danger">Alles löschen</button>
       </div>
       <p class="muted small center">Produktdaten: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL) ·
@@ -395,7 +507,7 @@
     <button class="tab" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food"><span>☰</span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements"><span>☰</span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -564,6 +676,9 @@
       <button data-action="meal"><span>🍽️</span>Mahlzeit</button>
       <button data-action="habit"><span>💧</span>Gewohnheit</button>
       <button data-action="search"><span>🔍</span>Suchen</button>
+      <button data-action="timer"><span>⏲️</span>Timer</button>
+      <button data-action="medtaken"><span>💊</span>Tabletten</button>
+      <button data-action="deadline"><span>📄</span>Frist</button>
     </div>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
@@ -785,6 +900,62 @@
     </div>
   </dialog>
 
+  <!-- Medikament -->
+  <dialog id="medDialog">
+    <form id="medForm" method="dialog">
+      <h2 id="medDlgTitle">Medikament</h2>
+      <div class="row">
+        <label style="flex:2">Name<input id="mdName" required autocomplete="off" placeholder="z. B. Vitamin D"></label>
+        <label>Menge je Einnahme<input id="mdAmount" inputmode="decimal" value="1"></label>
+      </div>
+      <label>Uhrzeiten</label>
+      <div class="chips" id="mdTimes"></div>
+      <div class="addrow"><input id="mdTimeAdd" type="time"><button type="button" class="btn" id="mdTimeBtn">＋ Uhrzeit</button></div>
+      <label>An welchen Tagen?</label>
+      <div class="chips" id="mdDays"></div>
+      <div class="row">
+        <label>Vorrat (Stück)<input id="mdStock" inputmode="numeric" placeholder="optional"></label>
+        <label>Hinweis<input id="mdNote" placeholder="z. B. zum Essen" autocomplete="off"></label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="mdDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="mdCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Frist -->
+  <dialog id="dlDialog">
+    <form id="dlForm" method="dialog">
+      <h2 id="dlDlgTitle">Frist</h2>
+      <div class="chips" id="dlType"></div>
+      <label>Bezeichnung<input id="dlTitle" autocomplete="off" placeholder="z. B. Personalausweis Anna"></label>
+      <div class="row">
+        <label>Läuft ab / fällig am<input id="dlDate" type="date" required></label>
+        <label>Vorwarnung (Tage)<input id="dlRemind" inputmode="numeric"></label>
+      </div>
+      <div class="row tight" id="dlFromRow">
+        <label>oder: ausgestellt/gekauft am<input id="dlStart" type="date"></label>
+        <label>Laufzeit (Jahre)<input id="dlYears" inputmode="decimal"></label>
+      </div>
+      <label>Notiz<input id="dlNote" autocomplete="off" placeholder="z. B. Kassenbon im Ordner Garantie"></label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="dlDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="dlCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Atemübung -->
+  <dialog id="breathDialog" class="cookmode breath">
+    <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
+    <div class="br-stage"><div class="br-circle" id="brCircle"></div><div class="br-text"><b id="brPhase"></b><span id="brCount"></span></div></div>
+  </dialog>
+
   <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 
   <!-- Kassenbon -->
@@ -828,5 +999,7 @@
   <script src="life-ui.js"></script>
   <script src="nutrition.js"></script>
   <script src="nutrition-ui.js"></script>
+  <script src="extras.js"></script>
+  <script src="extras-ui.js"></script>
 </body>
 </html>

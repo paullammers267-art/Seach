@@ -69,7 +69,7 @@
 
     // Ausgaben
     const month = ym(today);
-    const sum = P.summarize(P.monthEntries(st().expenses, month));
+    const sum = P.summarize(P.monthEntries(st().expenses, month).filter((e) => !P.isIncome(e)));
     const b = P.budgetStatus(sum.total, st().settings.budget, month);
     cards.push(`<button class="card home-card" data-goto="expenses">
       <div class="home-title">💶 Ausgaben ${P.monthLabel(month).split(' ')[0]}</div>
@@ -93,7 +93,7 @@
     const today = nowIso();
     const next = P.occurrences(st().events, today, P.addDays(today, 60))[0];
     $('#hubCal').textContent = next ? `${next.date === today ? 'heute' : L.formatDate(next.date).slice(0, 6)} ${eventTitle(next.event, next.date)}` : 'keine Termine';
-    $('#hubExp').textContent = euro(P.summarize(P.monthEntries(st().expenses, ym(today))).total) + ' diesen Monat';
+    $('#hubExp').textContent = euro(P.summarize(P.monthEntries(st().expenses, ym(today)).filter((e) => !P.isIncome(e))).total) + ' diesen Monat';
     const wk = S.thisWeek(st().workouts);
     $('#hubSport').textContent = `${wk.count}/${st().settings.weeklyGoal} diese Woche`;
     $('#hubRecipes').textContent = st().plan[today] ? 'heute: ' + (A.findRecipe(st().plan[today]) || {}).name : `${window.FridgeRecipes.length + st().customRecipes.length} Rezepte`;
@@ -498,12 +498,14 @@
     if (A.view !== 'expenses') return;
     $('#expTitle').textContent = P.monthLabel(expMonth);
     const entries = P.monthEntries(st().expenses, expMonth);
-    const sum = P.summarize(entries);
+    const sum = P.summarize(entries.filter((e) => !P.isIncome(e)));
+    const income = P.summarize(entries.filter(P.isIncome)).total;
     const b = P.budgetStatus(sum.total, st().settings.budget, expMonth);
-    const prev = P.summarize(P.monthEntries(st().expenses, P.shiftMonth(expMonth, -1))).total;
+    const prev = P.summarize(P.monthEntries(st().expenses, P.shiftMonth(expMonth, -1)).filter((e) => !P.isIncome(e))).total;
     const max = Math.max(1, ...sum.byCategory.map((c) => c.amount));
     $('#expSummary').innerHTML = `
       <div class="exp-total">${euro(sum.total)}</div>
+      ${income ? `<div class="saldo"><span>💰 Einnahmen <b>${euro(income)}</b></span><span>Saldo <b class="${income - sum.total < 0 ? 'warn-text' : 'ok-text'}">${income - sum.total >= 0 ? '+' : '−'}${euro(Math.abs(income - sum.total))}</b></span></div>` : ''}
       ${prev ? `<div class="muted small center">Vormonat: ${euro(prev)} (${sum.total >= prev ? '+' : '−'}${euro(Math.abs(sum.total - prev))})</div>` : ''}
       ${b ? `<div class="meter ${b.over ? 'over' : ''}"><i style="width:${b.pct}%"></i></div>
         <div class="small center">${b.over ? `<b class="warn-text">${euro(-b.left)} über dem Budget</b>` : `Budget ${euro(b.budget)}: noch <b>${euro(b.left)}</b>${b.perDay != null ? ` · ${euro(b.perDay)} pro Tag` : ''}`}</div>` : '<div class="muted small center">Tipp: Lege mit 🎯 ein Monatsbudget fest.</div>'}
@@ -517,7 +519,7 @@
       return head + `<button class="exp-row" data-exp="${esc(e.id)}">
         <span class="emoji-sm">${catOf(e.category).emoji}</span>
         <span class="grow">${esc(e.note || catOf(e.category).label)}${e.recurring ? ' <span class="tag">monatlich</span>' : ''}</span>
-        <b>${euro(e.amount)}</b></button>`;
+        <b class="${P.isIncome(e) ? 'ok-text' : ''}">${P.isIncome(e) ? '+' : ''}${euro(e.amount)}</b></button>`;
     }).join('') : '<p class="muted center">Keine Ausgaben in diesem Monat. Oben z. B. „12,50 Tanken“ eintippen.</p>';
   }
 
@@ -530,7 +532,9 @@
 
   $('#expQuick').addEventListener('submit', (e) => {
     e.preventDefault();
-    const p = P.parseExpenseText($('#expQuickInput').value);
+    const raw = $('#expQuickInput').value.trim();
+    const p = P.parseExpenseText(raw.replace(/^\+\s*/, ''));
+    if (p && raw.startsWith('+')) p.category = 'einnahme';
     if (!p) { A.toast('Bitte mit Betrag, z. B. „12,50 Tanken“'); return; }
     addExpense(p);
     $('#expQuickInput').value = '';
@@ -584,6 +588,7 @@
     exDlg.showModal();
   }
   A.actions.expense = () => openExpenseDialog(null);
+  A.openExpense = (preset) => { openExpenseDialog(null); if (preset && preset.category) setExCat(preset.category); if (preset && preset.title) $('#expDlgTitle').textContent = preset.title; };
   $('#expenseForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const amount = L.parsePrice($('#exAmount').value);

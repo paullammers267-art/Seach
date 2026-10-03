@@ -20,9 +20,9 @@
     items: [], products: {}, stats: { consumed: 0, wasted: 0 }, lastNotified: null,
     shopping: [], favorites: [], customRecipes: [], plan: {}, history: [], staples: [],
     events: [], expenses: [], workouts: [], notified: [],
-    tasks: [], habits: [], habitLog: {}, weights: [], moods: {}, notes: [], weatherCache: null, food: [],
+    tasks: [], habits: [], habitLog: {}, weights: [], moods: {}, notes: [], weatherCache: null, food: [], meds: [], medLog: {}, deadlines: [], meters: [], savings: [],
     settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false, height: null, weightGoal: null, place: null, theme: 'auto',
-      nutrition: { sex: 'w', age: null, activity: 1.375, goal: 'keep', manual: null, weight: null } },
+      nutrition: { sex: 'w', age: null, activity: 1.375, goal: 'keep', manual: null, weight: null }, homeHidden: [], lastBackup: null },
   });
   let state = load();
   let undoSnapshot = null;
@@ -1451,7 +1451,8 @@
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `frischecheck-${L.toISODate(new Date())}.json`;
+    a.download = `alltagsheld-${L.toISODate(new Date())}.json`;
+    state.settings.lastBackup = L.toISODate(new Date()); save(); render();
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
@@ -1486,6 +1487,8 @@
     beep, listen: SpeechRec ? listen : null, onRender: (fn) => renderHooks.push(fn), actions,
     calendarSources: [],
     scanBarcode: (cb) => openScanner('barcode', cb),
+    openPicker,
+    addToShopping: (name, ingredient, note) => { const r = addToShopping(name, ingredient, false, note); render(); return r; },
     ocrText,
     get view() { return currentView; },
     notify: async (title, body, tag) => {
