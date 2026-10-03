@@ -1,5 +1,5 @@
 /* Offline-Unterstützung: App-Dateien zwischenspeichern, Netzwerk bevorzugen. */
-const CACHE = 'frischecheck-v4';
+const CACHE = 'frischecheck-v5';
 const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'app.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {

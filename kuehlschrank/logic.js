@@ -242,7 +242,7 @@
   /** Kanonische Zutaten mit Suchbegriffen (Produktname, Open-Food-Facts-Kategorien). */
   const INGREDIENTS = {
     milch: { label: 'Milch', emoji: '🥛', days: 7, terms: ['milch', 'vollmilch', 'h-milch', 'frischmilch', 'buttermilch', 'en:milks', 'milk'] },
-    sahne: { label: 'Sahne', emoji: '🥛', days: 7, terms: ['sahne', 'schlagsahne', 'kochsahne', 'cream', 'en:creams'] },
+    sahne: { label: 'Sahne', emoji: '🥛', days: 7, terms: ['schlagsah', 'sahne', 'schlagsahne', 'kochsahne', 'cream', 'en:creams'] },
     sauresahne: { label: 'Saure Sahne / Schmand', emoji: '🥛', days: 10, terms: ['saure sahne', 'schmand', 'creme fraiche', 'crème fraîche', 'sour cream'] },
     butter: { label: 'Butter', emoji: '🧈', days: 30, terms: ['butter', 'en:butters'] },
     kaese: { label: 'Käse', emoji: '🧀', days: 21, terms: ['kase', 'gouda', 'emmentaler', 'edamer', 'cheddar', 'bergkase', 'reibekase', 'tilsiter', 'leerdammer', 'butterkase', 'en:cheeses', 'cheese'] },
@@ -250,13 +250,13 @@
     parmesan: { label: 'Parmesan', emoji: '🧀', days: 60, terms: ['parmesan', 'parmigiano', 'grana padano', 'pecorino'] },
     feta: { label: 'Feta / Hirtenkäse', emoji: '🧀', days: 21, terms: ['feta', 'hirtenkase', 'schafskase', 'salakis'] },
     frischkaese: { label: 'Frischkäse', emoji: '🧀', days: 14, terms: ['frischkase', 'philadelphia', 'cream cheese', 'ricotta', 'mascarpone'] },
-    joghurt: { label: 'Joghurt', emoji: '🥣', days: 14, terms: ['joghurt', 'jogurt', 'yoghurt', 'yogurt', 'skyr', 'en:yogurts'] },
+    joghurt: { label: 'Joghurt', emoji: '🥣', days: 14, terms: ['joghu', 'joghurt', 'jogurt', 'yoghurt', 'yogurt', 'skyr', 'en:yogurts'] },
     quark: { label: 'Quark', emoji: '🥣', days: 14, terms: ['quark', 'topfen'] },
     eier: { label: 'Eier', emoji: '🥚', days: 21, terms: ['eier', ' ei ', 'freilandeier', 'en:eggs', 'eggs'] },
     schinken: { label: 'Schinken', emoji: '🥓', days: 10, terms: ['schinken', 'kochschinken', ' ham '] },
     speck: { label: 'Speck', emoji: '🥓', days: 14, terms: ['speck', 'bacon', 'pancetta', 'schinkenwurfel'] },
-    hackfleisch: { label: 'Hackfleisch', emoji: '🥩', days: 1, terms: ['hackfleisch', 'gehacktes', ' hack ', 'rinderhack', 'minced'] },
-    haehnchen: { label: 'Hähnchen', emoji: '🍗', days: 2, terms: ['hahnchen', 'hühnchen', 'huhnchen', 'hahnchenbrust', 'chicken', 'pute', 'putenbrust', 'gefluegel', 'geflugel'] },
+    hackfleisch: { label: 'Hackfleisch', emoji: '🥩', days: 1, terms: ['hackfl', 'hack gem', 'hackfleisch', 'gehacktes', ' hack ', 'rinderhack', 'minced'] },
+    haehnchen: { label: 'Hähnchen', emoji: '🍗', days: 2, terms: ['haehn', 'hahn.', 'hahnchen', 'hühnchen', 'huhnchen', 'hahnchenbrust', 'chicken', 'pute', 'putenbrust', 'gefluegel', 'geflugel'] },
     rind: { label: 'Rindfleisch', emoji: '🥩', days: 3, terms: ['rindfleisch', 'rinder', 'steak', 'gulasch', 'beef'] },
     schwein: { label: 'Schweinefleisch', emoji: '🥩', days: 3, terms: ['schweine', 'schnitzel', 'kotelett', 'pork'] },
     wurst: { label: 'Wurst', emoji: '🌭', days: 14, terms: ['wurst', 'wurstchen', 'salami', 'bratwurst', 'wiener', 'chorizo', 'sausage'] },
@@ -267,18 +267,18 @@
     tomaten: { label: 'Tomaten', emoji: '🍅', days: 7, terms: ['tomate', 'tomaten', 'cherrytomaten', 'tomato'] },
     passata: { label: 'Passierte Tomaten', emoji: '🥫', days: 365, terms: ['passata', 'passierte tomaten', 'stuckige tomaten', 'tomatenmark', 'tomatensosse', 'tomatensauce', 'dosentomaten', 'pizzatomaten'] },
     paprika: { label: 'Paprika', emoji: '🫑', days: 7, terms: ['paprika', 'bell pepper'] },
-    zwiebeln: { label: 'Zwiebeln', emoji: '🧅', days: 30, terms: ['zwiebel', 'schalotte', 'onion'] },
+    zwiebeln: { label: 'Zwiebeln', emoji: '🧅', days: 30, terms: ['zwieb', 'zwiebel', 'schalotte', 'onion'] },
     knoblauch: { label: 'Knoblauch', emoji: '🧄', days: 30, terms: ['knoblauch', 'garlic'] },
     karotten: { label: 'Karotten', emoji: '🥕', days: 14, terms: ['karotte', 'mohre', 'moehre', 'rubli', 'carrot'] },
     zucchini: { label: 'Zucchini', emoji: '🥒', days: 7, terms: ['zucchini', 'zucchetti'] },
     gurke: { label: 'Gurke', emoji: '🥒', days: 7, terms: ['gurke', 'cucumber'] },
-    champignons: { label: 'Pilze', emoji: '🍄', days: 4, terms: ['champignon', 'pilze', 'pilz', 'mushroom', 'egerlinge'] },
+    champignons: { label: 'Pilze', emoji: '🍄', days: 4, terms: ['champ', 'champignon', 'pilze', 'pilz', 'mushroom', 'egerlinge'] },
     spinat: { label: 'Spinat', emoji: '🥬', days: 3, terms: ['spinat', 'spinach', 'blattspinat'] },
     salat: { label: 'Salat', emoji: '🥬', days: 4, terms: ['salat', 'eisberg', 'rucola', 'feldsalat', 'kopfsalat', 'romana', 'lettuce'] },
     brokkoli: { label: 'Brokkoli', emoji: '🥦', days: 5, terms: ['brokkoli', 'broccoli'] },
     blumenkohl: { label: 'Blumenkohl', emoji: '🥦', days: 7, terms: ['blumenkohl', 'cauliflower'] },
     lauch: { label: 'Lauch', emoji: '🥬', days: 10, terms: ['lauch', 'porree', 'fruhlingszwiebel', 'leek'] },
-    kartoffeln: { label: 'Kartoffeln', emoji: '🥔', days: 30, terms: ['kartoffel', 'potato', 'drillinge'] },
+    kartoffeln: { label: 'Kartoffeln', emoji: '🥔', days: 30, terms: ['kartoff', 'kartoffel', 'potato', 'drillinge'] },
     kuerbis: { label: 'Kürbis', emoji: '🎃', days: 30, terms: ['kurbis', 'hokkaido', 'butternut', 'pumpkin'] },
     erbsen: { label: 'Erbsen', emoji: '🫛', days: 180, terms: ['erbsen', 'peas'] },
     mais: { label: 'Mais', emoji: '🌽', days: 365, terms: [' mais', 'maiskorner', ' corn '] },
@@ -290,7 +290,7 @@
     bananen: { label: 'Bananen', emoji: '🍌', days: 5, terms: ['banane', 'banana'] },
     beeren: { label: 'Beeren', emoji: '🍓', days: 3, terms: ['beeren', 'erdbeere', 'himbeere', 'heidelbeere', 'blaubeere', 'berries'] },
     zitrone: { label: 'Zitrone', emoji: '🍋', days: 21, terms: ['zitrone', 'limette', 'lemon', 'lime'] },
-    nudeln: { label: 'Nudeln', emoji: '🍝', days: 365, terms: ['nudeln', 'spaghetti', 'penne', 'fusilli', 'pasta', 'tagliatelle', 'makkaroni', 'farfalle', 'rigatoni', 'lasagne'] },
+    nudeln: { label: 'Nudeln', emoji: '🍝', days: 365, terms: ['spagh', 'nudeln', 'spaghetti', 'penne', 'fusilli', 'pasta', 'tagliatelle', 'makkaroni', 'farfalle', 'rigatoni', 'lasagne'] },
     reis: { label: 'Reis', emoji: '🍚', days: 365, terms: ['reis', 'basmati', 'jasmin', 'risotto', 'rice'] },
     mehl: { label: 'Mehl', emoji: '🌾', days: 365, terms: ['mehl', 'weizenmehl', 'flour'] },
     brot: { label: 'Brot', emoji: '🍞', days: 4, terms: ['brot', 'toast', 'brotchen', 'baguette', 'ciabatta', 'bread'] },
@@ -535,10 +535,133 @@
     return (v || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
   }
 
+
+  // ---------- Spracheingabe ----------
+
+  const NUMBER_WORDS = { ein: 1, eine: 1, einen: 1, einer: 1, zwei: 2, drei: 3, vier: 4, fuenf: 5, funf: 5, sechs: 6, sieben: 7, acht: 8, neun: 9, zehn: 10, zwoelf: 12, zwolf: 12 };
+  const UNITS = /^(x|mal|stuck|stueck|packung(en)?|pack|packchen|flasche(n)?|dose(n)?|becher|glas|glaser|beutel|netz|bund|liter|l|kilo|kg|gramm|g|tafel(n)?|tute(n)?|schale(n)?|kiste(n)?)$/;
+
+  /** Menge am Anfang abtrennen: "2 Packungen Milch" -> { qty: 2, rest: "Milch" } */
+  function splitQuantity(text) {
+    const words = String(text).trim().split(/\s+/);
+    let qty = 1;
+    const n = norm(words[0] || '').replace(/ue/g, 'u');
+    if (/^\d+$/.test(words[0])) { qty = parseInt(words[0], 10); words.shift(); }
+    else if (NUMBER_WORDS[norm(words[0] || '')] || NUMBER_WORDS[n]) { qty = NUMBER_WORDS[norm(words[0])] || NUMBER_WORDS[n]; words.shift(); }
+    while (words.length > 1 && UNITS.test(norm(words[0]).replace(/[.,]/g, ''))) words.shift();
+    if (words.length > 1 && /^(mit|vom|von)$/i.test(words[0])) words.shift();
+    return { qty: Math.max(1, Math.min(qty, 99)), rest: words.join(' ') };
+  }
+
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  /** "Milch, zwei Packungen Eier und Brot" -> [{ name: 'Milch', qty: 1 }, { name: 'Eier', qty: 2 }, { name: 'Brot', qty: 1 }] */
+  function parseSpokenList(text) {
+    return String(text || '')
+      .split(/\s*(?:,|;|\bund\b|\bsowie\b|\bauch noch\b|\bnoch\b|\bdann\b|\n)\s*/i)
+      .map((p) => p.replace(/^(bitte|ich brauche|wir brauchen|kaufen?|noch)\s+/i, '').replace(/[.!?]+$/, '').trim())
+      .filter(Boolean)
+      .map((p) => { const { qty, rest } = splitQuantity(p); return { name: cap(rest), qty }; })
+      .filter((x) => x.name.length > 1);
+  }
+
+  /** "zwei Joghurt bis 12. Oktober" -> { name: 'Joghurt', qty: 2, expiry: '2026-10-12' } */
+  function parseSpokenItem(text, today = new Date()) {
+    const t = String(text || '').trim();
+    const m = t.match(/\s(?:bis(?:\s+zum)?|haltbar(?:\s+bis)?|mhd|ablauf(?:datum)?|läuft\s+ab(?:\s+am)?|laeuft\s+ab(?:\s+am)?)\s+(.*)$/i);
+    const head = m ? t.slice(0, m.index) : t;
+    let expiry = null;
+    if (m) {
+      const tail = m[1].replace(/\b(\d{1,2})(?:ter|ten|te)\b/gi, '$1.');
+      expiry = parseTypedDate(tail, today) || parseDateCandidates('mhd ' + tail, today).map((f) => f.iso)[0] || relativeDate(tail, today);
+    }
+    const { qty, rest } = splitQuantity(head.replace(/[.!?]+$/, ''));
+    return { name: cap(rest), qty, expiry };
+  }
+
+  /** "morgen", "übermorgen", "in 5 Tagen", "nächste Woche" -> ISO */
+  function relativeDate(text, today = new Date()) {
+    const t = norm(text);
+    const plus = (n) => toISODate(new Date(startOfDay(today).getTime() + n * DAY));
+    if (/ubermorgen|uebermorgen/.test(t)) return plus(2);
+    if (/morgen/.test(t)) return plus(1);
+    if (/heute/.test(t)) return plus(0);
+    let m = t.match(/in (\d+|\w+) tag/);
+    if (m) return plus(/^\d+$/.test(m[1]) ? +m[1] : NUMBER_WORDS[m[1]] || 1);
+    m = t.match(/in (\d+|\w+) woche/);
+    if (m) return plus(7 * (/^\d+$/.test(m[1]) ? +m[1] : NUMBER_WORDS[m[1]] || 1));
+    if (/nachste woche|naechste woche/.test(t)) return plus(7);
+    return null;
+  }
+
+  // ---------- Kassenbon ----------
+
+  const RECEIPT_SKIP = /(summe|zu zahlen|zwischensumme|gesamt|\btotal\b|\bmwst\b|\bust\b|ust-id|\bnetto\b|\bbrutto\b|rueckgeld|ruckgeld|gegeben|\bbar\b|\bkarte\b|kartenzahlung|\bec-|girocard|\bvisa\b|mastercard|kontaktlos|\bbeleg|\bbon\b|\bkasse\b|filiale|\bstr\.|strasse|\btel\b|telefon|steuer|\bdatum\b|uhrzeit|vielen dank|danke|payback|punkte|rabatt|coupon|\bpfand\b|leergut|\btse\b|signatur|terminal|\btrace\b|betrag|\beur\s*$|^eur\b)/;
+
+  /**
+   * Liest Produkte aus dem OCR-Text eines Kassenbons.
+   * Zeilen wie "H-MILCH 3,5% 1L   1,19 A" -> { name: 'H-Milch 3,5% 1l', price: 1.19, ingredient: 'milch' }
+   */
+  function parseReceipt(text) {
+    const out = [];
+    for (let raw of String(text || '').split('\n')) {
+      raw = raw.replace(/\s+/g, ' ').trim();
+      const line = norm(raw);
+      if (raw.length < 4 || RECEIPT_SKIP.test(line)) continue;
+      if (/^\d+([.,]\d+)?\s*(x|stk|kg)\s/i.test(raw) && !/[a-z]{3,}/i.test(raw.replace(/^\S+\s+\S+/, ''))) continue; // "2 x 0,99"
+      const m = raw.match(/^(.*?[A-Za-zÄÖÜäöüß].*?)\s+(-?\d{1,3}[,.]\d{2})\s*(?:[*]?\s*[ABCDE12]\b|€|EUR)?\s*[*]?$/i);
+      if (!m) continue;
+      const price = parseFloat(m[2].replace(',', '.'));
+      if (!(price > 0) || price > 200) continue; // Rabatte/Unsinn
+      let name = m[1].replace(/\b\d+\s*x\s*$/i, '').replace(/[|_*#]+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (name.replace(/[^A-Za-zÄÖÜäöüß]/g, '').length < 3) continue;
+      name = name.toLowerCase().replace(/(^|[\s\-/])([a-zäöü])/g, (x, a, b) => a + b.toUpperCase());
+      out.push({ name, price, ingredient: detectIngredient(name) });
+    }
+    return out;
+  }
+
+  // ---------- Kochmodus ----------
+
+  /** Zeitangaben in einem Rezeptschritt: "20 Min.", "1,5 Std.", "10–15 Minuten" -> Minuten (größerer Wert) */
+  function findTimers(step) {
+    const res = [];
+    const re = /(\d+(?:[,.]\d+)?)(?:\s*[–-]\s*(\d+(?:[,.]\d+)?))?\s*(min|minute|minuten|std|stunde|stunden)\b/gi;
+    let m;
+    while ((m = re.exec(step))) {
+      const v = parseFloat((m[2] || m[1]).replace(',', '.'));
+      const mins = /^(std|stunde)/i.test(m[3]) ? v * 60 : v;
+      if (mins > 0 && mins <= 600 && !res.includes(mins)) res.push(mins);
+    }
+    return res;
+  }
+
+  function formatTimer(sec) {
+    sec = Math.max(0, Math.round(sec));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+  }
+
+  // ---------- Teilen per Link ----------
+
+  function encodeShare(obj) {
+    const json = JSON.stringify(obj);
+    const bin = unescape(encodeURIComponent(json));
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function decodeShare(code) {
+    try {
+      const b64 = String(code).replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(escape(atob(b64))));
+    } catch (e) { return null; }
+  }
+
   return {
     toISODate, fromISODate, daysUntil, status, statusText, formatDate,
     parseDates, parseDateCandidates, parseTypedDate, createDateVoter, cleanOcr, norm, INGREDIENTS, detectIngredient, suggestExpiry, suggestRecipes,
     CARE, afterOpening, afterFreezing, expiredAdvice, isVegetarian, missingIngredients, shoppingText,
     nextDays, monthlyStats, topWasted, parsePrice, formatEuro,
+    parseSpokenList, parseSpokenItem, relativeDate, parseReceipt, findTimers, formatTimer, encodeShare, decodeShare,
   };
 });

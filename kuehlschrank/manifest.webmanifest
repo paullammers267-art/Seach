@@ -8,6 +8,11 @@
   "background_color": "#f4f6f3",
   "theme_color": "#2f855a",
   "lang": "de",
+  "shortcuts": [
+    { "name": "Produkt hinzufügen", "short_name": "Hinzufügen", "url": "./?neu" },
+    { "name": "Einkaufsliste", "short_name": "Einkauf", "url": "./?view=shopping" },
+    { "name": "Rezepte", "short_name": "Rezepte", "url": "./?view=recipes" }
+  ],
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]

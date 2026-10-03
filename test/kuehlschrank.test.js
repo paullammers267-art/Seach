@@ -158,3 +158,42 @@ test('nextDays, Statistik, Preise', () => {
   assert.equal(L.parsePrice('1,99 €'), 1.99);
   assert.equal(L.parsePrice(''), null);
 });
+
+test('Spracheingabe: Listen und Produkte mit Datum', () => {
+  assert.deepEqual(L.parseSpokenList('Milch, zwei Packungen Eier und Brot'),
+    [{ name: 'Milch', qty: 1 }, { name: 'Eier', qty: 2 }, { name: 'Brot', qty: 1 }]);
+  assert.deepEqual(L.parseSpokenList('Ich brauche 3 Bananen sowie Butter.'), [{ name: 'Bananen', qty: 3 }, { name: 'Butter', qty: 1 }]);
+  assert.deepEqual(L.parseSpokenItem('zwei Joghurt bis 12. Oktober', TODAY), { name: 'Joghurt', qty: 2, expiry: '2026-10-12' });
+  assert.deepEqual(L.parseSpokenItem('Hackfleisch bis morgen', TODAY), { name: 'Hackfleisch', qty: 1, expiry: '2026-10-04' });
+  assert.deepEqual(L.parseSpokenItem('Käse haltbar bis 20.10.', TODAY), { name: 'Käse', qty: 1, expiry: '2026-10-20' });
+  assert.deepEqual(L.parseSpokenItem('Quark bis zum fünfzehnten', TODAY).name, 'Quark');
+  assert.deepEqual(L.parseSpokenItem('Milch', TODAY), { name: 'Milch', qty: 1, expiry: null });
+  assert.equal(L.relativeDate('in 5 Tagen', TODAY), '2026-10-08');
+  assert.equal(L.relativeDate('nächste Woche', TODAY), '2026-10-10');
+});
+
+test('parseReceipt liest Produkte und Preise vom Kassenbon', () => {
+  const bon = [
+    'REWE Markt GmbH', 'Musterstr. 5', 'H-MILCH 3,5% 1L        1,19 A', 'GOUDA JUNG SCHEIBEN    2,29 A', '2 x 0,99',
+    'BIO EIER 10ER          3,49 A', 'SPAGH. NO.5            1,49 A', 'HAEHNCHENBRUSTFILET    5,99 A', 'KARTOFFELN 2KG         2,99 A', 'PFAND 0,25             0,25 A', 'SUMME EUR             8,46', 'GEGEBEN BAR           10,00',
+  ].join('\n');
+  assert.deepEqual(L.parseReceipt(bon), [
+    { name: 'H-Milch 3,5% 1l', price: 1.19, ingredient: 'milch' },
+    { name: 'Gouda Jung Scheiben', price: 2.29, ingredient: 'kaese' },
+    { name: 'Bio Eier 10er', price: 3.49, ingredient: 'eier' },
+    { name: 'Spagh. No.5', price: 1.49, ingredient: 'nudeln' },
+    { name: 'Haehnchenbrustfilet', price: 5.99, ingredient: 'haehnchen' },
+    { name: 'Kartoffeln 2kg', price: 2.99, ingredient: 'kartoffeln' },
+  ]);
+  assert.deepEqual(L.parseReceipt(''), []);
+});
+
+test('Kochmodus-Timer und Teilen-Link', () => {
+  assert.deepEqual(L.findTimers('Bei 180 °C ca. 35–40 Min. backen, dann 1,5 Std. ruhen'), [40, 90]);
+  assert.deepEqual(L.findTimers('Nudeln kochen.'), []);
+  assert.equal(L.formatTimer(125), '2:05');
+  assert.equal(L.formatTimer(3725), '1:02:05');
+  const list = [{ name: 'Käse', note: 'für Pizza' }];
+  assert.deepEqual(L.decodeShare(L.encodeShare(list)), list);
+  assert.equal(L.decodeShare('kaputt!!'), null);
+});

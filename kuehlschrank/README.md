@@ -17,6 +17,11 @@ Web-App (installierbar aufs Handy), mit der du deinen Vorrat im Blick behältst:
 - **🥛 Geöffnet / ❄️ Einfrieren** passen das Ablaufdatum automatisch an (typische Haltbarkeit je Lebensmittel).
 - **MHD oder Verbrauchsdatum**: abgelaufenes MHD → „oft noch gut, prüfen“, Verbrauchsdatum → „nicht mehr essen“.
 - **⚡ Schnellauswahl** häufiger Lebensmittel ohne Scannen, Sortierung, Notizen, Preise, Bereich „Bad & Haushalt“ (z. B. Medikamente).
+- **🎤 Spracheingabe**: „Milch, zwei Packungen Eier und Brot“ auf die Einkaufsliste, „zwei Joghurt bis 12. Oktober“ als Produkt.
+- **🧾 Kassenbon scannen**: Produkte und Preise vom Bon lesen und mit einem Tipp in den Vorrat übernehmen.
+- **👨‍🍳 Kochmodus**: Schritt für Schritt in großer Schrift, Bildschirm bleibt an, Timer werden aus dem Rezepttext erkannt („35 Min.“).
+- **🔗 Einkaufsliste per Link teilen** – wer den Link öffnet, übernimmt die Liste in seine App. **🎲 Was koche ich heute?**
+- **App-Verknüpfungen** (lange auf das App-Symbol drücken): Hinzufügen, Einkaufsliste, Rezepte.
 - **Statistik** pro Monat, Wert der weggeworfenen Lebensmittel, was am häufigsten im Müll landet.
 - **Ratgeber**: MHD vs. Verbrauchsdatum, Kühlschrank-Zonen, Einfrieren, Lagertipps für ~60 Lebensmittel.
 - **Erinnerung** beim Öffnen, wenn etwas heute/morgen abläuft (Browser-Benachrichtigung).

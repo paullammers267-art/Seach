@@ -69,6 +69,9 @@
   function toast(msg, actions) {
     const list = actions ? [].concat(actions) : [];
     const el = $('#toast');
+    // Offene Dialoge liegen in der obersten Ebene – die Meldung muss mit hinein, sonst ist sie verdeckt
+    const host = [...document.querySelectorAll('dialog[open]')].pop() || document.body;
+    if (el.parentElement !== host) host.appendChild(el);
     el.innerHTML = esc(msg) + list.map((a, i) => ` <button class="link" data-i="${i}">${esc(a.label)}</button>`).join('');
     el.hidden = false;
     el.querySelectorAll('button').forEach((b) => (b.onclick = () => { list[b.dataset.i].fn(); el.hidden = true; }));
@@ -78,6 +81,7 @@
 
   // ---------- Navigation ----------
   function showView(name) {
+    if (!$('#view-' + name)) return;
     $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     $$('.tab[data-view]').forEach((t) => t.classList.toggle('active', t.dataset.view === name));
     window.scrollTo(0, 0);
@@ -103,7 +107,7 @@
     if (c.expired) parts.push(`<span class="pill expired">${c.expired} abgelaufen</span>`);
     if (c.today) parts.push(`<span class="pill today">${c.today} heute</span>`);
     if (c.soon) parts.push(`<span class="pill soon">${c.soon} bald</span>`);
-    if (!parts.length) parts.push(`<span class="pill ok">${state.items.length} Produkte · alles frisch</span>`);
+    if (!parts.length) parts.push(`<span class="pill ok">${state.items.length} Produkt${state.items.length === 1 ? '' : 'e'} · alles frisch</span>`);
     $('#summary').innerHTML = parts.join('');
     const urgent = c.expired + c.today;
     $('#badgeStock').hidden = !urgent;
@@ -302,7 +306,9 @@
     toast(`${done.length} Produkt${done.length > 1 ? 'e' : ''} im Vorrat – mit typischer Haltbarkeit. Tippe ein Produkt an, um das Datum anzupassen.`, { label: 'Rückgängig', fn: undo });
   };
   $('#btnShopShare').onclick = async () => {
-    const text = L.shoppingText(state.shopping);
+    const open = state.shopping.filter((i) => !i.done).map((i) => ({ name: i.name, ingredient: i.ingredient, note: i.note }));
+    const link = location.origin + location.pathname + '#liste=' + L.encodeShare(open);
+    const text = L.shoppingText(state.shopping) + '\n\nIn Frischecheck übernehmen: ' + link;
     try {
       if (navigator.share) await navigator.share({ title: 'Einkaufsliste', text });
       else { await navigator.clipboard.writeText(text); toast('Liste kopiert – jetzt z. B. in WhatsApp einfügen'); }
@@ -330,7 +336,7 @@
       { recipe, used: [], missing: recipe.ingredients.slice(), extras: [], urgent: [], coverage: 0 };
   }
 
-  function recipeCard(r) {
+  function recipeCard(r, open) {
     const rec = r.recipe;
     const ing = (k) => `<span class="ing ${r.urgent.includes(k) ? 'urgent' : ''}">${ingEmoji(k)} ${esc(ingLabel(k))}</span>`;
     const pct = Math.round(r.coverage * 100);
@@ -351,12 +357,13 @@
         <button class="btn small" data-plan="${esc(rec.id)}">📅 Einplanen</button>
         ${r.missing.length ? `<button class="btn small" data-shop="${esc(rec.id)}">🛒 Fehlendes (${r.missing.length})</button>` : ''}
       </div>
-      <details>
+      <details${open ? ' open' : ''}>
         <summary>Zubereitung</summary>
         <ol>${rec.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
         <p class="muted small">Salz, Pfeffer, Öl und Gewürze setze ich als vorhanden voraus.</p>
         <div class="row tight">
-          <button class="btn small primary" data-cook="${esc(rec.id)}">🍽️ Gekocht – Zutaten austragen</button>
+          <button class="btn small primary" data-cookmode="${esc(rec.id)}">👨‍🍳 Kochmodus</button>
+          <button class="btn small" data-cook="${esc(rec.id)}">🍽️ Gekocht – Zutaten austragen</button>
           ${rec.custom ? `<button class="btn small" data-edit="${esc(rec.id)}">✏️ Bearbeiten</button>` : `<a class="btn small" target="_blank" rel="noopener" href="${chefkochUrl([rec.name])}">Varianten auf Chefkoch ↗</a>`}
         </div>
       </details>
@@ -373,7 +380,10 @@
     else renderAllRecipes();
   }
 
+  let surpriseId = null;
   function renderSuggestions() {
+    const sr = surpriseId && findRecipe(surpriseId);
+    $('#surpriseBox').innerHTML = sr ? `<div class="surprise"><div class="muted small">🎲 Wie wäre es heute mit …</div>${recipeCard(matchInfo(sr), true)}</div>` : '';
     const urgentItems = sortedItems().filter((i) => i.expiry && L.daysUntil(i.expiry) <= 3 && i.location !== 'haushalt');
     const urgentIngs = [...new Set(urgentItems.map((i) => i.ingredient).filter(Boolean))];
     const ub = $('#urgentBox');
@@ -456,7 +466,7 @@
 
   // Ein Handler für alle Rezeptkarten (Vorschläge + Alle)
   $('#view-recipes').addEventListener('click', (e) => {
-    const t = e.target.closest('[data-fav],[data-plan],[data-shop],[data-cook],[data-edit],[data-pickday],[data-unplan]');
+    const t = e.target.closest('[data-fav],[data-plan],[data-shop],[data-cook],[data-cookmode],[data-edit],[data-pickday],[data-unplan]');
     if (!t) return;
     const d = t.dataset;
     if (d.fav) {
@@ -472,6 +482,7 @@
       const n = shopMissing([findRecipe(d.shop)]);
       toast(n ? `${n} Zutat${n > 1 ? 'en' : ''} auf der Einkaufsliste 🛒` : 'Steht schon alles auf der Liste');
     } else if (d.cook) cook(findRecipe(d.cook));
+    else if (d.cookmode) openCookMode(findRecipe(d.cookmode));
     else if (d.edit) openRecipeDialog(findRecipe(d.edit));
     else if (d.unplan) { delete state.plan[d.unplan]; save(); renderRecipes(); }
     else if (d.pickday) {
@@ -617,6 +628,196 @@
       : '<p class="muted small">Dazu habe ich noch keinen Tipp.</p>';
   }
   $('#guideSearch').addEventListener('input', renderGuide);
+
+  // ---------- Überrasch mich ----------
+  $('#btnSurprise').onclick = () => {
+    const ranked = L.suggestRecipes(allRecipes(), state.items, new Date(), { minCoverage: 0.5 }).filter((r) => passesFilters(r.recipe)).slice(0, 8).map((r) => r.recipe);
+    const pool = (ranked.length ? ranked : allRecipes().filter(passesFilters)).filter((r) => r.id !== surpriseId);
+    if (!pool.length) { toast('Kein Rezept passt zu den Filtern'); return; }
+    surpriseId = pool[Math.floor(Math.random() * pool.length)].id;
+    renderSuggestions();
+  };
+
+  // ---------- Spracheingabe ----------
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function listen(btn, onText) {
+    const rec = new SpeechRec();
+    rec.lang = 'de-DE';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    btn.classList.add('listening');
+    toast('🎤 Ich höre zu …');
+    let got = false;
+    rec.onresult = (e) => { got = true; onText(e.results[0][0].transcript); };
+    rec.onerror = (e) => toast(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Mikrofon ist nicht erlaubt (Browser-Einstellungen)' : 'Nicht verstanden – bitte nochmal');
+    rec.onend = () => { btn.classList.remove('listening'); if (!got) $('#toast').hidden = true; };
+    try { rec.start(); } catch (e) { btn.classList.remove('listening'); }
+  }
+  if (SpeechRec) { $('#micShop').hidden = false; $('#micItem').hidden = false; }
+  $('#micShop').onclick = () => listen($('#micShop'), (text) => {
+    const added = [];
+    for (const it of L.parseSpokenList(text)) if (addToShopping(it.name, null, true, it.qty > 1 ? it.qty + '×' : '')) added.push(it.name);
+    save(); render();
+    toast(added.length ? `🛒 ${added.join(', ')}` : `„${text}“ – steht schon auf der Liste`);
+  });
+  $('#micItem').onclick = () => listen($('#micItem'), (text) => {
+    const it = L.parseSpokenItem(text);
+    $('#fName').value = it.name;
+    $('#fQty').value = it.qty;
+    const k = L.detectIngredient(it.name);
+    if (k && !ingredientTouched) { ingSelect.value = k; $('#fLocation').value = defaultLocation(k); }
+    if (it.expiry) setExpiry(it.expiry);
+    updateAdvice();
+    toast(it.expiry ? `${it.name} · ${L.formatDate(it.expiry)}` : `${it.name} – Datum noch eintippen oder scannen`);
+  });
+
+  // ---------- Kassenbon ----------
+  const receiptDlg = $('#receiptDialog');
+  let receiptItems = [];
+  $('#receiptInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (dlg.open) dlg.close();
+    receiptItems = [];
+    renderReceipt();
+    $('#receiptStatus').textContent = 'Lese Kassenbon … (beim ersten Mal lädt die Texterkennung, das dauert etwas)';
+    receiptDlg.showModal();
+    try {
+      const img = await createImageBitmap(file);
+      receiptItems = (await ocrReceipt(img)).map((r) => ({ ...r, use: !!r.ingredient }));
+      $('#receiptStatus').textContent = receiptItems.length
+        ? `${receiptItems.length} Produkte erkannt. Haken = kommt in den Vorrat (Namen kannst du ändern).`
+        : 'Keine Produkte erkannt. Tipp: Bon glatt hinlegen, gut beleuchtet und nur den Bon fotografieren.';
+    } catch (err) {
+      $('#receiptStatus').textContent = 'Texterkennung nicht verfügbar (offline?).';
+    }
+    renderReceipt();
+  });
+  function renderReceipt() {
+    $('#receiptList').innerHTML = receiptItems.map((r, i) => `<div class="receipt-row" data-i="${i}">
+        <input type="checkbox" ${r.use ? 'checked' : ''} aria-label="übernehmen">
+        <span class="emoji-sm">${ingEmoji(r.ingredient)}</span>
+        <input class="rname" value="${esc(r.name)}">
+        <span class="price">${L.formatEuro(r.price)}</span>
+      </div>`).join('');
+    const n = receiptItems.filter((r) => r.use).length;
+    $('#receiptSave').disabled = !n;
+    $('#receiptSave').textContent = n ? `${n} in den Vorrat` : 'In den Vorrat';
+  }
+  $('#receiptList').addEventListener('change', (e) => {
+    const row = e.target.closest('.receipt-row');
+    if (!row) return;
+    const r = receiptItems[row.dataset.i];
+    if (e.target.type === 'checkbox') r.use = e.target.checked;
+    else { r.name = e.target.value.trim() || r.name; r.ingredient = L.detectIngredient(r.name); }
+    renderReceipt();
+  });
+  $('#receiptCancel').onclick = () => receiptDlg.close();
+  $('#receiptSave').onclick = () => {
+    snapshot();
+    const chosen = receiptItems.filter((r) => r.use);
+    for (const r of chosen) {
+      state.items.push({
+        id: uid(), added: today(), name: r.name, ingredient: r.ingredient, qty: 1,
+        expiry: r.ingredient ? L.suggestExpiry(r.ingredient) : null, location: defaultLocation(r.ingredient),
+        dateType: ['hackfleisch', 'haehnchen', 'fisch', 'lachs'].includes(r.ingredient) ? 'verbrauch' : 'mhd',
+        price: r.price, barcode: null, image: null,
+      });
+      if (r.ingredient) state.shopping = state.shopping.filter((s) => s.done || s.ingredient !== r.ingredient);
+    }
+    save(); receiptDlg.close(); render();
+    toast(`${chosen.length} Produkte im Vorrat – mit typischer Haltbarkeit. Antippen zum Anpassen.`, { label: 'Rückgängig', fn: undo });
+  };
+
+  // ---------- Kochmodus ----------
+  const cookDlg = $('#cookDialog');
+  let cookRecipe = null;
+  let cookIdx = 0;
+  let wakeLock = null;
+  const timers = []; // { label, end }
+  let timerTick = null;
+
+  async function openCookMode(rec) {
+    cookRecipe = rec;
+    cookIdx = 0;
+    renderCook();
+    cookDlg.showModal();
+    try { if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* nicht unterstützt */ }
+  }
+  function closeCookMode() {
+    if (cookDlg.open) cookDlg.close();
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  }
+  function renderCook() {
+    const steps = cookRecipe.steps;
+    $('#cookTitle').textContent = `${cookRecipe.emoji || '🍽️'} ${cookRecipe.name}`;
+    $('#cookCount').textContent = `Schritt ${cookIdx + 1} von ${steps.length}`;
+    $('#cookStep').textContent = steps[cookIdx];
+    $('#cookStepTimers').innerHTML = L.findTimers(steps[cookIdx])
+      .map((m) => `<button class="chip" data-min="${m}">⏲️ Timer ${m >= 60 ? L.formatTimer(m * 60).replace(/:00$/, '') + ' Std' : m + ' Min'}</button>`).join('');
+    $('#cookPrev').disabled = cookIdx === 0;
+    $('#cookNext').textContent = cookIdx === steps.length - 1 ? 'Fertig 🍽️' : 'Weiter →';
+    renderTimers();
+  }
+  $('#cookPrev').onclick = () => { if (cookIdx > 0) { cookIdx--; renderCook(); } };
+  $('#cookNext').onclick = () => {
+    if (cookIdx < cookRecipe.steps.length - 1) { cookIdx++; renderCook(); return; }
+    const rec = cookRecipe;
+    closeCookMode();
+    toast('Guten Appetit! 😋', { label: 'Zutaten austragen', fn: () => cook(rec) });
+  };
+  $('#cookClose').onclick = closeCookMode;
+  cookDlg.addEventListener('close', () => { if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; } });
+  document.addEventListener('visibilitychange', async () => {
+    // Wake-Lock geht beim Wechsel der App verloren -> neu anfordern
+    if (!document.hidden && cookDlg.open && navigator.wakeLock && !wakeLock) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* egal */ }
+  });
+  $('#cookStepTimers').addEventListener('click', (e) => {
+    const c = e.target.closest('[data-min]');
+    if (!c) return;
+    timers.push({ label: `${cookRecipe.name}, Schritt ${cookIdx + 1}`, end: Date.now() + Number(c.dataset.min) * 60000 });
+    if (!timerTick) timerTick = setInterval(tickTimers, 1000);
+    renderTimers();
+  });
+  $('#cookTimers').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-stop]');
+    if (!b) return;
+    timers.splice(Number(b.dataset.stop), 1);
+    renderTimers();
+  });
+  function renderTimers() {
+    $('#cookTimers').innerHTML = timers.map((t, i) => {
+      const left = (t.end - Date.now()) / 1000;
+      return `<div class="timer ${left <= 0 ? 'done' : ''}">⏲️ <b>${left <= 0 ? 'Fertig!' : L.formatTimer(left)}</b> <span class="muted small">${esc(t.label)}</span>
+        <button class="icon-sm" data-stop="${i}" aria-label="Timer beenden">✕</button></div>`;
+    }).join('');
+  }
+  function tickTimers() {
+    for (const t of timers) {
+      if (!t.rang && t.end <= Date.now()) { t.rang = true; alarm(t.label); }
+    }
+    if (!timers.length) { clearInterval(timerTick); timerTick = null; }
+    renderTimers();
+  }
+  function alarm(label) {
+    if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 600]);
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.4, 0.8].forEach((t) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.25, ctx.currentTime + t);
+        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.25);
+      });
+    } catch (e) { /* kein Ton */ }
+    toast(`⏲️ Timer abgelaufen: ${label}`);
+    if ('Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker && navigator.serviceWorker.getRegistration()
+        .then((reg) => reg ? reg.showNotification('⏲️ Timer abgelaufen', { body: label, tag: 'timer' }) : new Notification('⏲️ Timer abgelaufen', { body: label }))
+        .catch(() => {});
+    }
+  }
 
   // ---------- Produkt-Dialog ----------
   const dlg = $('#itemDialog');
@@ -981,6 +1182,7 @@
     }
   }
 
+  const DATE_WHITELIST = '0123456789./-: ABCDEFGHIJKLMNOPRSTUVZabcdefghijklmnoprstuvzäÄ';
   function initOcr() {
     if (ocrWorker) return ocrWorker;
     setHint('Texterkennung wird geladen … (nur beim ersten Mal etwas länger)');
@@ -989,7 +1191,7 @@
       const worker = await Tesseract.createWorker('eng', 1, { errorHandler: (e) => console.warn('OCR', e) });
       await worker.setParameters({
         tessedit_pageseg_mode: '6',
-        tessedit_char_whitelist: '0123456789./-: ABCDEFGHIJKLMNOPRSTUVZabcdefghijklmnoprstuvzäÄ',
+        tessedit_char_whitelist: DATE_WHITELIST,
       });
       return worker;
     })();
@@ -1069,6 +1271,25 @@
       if ((sure = voter.add(text))) return sure;
     }
     return voter.best();
+  }
+
+  /** Kassenbon lesen: ganzer Text erlaubt (nicht nur Datumszeichen), Spaltenlayout. */
+  async function ocrReceipt(img) {
+    const worker = await initOcr();
+    await worker.setParameters({ tessedit_char_whitelist: '', tessedit_pageseg_mode: '4' });
+    try {
+      let best = [];
+      const full = { x: 0, y: 0, w: img.width, h: img.height };
+      for (const v of [{ width: Math.min(1800, Math.max(1000, img.width)), blur: 0, plain: true }, { width: Math.min(1800, Math.max(1000, img.width)), blur: 0 }]) {
+        const { text } = await ocrRect(img, full, v);
+        const items = L.parseReceipt(text);
+        if (items.length > best.length) best = items;
+        if (best.length >= 3) break;
+      }
+      return best;
+    } finally {
+      await worker.setParameters({ tessedit_char_whitelist: DATE_WHITELIST, tessedit_pageseg_mode: '6' });
+    }
   }
 
   function acceptDates(dates) {
@@ -1183,4 +1404,20 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); checkNotifications(); } });
   render();
   checkNotifications();
+
+  // Geteilte Einkaufsliste übernehmen (#liste=…)
+  if (location.hash.startsWith('#liste=')) {
+    const list = L.decodeShare(location.hash.slice(7));
+    history.replaceState(null, '', location.pathname + location.search);
+    if (Array.isArray(list) && list.length && confirm(`Geteilte Einkaufsliste mit ${list.length} Einträgen übernehmen?\n\n${list.map((i) => '• ' + i.name).join('\n')}`)) {
+      let n = 0;
+      for (const i of list) if (addToShopping(i.name, i.ingredient, true, i.note)) n++;
+      save(); showView('shopping');
+      toast(n ? `${n} Einträge übernommen` : 'Stand schon alles auf deiner Liste');
+    }
+  }
+  // App-Verknüpfungen (lange auf das App-Symbol drücken)
+  const params = new URLSearchParams(location.search);
+  if (params.get('view')) showView(params.get('view'));
+  if (params.has('neu')) openItemDialog(null);
 })();

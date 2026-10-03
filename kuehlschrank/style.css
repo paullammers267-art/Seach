@@ -343,3 +343,37 @@ dialog .dialog-actions {
 .row > label.btn { flex: 1; min-width: 150px; font-size: inherit; color: var(--text); }
 .row > .btn { flex: 1; min-width: 150px; }
 .row.tight > .btn { flex: 0 1 auto; min-width: 0; }
+
+/* ---------- Runde 3: Sprache, Kassenbon, Kochmodus ---------- */
+.mic { font-size: 1.2rem; padding: 6px 12px; }
+.mic.listening, #micItem.listening { background: var(--expired); color: #fff; border-color: var(--expired); animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: .6; } }
+.receipt-btn { width: 100%; margin-bottom: 12px; }
+#addExtras { margin: -4px 0 0; }
+#addExtras > * { flex: 1; }
+#btnSurprise { width: 100%; margin-bottom: 12px; }
+.surprise .recipe { border: 2px solid var(--primary); }
+.surprise > .muted { margin: 0 0 4px 4px; }
+
+.receipt-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.receipt-row input[type=checkbox] { width: 22px; height: 22px; flex: none; accent-color: var(--primary); }
+.receipt-row .rname { flex: 1; min-width: 0; padding: 6px 8px; }
+.receipt-row .price { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+.emoji-sm { font-size: 1.2rem; }
+#receiptList { max-height: 55vh; overflow: auto; margin: 8px 0; }
+
+dialog.cookmode {
+  width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; border-radius: 0;
+  display: none; flex-direction: column; gap: 16px; padding: calc(16px + env(safe-area-inset-top)) 20px calc(16px + env(safe-area-inset-bottom));
+}
+dialog.cookmode[open] { display: flex; }
+.cook-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; font-size: 1.1rem; }
+.big-x { font-size: 1.5rem; }
+.cook-step { flex: 1; overflow: auto; font-size: clamp(1.4rem, 5.5vw, 2.2rem); line-height: 1.4; font-weight: 500; display: flex; align-items: center; }
+.cook-nav { display: flex; gap: 12px; }
+.cook-nav .btn { font-size: 1.1rem; padding: 18px 10px; }
+.cook-timer-chips .chip { font-size: 1rem; padding: 10px 16px; }
+.cook-timers { display: grid; gap: 6px; }
+.timer { display: flex; align-items: center; gap: 8px; background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 1.1rem; }
+.timer .muted { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.timer.done { background: var(--today-bg); color: var(--today); animation: pulse 1s infinite; }

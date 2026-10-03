@@ -47,8 +47,10 @@
       <form id="shopForm" class="addrow" autocomplete="off">
         <input id="shopInput" placeholder="Was brauchst du? z. B. Milch" list="shopSuggest">
         <datalist id="shopSuggest"></datalist>
+        <button class="btn mic" type="button" id="micShop" aria-label="Spracheingabe" hidden>🎤</button>
         <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
       </form>
+      <label class="btn small receipt-btn" for="receiptInput">🧾 Kassenbon scannen</label>
       <div id="shopSuggestions"></div>
       <div id="shopList"></div>
       <div class="row" id="shopActions">
@@ -75,6 +77,8 @@
         </div>
       </div>
       <div id="sub-suggest" class="sub active">
+        <button class="btn" id="btnSurprise">🎲 Was koche ich heute?</button>
+        <div id="surpriseBox"></div>
         <div id="urgentBox"></div>
         <label class="toggle"><input type="checkbox" id="showAll"> auch Rezepte zeigen, bei denen mehr fehlt</label>
         <div id="recipeList"></div>
@@ -169,6 +173,10 @@
         <button type="button" class="btn big" id="btnScanDate">📅 Datum scannen</button>
       </div>
 
+      <div class="row tight" id="addExtras">
+        <label class="btn small" for="receiptInput">🧾 Kassenbon</label>
+        <button type="button" class="btn small" id="micItem" hidden>🎤 Sprechen</button>
+      </div>
       <div id="productPreview" class="preview" hidden></div>
 
       <details id="quickAddBox" class="quickadd">
@@ -296,6 +304,35 @@
         <button type="submit" class="btn primary">Speichern</button>
       </div>
     </form>
+  </dialog>
+
+  <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
+
+  <!-- Kassenbon -->
+  <dialog id="receiptDialog">
+    <h2>🧾 Kassenbon</h2>
+    <div id="receiptStatus" class="muted small"></div>
+    <div id="receiptList"></div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button class="btn" id="receiptCancel">Abbrechen</button>
+      <button class="btn primary" id="receiptSave" disabled>In den Vorrat</button>
+    </div>
+  </dialog>
+
+  <!-- Kochmodus -->
+  <dialog id="cookDialog" class="cookmode">
+    <div class="cook-head">
+      <div><b id="cookTitle"></b><div class="muted small" id="cookCount"></div></div>
+      <button class="icon-sm big-x" id="cookClose" aria-label="Kochmodus beenden">✕</button>
+    </div>
+    <div id="cookTimers" class="cook-timers"></div>
+    <div class="cook-step" id="cookStep"></div>
+    <div class="chips cook-timer-chips" id="cookStepTimers"></div>
+    <div class="cook-nav">
+      <button class="btn big" id="cookPrev">← Zurück</button>
+      <button class="btn big primary" id="cookNext">Weiter →</button>
+    </div>
   </dialog>
 
   <div id="toast" class="toast" hidden></div>
