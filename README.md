@@ -1,6 +1,6 @@
 # Beförderungsunternehmen in der Umgebung
 
-> Ebenfalls in diesem Repository: **[🥬 Frischecheck](kuehlschrank/)** – Ablaufdaten scannen, Kühlschrank-Vorrat verwalten, passende Rezepte finden.
+> Ebenfalls in diesem Repository: **[🦸 Alltagsheld](kuehlschrank/)** – Alltagshelfer: Vorrat & Ablaufdaten, Einkauf, Rezepte, Kalorien (auch per Foto), Sport, Kalender, Ausgaben, Aufgaben und mehr.
 
 Web-App, die alle Beförderungsunternehmen rund um einen Standort auf einer Karte und als Liste anzeigt:
 

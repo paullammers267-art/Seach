@@ -3,18 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Frischecheck – Alltagshelfer</title>
+  <title>Alltagsheld</title>
   <meta name="description" content="Alltagshelfer: Vorrat & Ablaufdaten, Einkauf, Rezepte, Sport für zuhause, Kalender und Ausgaben.">
-  <meta name="theme-color" content="#2f855a">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-title" content="Alltagsheld">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Hell/Dunkel sofort setzen (kein Aufblitzen)
+    try { var t = (JSON.parse(localStorage.getItem('frischecheck.v1') || '{}').settings || {}).theme; if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
 </head>
 <body>
   <header class="topbar">
-    <h1>🥬 Frischecheck</h1>
+    <h1><img src="icon.svg" alt="" class="logo">Alltagsheld</h1>
     <div id="summary" class="summary"></div>
   </header>
 
@@ -26,6 +31,7 @@
       <input id="globalSearch" type="search" placeholder="🔍 Alles durchsuchen …" autocomplete="off">
       <div id="searchResults"></div>
       <div id="homeTop"></div>
+      <div id="homeFood"></div>
       <div id="homeCards"></div>
     </section>
 
@@ -250,6 +256,46 @@
       <div id="noteList" class="notes"></div>
     </section>
 
+    <!-- Kalorien -->
+    <section id="view-food" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🍽️ Kalorien</h2></div>
+      <div class="cal-head">
+        <button class="btn small" id="foodPrev" aria-label="Vortag">‹</button>
+        <h2 id="foodDay"></h2>
+        <button class="btn small" id="foodNext" aria-label="Nächster Tag">›</button>
+      </div>
+      <div class="card" id="foodSummary"></div>
+      <div class="food-add">
+        <label class="btn" for="mealPhotoInput"><span>📷</span>Mahlzeit-Foto</label>
+        <button class="btn" id="btnFoodBarcode"><span>📦</span>Barcode</button>
+        <label class="btn" for="labelPhotoInput"><span>🏷️</span>Nährwerte</label>
+        <button class="btn" id="btnFoodSearch"><span>🔎</span>Suchen</button>
+      </div>
+      <form id="foodQuick" class="addrow" autocomplete="off">
+        <input id="foodQuickInput" placeholder="z. B. 1 Apfel und 2 Scheiben Toast">
+        <button class="btn mic" type="button" id="micFood" aria-label="Spracheingabe" hidden>🎤</button>
+        <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
+      </form>
+      <div id="foodRecent"></div>
+      <div id="foodMeals"></div>
+      <div class="card" id="foodWeek"></div>
+      <details class="card" id="foodGoalCard">
+        <summary><b>🎯 Tagesziel einstellen</b> <span class="muted small" id="foodGoalShort"></span></summary>
+        <div class="row">
+          <label>Geschlecht<select id="fgSex"><option value="w">weiblich</option><option value="m">männlich</option></select></label>
+          <label>Alter<input id="fgAge" inputmode="numeric" placeholder="z. B. 35"></label>
+        </div>
+        <div class="row">
+          <label>Größe (cm)<input id="fgHeight" inputmode="numeric" placeholder="z. B. 170"></label>
+          <label>Gewicht (kg)<input id="fgWeight" inputmode="decimal" placeholder="z. B. 70"></label>
+        </div>
+        <label>Alltag<select id="fgActivity"></select></label>
+        <label>Ziel<select id="fgGoal"></select></label>
+        <label>Oder eigenes Ziel (kcal/Tag)<input id="fgManual" inputmode="numeric" placeholder="leer = automatisch berechnen"></label>
+        <div id="fgResult" class="small"></div>
+      </details>
+    </section>
+
     <!-- Mehr -->
     <section id="view-settings" class="view">
       <div class="hub">
@@ -261,6 +307,25 @@
         <button class="hub-tile" data-goto="habits"><span>💧</span>Gewohnheiten<small id="hubHabits"></small></button>
         <button class="hub-tile" data-goto="health"><span>❤️</span>Gesundheit<small id="hubHealth"></small></button>
         <button class="hub-tile" data-goto="notes"><span>📝</span>Notizen<small id="hubNotes"></small></button>
+        <button class="hub-tile" data-goto="food"><span>🍽️</span>Kalorien<small id="hubFood"></small></button>
+      </div>
+      <div class="card">
+        <h2>🎨 Darstellung</h2>
+        <div class="segmented" id="themeSwitch">
+          <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🤖 KI-Erkennung für Mahlzeit-Fotos</h2>
+        <p class="muted small">Optional: Mit einem eigenen API-Schlüssel von Anthropic erkennt Claude auf einem Foto, was auf dem Teller liegt, und schätzt Mengen und Kalorien.
+          Das Foto wird dafür an Anthropic gesendet; die Nutzung kostet pro Foto etwa 1–3 Cent über dein Anthropic-Konto.
+          Schlüssel erstellen: <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+          Der Schlüssel bleibt nur auf diesem Gerät und ist nicht in der Sicherung enthalten.</p>
+        <form id="aiKeyForm" class="addrow" autocomplete="off">
+          <input id="aiKeyInput" type="password" placeholder="sk-ant-…" autocomplete="off">
+          <button class="btn" type="submit">Speichern</button>
+        </form>
+        <p class="small" id="aiKeyState"></p>
       </div>
       <div class="card">
         <h2>🌤️ Wetter-Ort</h2>
@@ -335,7 +400,7 @@
     <button class="tab" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes"><span>☰</span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food"><span>☰</span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -493,6 +558,9 @@
       <button data-action="task"><span>✅</span>Aufgabe</button>
       <button data-action="note"><span>📝</span>Notiz</button>
       <button data-action="weight"><span>⚖️</span>Gewicht</button>
+      <button data-action="meal"><span>🍽️</span>Mahlzeit</button>
+      <button data-action="habit"><span>💧</span>Gewohnheit</button>
+      <button data-action="search"><span>🔍</span>Suchen</button>
     </div>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
@@ -658,6 +726,63 @@
     </form>
   </dialog>
 
+  <input id="mealPhotoInput" type="file" accept="image/*" capture="environment" hidden>
+  <input id="labelPhotoInput" type="file" accept="image/*" capture="environment" hidden>
+
+  <!-- Lebensmittel-Eintrag -->
+  <dialog id="foodDialog">
+    <form id="foodForm" method="dialog">
+      <h2 id="foodDlgTitle">Eintrag</h2>
+      <img id="fdPhoto" class="fd-photo" alt="" hidden>
+      <label>Was?<input id="fdName" required autocomplete="off"></label>
+      <div class="row">
+        <label>Menge (g/ml)<input id="fdGrams" inputmode="decimal"></label>
+        <label>Kalorien (kcal)<input id="fdKcal" inputmode="decimal" required></label>
+      </div>
+      <div class="chips" id="fdPortions"></div>
+      <div class="row macros">
+        <label>Eiweiß (g)<input id="fdP" inputmode="decimal"></label>
+        <label>Kohlenh. (g)<input id="fdC" inputmode="decimal"></label>
+        <label>Fett (g)<input id="fdF" inputmode="decimal"></label>
+      </div>
+      <div class="muted small" id="fdPer100"></div>
+      <div class="chips" id="fdMeal"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="fdDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="fdCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Lebensmittel suchen -->
+  <dialog id="foodSearchDialog">
+    <h2>🔎 Lebensmittel</h2>
+    <input id="fsInput" type="search" placeholder="z. B. Banane, Pizza, Cappuccino" autocomplete="off">
+    <div id="fsList" class="picklist"></div>
+    <div class="dialog-actions">
+      <button class="btn" id="fsManual">✍️ Selbst eingeben</button>
+      <span class="spacer"></span>
+      <button class="btn" id="fsCancel">Schließen</button>
+    </div>
+  </dialog>
+
+  <!-- Ergebnis prüfen (Foto-KI, Text) -->
+  <dialog id="mealReview">
+    <h2 id="mrTitle">Mahlzeit</h2>
+    <img id="mrPhoto" class="fd-photo" alt="" hidden>
+    <div id="mrStatus" class="muted small"></div>
+    <div id="mrList"></div>
+    <div id="mrTotal" class="small"></div>
+    <div class="chips" id="mrMeal"></div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button class="btn" id="mrCancel">Abbrechen</button>
+      <button class="btn primary" id="mrSave" disabled>Eintragen</button>
+    </div>
+  </dialog>
+
   <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 
   <!-- Kassenbon -->
@@ -699,5 +824,7 @@
   <script src="alltag.js"></script>
   <script src="life.js"></script>
   <script src="life-ui.js"></script>
+  <script src="nutrition.js"></script>
+  <script src="nutrition-ui.js"></script>
 </body>
 </html>

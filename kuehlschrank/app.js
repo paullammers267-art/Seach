@@ -20,8 +20,9 @@
     items: [], products: {}, stats: { consumed: 0, wasted: 0 }, lastNotified: null,
     shopping: [], favorites: [], customRecipes: [], plan: {}, history: [], staples: [],
     events: [], expenses: [], workouts: [], notified: [],
-    tasks: [], habits: [], habitLog: {}, weights: [], moods: {}, notes: [], weatherCache: null,
-    settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false, height: null, weightGoal: null, place: null },
+    tasks: [], habits: [], habitLog: {}, weights: [], moods: {}, notes: [], weatherCache: null, food: [],
+    settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false, height: null, weightGoal: null, place: null, theme: 'auto',
+      nutrition: { sex: 'w', age: null, activity: 1.375, goal: 'keep', manual: null, weight: null } },
   });
   let state = load();
   let undoSnapshot = null;
@@ -1102,8 +1103,10 @@
     });
   }
 
-  async function openScanner(mode) {
+  let barcodeCallback = null; // andere Bereiche (z. B. Kalorien) können den Scanner mitbenutzen
+  async function openScanner(mode, onBarcode) {
     scanMode = mode;
+    barcodeCallback = onBarcode || null;
     // Als eigenes modales Fenster öffnen, damit es über dem Produkt-Dialog liegt und bedienbar ist
     if (!scanDlg.open) scanDlg.showModal();
     $('#scanFrame').className = 'frame ' + mode;
@@ -1215,8 +1218,9 @@
         const code = await detectBarcode(video, video.videoWidth, video.videoHeight).catch(() => null);
         if (code && scanning) {
           if (navigator.vibrate) navigator.vibrate(80);
+          const cb = barcodeCallback;
           closeScanner();
-          handleBarcode(code);
+          (cb || handleBarcode)(code);
           return;
         }
       }
@@ -1316,6 +1320,22 @@
   }
 
   /** Kassenbon lesen: ganzer Text erlaubt (nicht nur Datumszeichen), Spaltenlayout. */
+  /** Freier Text aus einem Bild (für Nährwerttabellen): liefert die Texte mehrerer Aufbereitungen. */
+  async function ocrText(img) {
+    const worker = await initOcr();
+    await worker.setParameters({ tessedit_char_whitelist: '', tessedit_pageseg_mode: '6' });
+    try {
+      const full = { x: 0, y: 0, w: img.width, h: img.height };
+      const texts = [];
+      for (const v of [{ width: Math.min(1800, Math.max(1000, img.width)), blur: 0, plain: true }, { width: Math.min(1800, Math.max(1000, img.width)), blur: 0 }]) {
+        texts.push((await ocrRect(img, full, v)).text);
+      }
+      return texts;
+    } finally {
+      await worker.setParameters({ tessedit_char_whitelist: DATE_WHITELIST, tessedit_pageseg_mode: '6' });
+    }
+  }
+
   async function ocrReceipt(img) {
     const worker = await initOcr();
     await worker.setParameters({ tessedit_char_whitelist: '', tessedit_pageseg_mode: '4' });
@@ -1368,7 +1388,7 @@
       setHint('Suche Barcode im Foto …');
       await initBarcode().catch(() => {});
       const code = await detectBarcode(img, img.width, img.height, 1).catch(() => null);
-      if (code) { closeScanner(); handleBarcode(code); } else setHint('Im Foto wurde kein Barcode gefunden.');
+      if (code) { const cb = barcodeCallback; closeScanner(); (cb || handleBarcode)(code); } else setHint('Im Foto wurde kein Barcode gefunden.');
     } else {
       setHint('Lese Datum aus dem Foto …');
       try {
@@ -1452,6 +1472,8 @@
     L, save, render, toast, esc, uid, today, showView, openItemDialog, findRecipe, sortedItems, ingEmoji, ingLabel,
     beep, listen: SpeechRec ? listen : null, onRender: (fn) => renderHooks.push(fn), actions,
     calendarSources: [],
+    scanBarcode: (cb) => openScanner('barcode', cb),
+    ocrText,
     get view() { return currentView; },
     notify: async (title, body, tag) => {
       if (!('Notification' in window) || Notification.permission !== 'granted') return false;

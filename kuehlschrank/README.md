@@ -1,4 +1,6 @@
-# 🥬 Frischecheck – Alltagshelfer
+# 🦸 Alltagsheld – dein Alltagshelfer
+
+<img src="icon.svg" width="96" alt="Logo">
 
 Web-App (installierbar aufs Handy) für den Alltag. Startseite **🏠 Heute** zeigt Termine, was bald abläuft, das geplante Essen,
 den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellmenü (Produkt, Kassenbon, Einkauf, Termin, Ausgabe, Training).
@@ -21,6 +23,16 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Monatsübersicht mit Kategorien, Vergleich zum Vormonat, **Budget** mit „pro Tag noch …“
 - **Fixkosten** (Miete, Abos) monatlich automatisch, CSV-Export für Excel
 - Kassenbon-Summe wird automatisch als Lebensmittel-Ausgabe gebucht
+
+## 🍽️ Kalorien
+- **📷 Mahlzeit fotografieren**: Claude erkennt Speisen auf dem Foto und schätzt Menge, Kalorien und Makros (optional, eigener Anthropic-API-Schlüssel unter Mehr → KI-Erkennung; das Foto wird dafür an Anthropic gesendet). Ergebnis vor dem Eintragen prüfbar, Gramm anpassbar.
+- **📦 Barcode** (Open Food Facts) und **🏷️ Nährwerttabelle fotografieren** (Texterkennung auf dem Gerät)
+- **🔎 Suche** in über 100 Lebensmitteln/Gerichten, **Text/Sprache**: „1 Apfel und 2 Scheiben Toast“
+- Tagesziel nach Mifflin-St-Jeor (Alter, Größe, Gewicht, Aktivität, Ziel), Eiweiß/Kohlenhydrate/Fett, Training wird gutgeschrieben, Wochenübersicht
+- Der API-Schlüssel bleibt nur auf dem Gerät und ist nicht Teil der Sicherung.
+
+## 🎨 Darstellung
+- Hell, Dunkel oder automatisch (Mehr → Darstellung)
 
 ## ✅ Aufgaben
 - Eingabe in normaler Sprache: „Müll rausbringen jeden Dienstag“, „Steuer bis 31.10. wichtig“, „Mama anrufen morgen um 18 Uhr“
@@ -87,6 +99,8 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `recipes.js` | ~45 Rezepte |
 | `sport.js` | Übungen, Workout-Generator, Trainings-Statistik |
 | `planner.js` | Kalender (Wiederholungen, Erinnerungen, iCal) und Ausgaben (Kategorien, Budget, CSV) |
+| `nutrition.js` | Lebensmittel-Datenbank, Kalorienziel, Nährwerttabelle/Open-Food-Facts/Text erkennen, KI-Antwort prüfen |
+| `nutrition-ui.js` | Kalorien-Oberfläche, KI-Foto-Erkennung (Anthropic SDK im Browser), Hell/Dunkel |
 | `alltag.js` | Oberfläche für Heute, Sport, Kalender, Ausgaben |
 | `life.js` | Aufgaben (Spracherkennung, Wiederholung), Gewohnheiten, Gesundheit, Wetter-Tipps |
 | `life-ui.js` | Oberfläche für Aufgaben, Gewohnheiten, Gesundheit, Notizen, Wetter, Suche |

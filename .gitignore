@@ -1,3 +1,4 @@
 node_modules/
 *.png
 Anrufliste_*.xlsx
+!kuehlschrank/icon-*.png
