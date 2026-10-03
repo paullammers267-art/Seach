@@ -22,6 +22,26 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - **Fixkosten** (Miete, Abos) monatlich automatisch, CSV-Export für Excel
 - Kassenbon-Summe wird automatisch als Lebensmittel-Ausgabe gebucht
 
+## ✅ Aufgaben
+- Eingabe in normaler Sprache: „Müll rausbringen jeden Dienstag“, „Steuer bis 31.10. wichtig“, „Mama anrufen morgen um 18 Uhr“
+- Wiederholungen (täglich, werktags, wöchentlich, alle 2 Wochen, monatlich), Kategorien, Wichtigkeit, Erinnerung zur Uhrzeit
+- 🧹 Putzplan-Vorlage mit 10 wiederkehrenden Haushaltsaufgaben; Aufgaben erscheinen auf „Heute“ und im Kalender
+
+## 💧 Gewohnheiten
+- Vorlagen (Wasser 8 Gläser, Obst & Gemüse, Vitamine, Lesen …) oder eigene, mit Tagesziel
+- +1 direkt auf der Startseite, Serie, Wochenpunkte, Quote der letzten 30 Tage
+
+## ❤️ Gesundheit
+- Gewicht mit Verlaufskurve, Trend (7/30 Tage), BMI und Zielgewicht
+- Stimmung, Schlaf und kurzes Tagebuch pro Tag
+
+## 📝 Notizen
+- Farbig, anheften, durchsuchen, teilen; Zeilen mit „[ ]“ werden zur abhakbaren Checkliste
+
+## 🌤️ Wetter & 🔍 Suche
+- Wetter für deinen Ort (Open-Meteo, ohne Konto) mit Tipps wie „☂️ Regenschirm mitnehmen“ oder „🧊 Frost – Scheiben kratzen“
+- Suche über alles: Vorrat, Einkauf, Aufgaben, Termine, Notizen, Rezepte, Ausgaben, Übungen
+
 ## 🧊 Küche & Einkauf
 
 - **Barcode scannen** → Produktname, Bild und Zutat kommen automatisch von [Open Food Facts](https://world.openfoodfacts.org).
@@ -68,6 +88,8 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `sport.js` | Übungen, Workout-Generator, Trainings-Statistik |
 | `planner.js` | Kalender (Wiederholungen, Erinnerungen, iCal) und Ausgaben (Kategorien, Budget, CSV) |
 | `alltag.js` | Oberfläche für Heute, Sport, Kalender, Ausgaben |
+| `life.js` | Aufgaben (Spracherkennung, Wiederholung), Gewohnheiten, Gesundheit, Wetter-Tipps |
+| `life-ui.js` | Oberfläche für Aufgaben, Gewohnheiten, Gesundheit, Notizen, Wetter, Suche |
 | `sw.js`, `manifest.webmanifest` | Offline & Installation |
 
 Tests: `npm test` (im Hauptordner).

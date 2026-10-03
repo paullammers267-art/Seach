@@ -20,7 +20,8 @@
     items: [], products: {}, stats: { consumed: 0, wasted: 0 }, lastNotified: null,
     shopping: [], favorites: [], customRecipes: [], plan: {}, history: [], staples: [],
     events: [], expenses: [], workouts: [], notified: [],
-    settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false },
+    tasks: [], habits: [], habitLog: {}, weights: [], moods: {}, notes: [], weatherCache: null,
+    settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false, height: null, weightGoal: null, place: null },
   });
   let state = load();
   let undoSnapshot = null;
@@ -1450,6 +1451,7 @@
     get state() { return state; },
     L, save, render, toast, esc, uid, today, showView, openItemDialog, findRecipe, sortedItems, ingEmoji, ingLabel,
     beep, listen: SpeechRec ? listen : null, onRender: (fn) => renderHooks.push(fn), actions,
+    calendarSources: [],
     get view() { return currentView; },
     notify: async (title, body, tag) => {
       if (!('Notification' in window) || Notification.permission !== 'granted') return false;

@@ -23,6 +23,9 @@
     <!-- Heute -->
     <section id="view-home" class="view active">
       <div class="hello"><h2 id="homeHello">Hallo!</h2><div class="muted" id="homeDate"></div></div>
+      <input id="globalSearch" type="search" placeholder="🔍 Alles durchsuchen …" autocomplete="off">
+      <div id="searchResults"></div>
+      <div id="homeTop"></div>
       <div id="homeCards"></div>
     </section>
 
@@ -148,7 +151,7 @@
         <button class="btn small" id="calToday">Heute</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-legend muted small"><i class="lg dot-ev"></i>Termin <i class="lg dot-exp"></i>läuft ab <i class="lg dot-meal"></i>Essen <i class="lg dot-sport"></i>Training</div>
+      <div class="cal-legend muted small"><i class="lg dot-ev"></i>Termin <i class="lg dot-exp"></i>läuft ab <i class="lg dot-meal"></i>Essen <i class="lg dot-sport"></i>Training <i class="lg dot-task"></i>Aufgabe</div>
       <div class="row tight cal-actions">
         <button class="btn primary" id="btnNewEvent">＋ Termin</button>
         <button class="btn" id="btnIcsAll">📲 In Handy-Kalender</button>
@@ -182,6 +185,71 @@
       </div>
     </section>
 
+    <!-- Aufgaben -->
+    <section id="view-tasks" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>✅ Aufgaben</h2></div>
+      <form id="taskForm" class="addrow" autocomplete="off">
+        <input id="taskInput" placeholder="z. B. Müll rausbringen jeden Dienstag">
+        <button class="btn mic" type="button" id="micTask" aria-label="Spracheingabe" hidden>🎤</button>
+        <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
+      </form>
+      <p class="muted small hint">Versteht z. B. „morgen um 18 Uhr“, „am Freitag“, „bis 31.10.“, „jeden Montag“, „täglich“, „wichtig“.</p>
+      <div class="chips" id="taskFilter"></div>
+      <div id="taskList"></div>
+      <div class="row tight">
+        <button class="btn" id="btnCleaning">🧹 Putzplan-Vorlage</button>
+        <button class="btn" id="btnTaskNew">＋ Aufgabe mit Details</button>
+      </div>
+    </section>
+
+    <!-- Gewohnheiten -->
+    <section id="view-habits" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💧 Gewohnheiten</h2></div>
+      <div id="habitList"></div>
+      <div class="card">
+        <h2>Neue Gewohnheit</h2>
+        <div class="chips" id="habitPresets"></div>
+        <button class="btn small" id="btnHabitCustom">✍️ Eigene Gewohnheit</button>
+      </div>
+    </section>
+
+    <!-- Gesundheit -->
+    <section id="view-health" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>❤️ Gesundheit</h2></div>
+      <div class="card">
+        <h2>⚖️ Gewicht</h2>
+        <form id="weightForm" class="addrow" autocomplete="off">
+          <input id="weightInput" inputmode="decimal" placeholder="Gewicht heute in kg, z. B. 72,4">
+          <button class="btn primary" type="submit">Speichern</button>
+        </form>
+        <div id="weightStats"></div>
+        <div class="row tight">
+          <label>Größe (cm)<input id="heightInput" inputmode="numeric" placeholder="z. B. 175"></label>
+          <label>Zielgewicht (kg)<input id="goalInput" inputmode="decimal" placeholder="optional"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🙂 Wie geht's dir heute?</h2>
+        <div class="moods" id="moodPick"></div>
+        <div class="row tight">
+          <label>Schlaf (Stunden)<input id="sleepInput" inputmode="decimal" placeholder="z. B. 7,5"></label>
+        </div>
+        <label>Tagebuch (optional)<textarea id="moodNote" rows="2" placeholder="Was war heute schön?"></textarea></label>
+        <button class="btn primary" id="btnMoodSave">Speichern</button>
+        <div id="moodStats"></div>
+      </div>
+    </section>
+
+    <!-- Notizen -->
+    <section id="view-notes" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📝 Notizen</h2></div>
+      <div class="addrow">
+        <input id="noteSearch" type="search" placeholder="Notizen durchsuchen …" autocomplete="off">
+        <button class="btn primary" id="btnNoteNew" aria-label="Neue Notiz">＋</button>
+      </div>
+      <div id="noteList" class="notes"></div>
+    </section>
+
     <!-- Mehr -->
     <section id="view-settings" class="view">
       <div class="hub">
@@ -189,6 +257,19 @@
         <button class="hub-tile" data-goto="sport"><span>🏋️</span>Sport<small id="hubSport"></small></button>
         <button class="hub-tile" data-goto="calendar"><span>📅</span>Kalender<small id="hubCal"></small></button>
         <button class="hub-tile" data-goto="expenses"><span>💶</span>Ausgaben<small id="hubExp"></small></button>
+        <button class="hub-tile" data-goto="tasks"><span>✅</span>Aufgaben<small id="hubTasks"></small></button>
+        <button class="hub-tile" data-goto="habits"><span>💧</span>Gewohnheiten<small id="hubHabits"></small></button>
+        <button class="hub-tile" data-goto="health"><span>❤️</span>Gesundheit<small id="hubHealth"></small></button>
+        <button class="hub-tile" data-goto="notes"><span>📝</span>Notizen<small id="hubNotes"></small></button>
+      </div>
+      <div class="card">
+        <h2>🌤️ Wetter-Ort</h2>
+        <p class="muted small" id="placeInfo">Für das Wetter auf der Startseite.</p>
+        <form id="placeForm" class="addrow" autocomplete="off">
+          <input id="placeInput" placeholder="Ort, z. B. Ahaus">
+          <button class="btn" type="submit">Suchen</button>
+          <button class="btn" type="button" id="btnPlaceGps" aria-label="Mein Standort">📍</button>
+        </form>
       </div>
       <div class="card">
         <h2>Erinnerungen</h2>
@@ -254,7 +335,7 @@
     <button class="tab" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses"><span>☰</span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes"><span>☰</span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -409,6 +490,9 @@
       <button data-action="event"><span>📅</span>Termin</button>
       <button data-action="expense"><span>💶</span>Ausgabe</button>
       <button data-action="workout"><span>🏋️</span>Training</button>
+      <button data-action="task"><span>✅</span>Aufgabe</button>
+      <button data-action="note"><span>📝</span>Notiz</button>
+      <button data-action="weight"><span>⚖️</span>Gewicht</button>
     </div>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
@@ -510,6 +594,70 @@
     </div>
   </dialog>
 
+  <!-- Aufgabe -->
+  <dialog id="taskDialog">
+    <form id="taskDlgForm" method="dialog">
+      <h2 id="taskDlgTitle">Aufgabe</h2>
+      <label>Was ist zu tun?<input id="tkTitle" required autocomplete="off"></label>
+      <div class="row">
+        <label>Fällig am<input id="tkDue" type="date"></label>
+        <label>Uhrzeit<input id="tkTime" type="time"></label>
+      </div>
+      <div class="row">
+        <label>Wiederholen<select id="tkRepeat"></select></label>
+        <label>Wichtigkeit
+          <select id="tkPriority"><option value="0">normal</option><option value="1">❗ wichtig</option><option value="2">‼️ dringend</option></select>
+        </label>
+      </div>
+      <div class="chips" id="tkCategory"></div>
+      <label>Notiz<input id="tkNote" autocomplete="off"></label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="tkDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="tkCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Notiz -->
+  <dialog id="noteDialog" class="note-dialog">
+    <form id="noteForm" method="dialog">
+      <input id="ntTitle" class="note-title" placeholder="Titel" autocomplete="off">
+      <textarea id="ntText" rows="10" placeholder="Notiz … Tipp: Zeilen mit „[ ]“ werden zur Checkliste."></textarea>
+      <div class="chips" id="ntColors"></div>
+      <label class="toggle"><input type="checkbox" id="ntPinned"> 📌 oben anheften</label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="ntDelete" hidden>Löschen</button>
+        <button type="button" class="btn" id="ntShare" hidden>📤</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="ntCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Gewohnheit -->
+  <dialog id="habitDialog">
+    <form id="habitForm" method="dialog">
+      <h2 id="habitDlgTitle">Gewohnheit</h2>
+      <div class="row">
+        <label style="flex:3">Name<input id="hbName" required autocomplete="off"></label>
+        <label style="flex:1">Emoji<input id="hbEmoji" maxlength="4" autocomplete="off"></label>
+      </div>
+      <div class="row">
+        <label>Ziel pro Tag<input id="hbTarget" type="number" min="1" max="50" value="1" inputmode="numeric"></label>
+        <label>Einheit<input id="hbUnit" placeholder="z. B. Gläser" autocomplete="off"></label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="hbDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="hbCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
   <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 
   <!-- Kassenbon -->
@@ -549,5 +697,7 @@
   <script src="planner.js"></script>
   <script src="app.js"></script>
   <script src="alltag.js"></script>
+  <script src="life.js"></script>
+  <script src="life-ui.js"></script>
 </body>
 </html>

@@ -327,6 +327,7 @@
       if (r && d >= from && d <= to) out.push({ date: d, kind: 'meal', text: r.name, emoji: '🍽️', go: 'recipes' });
     }
     for (const w of st().workouts) if (w.date >= from && w.date <= to) out.push({ date: w.date, kind: 'sport', text: `${w.name} (${Math.round(w.seconds / 60)} Min)`, emoji: '🏋️', go: 'sport' });
+    for (const src of A.calendarSources) out.push(...src(from, to));
     return out;
   }
 
@@ -345,7 +346,7 @@
         const kinds = new Set(auto.filter((a) => a.date === d.iso).map((a) => a.kind));
         return `<button class="cal-cell ${d.out ? 'out' : ''} ${d.iso === today ? 'today' : ''} ${d.iso === calDay ? 'sel' : ''}" data-day="${d.iso}">
           <span class="n">${d.day}</span>
-          <span class="dots">${ev.length ? `<i class="dot-ev">${ev.length > 1 ? ev.length : ''}</i>` : ''}${kinds.has('exp') ? '<i class="dot-exp"></i>' : ''}${kinds.has('meal') ? '<i class="dot-meal"></i>' : ''}${kinds.has('sport') ? '<i class="dot-sport"></i>' : ''}</span>
+          <span class="dots">${ev.length ? `<i class="dot-ev">${ev.length > 1 ? ev.length : ''}</i>` : ''}${kinds.has('exp') ? '<i class="dot-exp"></i>' : ''}${kinds.has('meal') ? '<i class="dot-meal"></i>' : ''}${kinds.has('sport') ? '<i class="dot-sport"></i>' : ''}${kinds.has('task') ? '<i class="dot-task"></i>' : ''}</span>
         </button>`;
       }).join('');
 
@@ -429,6 +430,7 @@
     evDlg.showModal();
   }
   A.actions.event = () => openEventDialog(null, nowIso());
+  A.openEvent = (id) => { A.showView('calendar'); openEventDialog(st().events.find((x) => x.id === id)); };
 
   // Bei Geburtstagen mit Geburtsjahr im Datum: Datum = Geburtstag, Wiederholung jährlich
   $('#eventForm').addEventListener('submit', (e) => {
