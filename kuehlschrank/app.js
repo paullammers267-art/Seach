@@ -308,7 +308,7 @@
       barcode: $('#fBarcode').value || null,
       image: $('#fImage').value || null,
     };
-    if (!data.name) return;
+    if (!data.name) data.name = data.ingredient ? ingLabel(data.ingredient) : (data.barcode ? 'Produkt ' + data.barcode : 'Produkt');
     if (editingId) {
       Object.assign(state.items.find((i) => i.id === editingId), data);
     } else {
@@ -366,6 +366,7 @@
 
   // ---------- Kamera / Scanner ----------
   const video = $('#video');
+  const scanDlg = $('#scanner');
   let stream = null;
   let scanMode = null;
   let scanning = false;
@@ -387,14 +388,17 @@
 
   async function openScanner(mode) {
     scanMode = mode;
-    $('#scanner').hidden = false;
+    // Als eigenes modales Fenster öffnen, damit es über dem Produkt-Dialog liegt und bedienbar ist
+    if (!scanDlg.open) scanDlg.showModal();
     $('#scanFrame').className = 'frame ' + mode;
     $('#btnTorch').hidden = true;
     setHint(mode === 'barcode' ? 'Barcode in den Rahmen halten' : 'Ablaufdatum in den Rahmen halten – möglichst gerade und gut beleuchtet');
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
+      const s = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false,
       });
+      if (scanMode !== mode) { s.getTracks().forEach((t) => t.stop()); return; } // inzwischen geschlossen
+      stream = s;
       video.srcObject = stream;
       await video.play();
       const track = stream.getVideoTracks()[0];
@@ -409,14 +413,18 @@
     if (mode === 'barcode') barcodeLoop(); else dateLoop();
   }
 
-  function closeScanner() {
+  function stopCamera() {
     scanning = false;
     scanMode = null;
     if (stream) stream.getTracks().forEach((t) => t.stop());
     stream = null;
     video.srcObject = null;
-    $('#scanner').hidden = true;
   }
+  function closeScanner() {
+    stopCamera();
+    if (scanDlg.open) scanDlg.close();
+  }
+  scanDlg.addEventListener('close', stopCamera); // auch bei Zurück-Taste / Esc
 
   function setHint(t) { $('#scanHint').textContent = t; }
 

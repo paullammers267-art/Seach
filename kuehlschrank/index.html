@@ -86,7 +86,7 @@
       <div id="productPreview" class="preview" hidden></div>
 
       <label>Produkt
-        <input id="fName" required placeholder="z. B. Vollmilch 1 l" autocomplete="off">
+        <input id="fName" placeholder="z. B. Vollmilch 1 l" autocomplete="off">
       </label>
       <label>Zutat (für Rezepte)
         <select id="fIngredient"></select>
@@ -129,7 +129,7 @@
   </dialog>
 
   <!-- Kamera -->
-  <div id="scanner" class="scanner" hidden>
+  <dialog id="scanner" class="scanner">
     <video id="video" playsinline muted></video>
     <div class="frame" id="scanFrame"></div>
     <div class="scan-hint" id="scanHint"></div>
@@ -139,7 +139,7 @@
       <button class="btn" id="btnTorch" hidden>🔦</button>
       <button class="btn" id="btnCloseScan">Schließen</button>
     </div>
-  </div>
+  </dialog>
 
   <div id="toast" class="toast" hidden></div>
 

@@ -84,14 +84,37 @@
     return new Date(y, m, 0);
   }
 
-  /** Häufige OCR-Verwechslungen in Ziffernfolgen korrigieren. */
+  /** Häufige OCR-Verwechslungen in Ziffernfolgen korrigieren.
+      (Ohne Lookbehind-Regex, damit es auch auf älteren iPhones läuft.) */
   function cleanOcr(text) {
-    return text
-      .replace(/(?<=[\d./-])[oO](?=[\d./-])|(?<![A-Za-z])[oO](?=\d)/g, '0')
-      .replace(/(?<=[\d./-])[lI|](?=[\d./-])|(?<![A-Za-z])[lI|](?=\d)/g, '1')
-      .replace(/(?<=\d)[sS](?=\d)/g, '5')
-      .replace(/(?<=\d)[B](?=\d)/g, '8')
-      .replace(/(?<=\d),(?=\d)/g, '.');
+    const s = String(text);
+    const isD = (c) => c >= '0' && c <= '9';
+    const isNum = (c) => isD(c) || c === '.' || c === '/' || c === '-';
+    const isL = (c) => /[A-Za-z]/.test(c);
+    let out = '';
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i], p = s[i - 1] || '', n = s[i + 1] || '';
+      const digitLike = (isNum(p) && isNum(n)) || (!isL(p) && isD(n));
+      if ((c === 'o' || c === 'O') && digitLike) out += '0';
+      else if ((c === 'l' || c === 'I' || c === '|') && digitLike) out += '1';
+      else if ((c === 's' || c === 'S') && isD(p) && isD(n)) out += '5';
+      else if (c === 'B' && isD(p) && isD(n)) out += '8';
+      else if (c === ',' && isD(p) && isD(n)) out += '.';
+      else out += c;
+    }
+    return out;
+  }
+
+  /** Wie re.exec in einer Schleife, überspringt aber Treffer, vor denen ein Zeichen aus `notBefore` steht. */
+  function allMatches(re, str, notBefore) {
+    const res = [];
+    let m;
+    re.lastIndex = 0;
+    while ((m = re.exec(str))) {
+      if (m.index > 0 && notBefore.test(str[m.index - 1])) { re.lastIndex = m.index + 1; continue; }
+      res.push(m);
+    }
+    return res;
   }
 
   /**
@@ -113,12 +136,12 @@
     let m;
 
     // 2026-10-03
-    const reIso = /(?<!\d)(20\d\d)[-./](\d{1,2})[-./](\d{1,2})(?!\d)/g;
-    while ((m = reIso.exec(lower))) add(validDate(+m[1], +m[2], +m[3]), m.index, true);
+    const reIso = /(20\d\d)[-./](\d{1,2})[-./](\d{1,2})(?!\d)/g;
+    for (m of allMatches(reIso, lower, /\d/)) add(validDate(+m[1], +m[2], +m[3]), m.index, true);
 
     // 03.10.2026 · 03.10.26 · 03/10/26 · 03 10 26
-    const reDMY = /(?<![\d.])(\d{1,2})\s?[./\- ]\s?(\d{1,2})\s?[./\- ]\s?(\d{4}|\d{2})(?![\d])/g;
-    while ((m = reDMY.exec(lower))) {
+    const reDMY = /(\d{1,2})\s?[./\- ]\s?(\d{1,2})\s?[./\- ]\s?(\d{4}|\d{2})(?![\d])/g;
+    for (m of allMatches(reDMY, lower, /[\d.]/)) {
       if (/^20\d\d$/.test(m[1])) continue;
       add(validDate(fullYear(m[3]), +m[2], +m[1]), m.index, true);
     }
@@ -128,8 +151,8 @@
     while ((m = reCompact.exec(lower))) add(validDate(fullYear(m[4]), +m[3], +m[2]), m.index + m[1].length, true);
 
     // 3. Okt 2026 · 03 OCT 26 · 3 Okt
-    const reMon = /(?<!\d)(\d{1,2})\.?\s*(jan|feb|maer|mar|mrz|apr|mai|may|jun|jul|aug|sep|okt|oct|nov|dez|dec)[a-z]*\.?\s*(\d{4}|\d{2})?(?!\d)/g;
-    while ((m = reMon.exec(lower))) {
+    const reMon = /(\d{1,2})\.?\s*(jan|feb|maer|mar|mrz|apr|mai|may|jun|jul|aug|sep|okt|oct|nov|dez|dec)[a-z]*\.?\s*(\d{4}|\d{2})?(?!\d)/g;
+    for (m of allMatches(reMon, lower, /\d/)) {
       let y = m[3] ? fullYear(m[3]) : today.getFullYear();
       let dt = validDate(y, MONTHS[m[2]], +m[1]);
       if (dt && !m[3] && dt < startOfDay(today)) dt = validDate(y + 1, MONTHS[m[2]], +m[1]);
@@ -137,8 +160,8 @@
     }
 
     // Monat/Jahr: 10/2026 · 10.26 (nach Schlüsselwort) -> letzter Tag des Monats
-    const reMY = /(?<![\d./])(\d{1,2})\s?[./]\s?(20\d\d|\d{2})(?![\d./])/g;
-    while ((m = reMY.exec(lower))) {
+    const reMY = /(\d{1,2})\s?[./]\s?(20\d\d|\d{2})(?![\d./])/g;
+    for (m of allMatches(reMY, lower, /[\d./]/)) {
       const month = +m[1];
       if (month < 1 || month > 12) continue;
       const before = lower.slice(Math.max(0, m.index - 30), m.index);
