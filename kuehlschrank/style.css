@@ -614,3 +614,21 @@ details.ex p { margin: 6px 0 0; }
 #foodGoalCard summary { cursor: pointer; }
 #foodGoalCard label { display: grid; gap: 4px; font-size: .85rem; font-weight: 600; color: var(--muted); margin-top: 8px; }
 #themeSwitch { margin-bottom: 0; }
+
+/* ---------- Kein Zoomen ----------
+   iOS zoomt automatisch in Eingabefelder unter 16 px – deshalb alle Felder mindestens 16 px.
+   Doppeltipp-Zoom aus, Inhalte nie breiter als der Bildschirm. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; touch-action: manipulation; }
+body { overflow-x: hidden; touch-action: manipulation; }
+input, select, textarea { font-size: max(16px, 1em) !important; min-width: 0; max-width: 100%; }
+button, label, a, .chip { touch-action: manipulation; }
+dialog { overflow-x: hidden; }
+dialog form { grid-template-columns: minmax(0, 1fr); }
+dialog form > *, .row > *, .addrow > * { min-width: 0; }
+.addrow input { flex: 1; }
+img, svg, video { max-width: 100%; }
+.food-add { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.food-add .btn { min-width: 0; padding: 10px 2px; overflow-wrap: anywhere; hyphens: auto; }
+@media (max-width: 360px) { .food-add .btn { font-size: .7rem; } }
+dialog .dialog-actions { flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; }
+dialog .dialog-actions .btn { padding-left: 12px; padding-right: 12px; }
