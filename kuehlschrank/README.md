@@ -61,7 +61,7 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
   Werden mehrere Daten erkannt, kannst du das richtige antippen. Alternativ: Schnellauswahl (+3 Tage, +1 Woche, „typisch“ …).
 - **Vorrat** nach Ablaufdatum sortiert, farbig markiert (abgelaufen / heute / bald), getrennt nach Kühlschrank, Gefrierfach, Vorrat.
   ✓ = verbraucht, 🗑 = weggeworfen (mit Rückgängig), Statistik „gerettet“.
-- **Rezeptvorschläge** aus dem, was da ist – Rezepte, die bald ablaufende Zutaten retten, stehen oben.
+- **175 Rezepte** (Frühstück, Hauptgerichte, Suppen, Salate, Snacks, Süßes) – **Rezeptvorschläge** aus dem, was da ist – Rezepte, die bald ablaufende Zutaten retten, stehen oben.
   Filter (⭐ Favoriten, 🥕 vegetarisch, ⚡ bis 20 Min, ✍️ eigene), Suche, „Gekocht“ trägt die Zutaten aus.
 - **Eigene Rezepte** anlegen und bearbeiten.
 - **📅 Wochenplan**: Rezepte auf die nächsten 7 Tage legen, fehlende Zutaten mit einem Tipp auf die Einkaufsliste.
@@ -95,7 +95,7 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `app.js` | Speicherung, Kamera-Scanner (BarcodeDetector bzw. ZXing, Tesseract.js), Open Food Facts |
 | `logic.js` | Datumserkennung, Ablauf-Status, Zuordnung Produkt → Zutat, Rezept-Bewertung, Haltbarkeit nach Öffnen/Einfrieren, Statistik |
 | `imageprep.js` | Bildaufbereitung für die Texterkennung (Punktmatrix, Kontrast, Hell/Dunkel) |
-| `recipes.js` | ~45 Rezepte |
+| `recipes.js` | 175 Rezepte in 6 Kategorien (Frühstück, Hauptgericht, Suppe, Salat, Snack, Süßes) |
 | `sport.js` | Übungen, Workout-Generator, Trainings-Statistik |
 | `planner.js` | Kalender (Wiederholungen, Erinnerungen, iCal) und Ausgaben (Kategorien, Budget, CSV) |
 | `nutrition.js` | Lebensmittel-Datenbank, Kalorienziel, Nährwerttabelle/Open-Food-Facts/Text erkennen |

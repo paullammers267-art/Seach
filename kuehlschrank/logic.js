@@ -300,6 +300,11 @@
     schokolade: { label: 'Schokolade', emoji: '🍫', days: 180, terms: ['schokolade', 'milchschokolade', 'chocolate', 'en:chocolates'] },
     pesto: { label: 'Pesto', emoji: '🌿', days: 30, terms: ['pesto'] },
     getraenk: { label: 'Getränk', emoji: '🧃', days: 180, terms: ['saft', 'limonade', 'cola', 'wasser', 'bier', 'wein', 'en:beverages', 'drink'] },
+    aubergine: { label: 'Aubergine', emoji: '🍆', days: 7, terms: ['aubergine', 'melanzani', 'eggplant'] },
+    kohl: { label: 'Kohl', emoji: '🥬', days: 14, terms: [' kohl', 'weisskohl', 'rotkohl', 'wirsing', 'spitzkohl', 'sauerkraut', 'cabbage'] },
+    spargel: { label: 'Spargel', emoji: '🌱', days: 3, terms: ['spargel', 'asparagus'] },
+    avocado: { label: 'Avocado', emoji: '🥑', days: 4, terms: ['avocado'] },
+    suesskartoffel: { label: 'Süßkartoffel', emoji: '🍠', days: 21, terms: ['susskartoffel', 'suesskartoffel', 'sweet potato', 'batate'] },
   };
 
   /**
@@ -436,6 +441,11 @@
     schokolade: { opened: 60, freeze: 0, tip: 'Weißer Belag (Fettreif) ist harmlos.' },
     pesto: { opened: 7, freeze: 3, tip: 'Mit Öl bedeckt halten, dann ca. eine Woche.' },
     getraenk: { opened: 3, freeze: 0, tip: 'Säfte geöffnet gekühlt 3–5 Tage.' },
+    aubergine: { opened: 2, freeze: 6, tip: 'Nicht zu kalt lagern (max. 1 Woche im Gemüsefach). Zum Einfrieren in Scheiben grillen oder braten.' },
+    kohl: { opened: 5, freeze: 10, tip: 'Ganze Köpfe halten im Gemüsefach 2–3 Wochen. Angeschnitten in Folie wickeln. Blanchiert gut einfrierbar.' },
+    spargel: { opened: 2, freeze: 8, tip: 'In ein feuchtes Tuch gewickelt im Kühlschrank 2–3 Tage. Roh geschält einfrieren und gefroren kochen.' },
+    avocado: { opened: 1, freeze: 4, tip: 'Hart kaufen und bei Zimmertemperatur reifen lassen (schneller neben Äpfeln). Angeschnitten mit Zitrone beträufeln, Kern drin lassen.' },
+    suesskartoffel: { opened: 2, freeze: 10, tip: 'Kühl und dunkel, aber nicht im Kühlschrank lagern. Gekocht als Püree gut einfrierbar.' },
   };
 
   /** Neues Ablaufdatum nach dem Öffnen: das frühere aus aufgedrucktem Datum und "heute + Tage nach Öffnen". */

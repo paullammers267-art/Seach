@@ -11,7 +11,7 @@
   const TESSERACT_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
   /** Lebensmittel, die normalerweise nicht in den Kühlschrank gehören. */
   const PANTRY = new Set(['nudeln', 'reis', 'mehl', 'linsen', 'kichererbsen', 'bohnen', 'mais', 'passata', 'kokosmilch', 'thunfisch',
-    'haferflocken', 'schokolade', 'kartoffeln', 'zwiebeln', 'knoblauch', 'getraenk', 'brot', 'tomaten', 'bananen', 'kuerbis', 'wraps', 'gnocchi']);
+    'haferflocken', 'schokolade', 'kartoffeln', 'zwiebeln', 'knoblauch', 'getraenk', 'brot', 'tomaten', 'bananen', 'kuerbis', 'wraps', 'gnocchi', 'suesskartoffel', 'avocado']);
   const QUICK = ['milch', 'eier', 'butter', 'kaese', 'joghurt', 'sahne', 'quark', 'brot', 'tomaten', 'gurke', 'paprika', 'salat', 'karotten',
     'champignons', 'hackfleisch', 'haehnchen', 'wurst', 'schinken', 'aepfel', 'bananen', 'beeren', 'kartoffeln', 'zwiebeln', 'nudeln'];
 
@@ -31,6 +31,7 @@
   let ingredientTouched = false;
   let recipeSub = 'suggest';
   const recipeFilters = new Set();
+  let recipeCat = '';
 
   function load() {
     try {
@@ -341,6 +342,7 @@
     if (recipeFilters.has('veg') && !L.isVegetarian(r)) return false;
     if (recipeFilters.has('quick') && r.minutes > 20) return false;
     if (recipeFilters.has('own') && !r.custom) return false;
+    if (recipeCat && (r.cat || 'haupt') !== recipeCat) return false;
     return true;
   }
 
@@ -388,7 +390,8 @@
     $$('#recipeTabs button').forEach((b) => b.classList.toggle('active', b.dataset.sub === recipeSub));
     $$('#view-recipes .sub').forEach((s) => s.classList.toggle('active', s.id === 'sub-' + recipeSub));
     $('#recipeFilters').hidden = recipeSub === 'plan';
-    $$('#recipeFilters .chip').forEach((c) => c.classList.toggle('active', recipeFilters.has(c.dataset.filter)));
+    $$('#recipeFilters [data-filter]').forEach((c) => c.classList.toggle('active', recipeFilters.has(c.dataset.filter)));
+    $$('#recipeCats [data-cat]').forEach((c) => c.classList.toggle('active', c.dataset.cat === recipeCat));
     if (recipeSub === 'suggest') renderSuggestions();
     else if (recipeSub === 'plan') renderPlan();
     else renderAllRecipes();
@@ -422,7 +425,9 @@
   function renderAllRecipes() {
     const list = allRecipes().filter(passesFilters).map(matchInfo)
       .sort((a, b) => b.coverage - a.coverage || a.recipe.name.localeCompare(b.recipe.name, 'de'));
-    $('#allRecipeList').innerHTML = list.length ? list.map(recipeCard).join('') : '<p class="muted center">Kein Rezept passt zu den Filtern.</p>';
+    $('#allRecipeList').innerHTML = list.length
+      ? `<p class="muted small">${list.length} Rezept${list.length === 1 ? '' : 'e'}${list.length < allRecipes().length ? ` von ${allRecipes().length}` : ''} – die mit den meisten vorhandenen Zutaten zuerst</p>` + list.map(recipeCard).join('')
+      : '<p class="muted center">Kein Rezept passt zu den Filtern.</p>';
   }
 
   function renderPlan() {
@@ -444,6 +449,12 @@
     const b = e.target.closest('[data-sub]');
     if (!b) return;
     recipeSub = b.dataset.sub;
+    renderRecipes();
+  });
+  $('#recipeCats').addEventListener('click', (e) => {
+    const c = e.target.closest('[data-cat]');
+    if (!c) return;
+    recipeCat = recipeCat === c.dataset.cat ? '' : c.dataset.cat;
     renderRecipes();
   });
   $('#recipeFilters').addEventListener('click', (e) => {
@@ -559,6 +570,7 @@
     $('#rName').value = rec ? rec.name : '';
     $('#rEmoji').value = rec ? rec.emoji : '';
     $('#rMinutes').value = rec ? rec.minutes : 30;
+    $('#rCat').value = rec ? rec.cat || 'haupt' : 'haupt';
     $('#rSteps').value = rec ? rec.steps.join('\n') : '';
     $$('#rIngredients .chip').forEach((c) => c.classList.toggle('active', !!rec && rec.ingredients.includes(c.dataset.k)));
     $('#rDelete').hidden = !rec;
@@ -582,6 +594,7 @@
       name: $('#rName').value.trim() || 'Mein Rezept',
       emoji: $('#rEmoji').value.trim() || '🍽️',
       minutes: Math.max(1, parseInt($('#rMinutes').value, 10) || 30),
+      cat: $('#rCat').value,
       ingredients, optional: [],
       steps: $('#rSteps').value.split('\n').map((s) => s.trim()).filter(Boolean),
     };

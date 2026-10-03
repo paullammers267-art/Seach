@@ -91,6 +91,14 @@
           <button class="chip" data-filter="quick">⚡ bis 20 Min</button>
           <button class="chip" data-filter="own">✍️ Eigene</button>
         </div>
+        <div class="chips" id="recipeCats">
+          <button class="chip" data-cat="fruehstueck">🌅 Frühstück</button>
+          <button class="chip" data-cat="haupt">🍝 Hauptgericht</button>
+          <button class="chip" data-cat="suppe">🍲 Suppe</button>
+          <button class="chip" data-cat="salat">🥗 Salat</button>
+          <button class="chip" data-cat="snack">🥨 Snack</button>
+          <button class="chip" data-cat="suess">🍰 Süßes</button>
+        </div>
       </div>
       <div id="sub-suggest" class="sub active">
         <button class="btn" id="btnSurprise">🎲 Was koche ich heute?</button>
@@ -516,9 +524,17 @@
           <input id="rEmoji" maxlength="4" placeholder="🍲" autocomplete="off">
         </label>
       </div>
-      <label>Zeit (Minuten)
-        <input id="rMinutes" type="number" min="1" value="30" inputmode="numeric">
-      </label>
+      <div class="row">
+        <label>Zeit (Minuten)
+          <input id="rMinutes" type="number" min="1" value="30" inputmode="numeric">
+        </label>
+        <label>Kategorie
+          <select id="rCat">
+            <option value="haupt">🍝 Hauptgericht</option><option value="fruehstueck">🌅 Frühstück</option><option value="suppe">🍲 Suppe</option>
+            <option value="salat">🥗 Salat</option><option value="snack">🥨 Snack</option><option value="suess">🍰 Süßes</option>
+          </select>
+        </label>
+      </div>
       <label>Hauptzutaten <span class="muted small">(antippen)</span></label>
       <div class="chips ingpick" id="rIngredients"></div>
       <label>Zubereitung <span class="muted small">(ein Schritt pro Zeile)</span>
