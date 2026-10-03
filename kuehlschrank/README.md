@@ -4,7 +4,7 @@ Web-App (installierbar aufs Handy) für den Alltag. Startseite **🏠 Heute** ze
 den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellmenü (Produkt, Kassenbon, Einkauf, Termin, Ausgabe, Training).
 
 ## 🏋️ Sport für zuhause
-- ~50 Übungen ohne Geräte mit Anleitung (Aufwärmen, Beine & Po, Bauch & Rücken, Oberkörper, Cardio, Dehnen)
+- 46 Übungen ohne Geräte mit Anleitung (Aufwärmen, Beine & Po, Bauch & Rücken, Oberkörper, Cardio, Dehnen)
 - **Workout-Generator**: Dauer (10–45 Min), Schwerpunkt, Level (Intervalle 30/30, 40/20, 45/15), **🤫 leise** ohne Sprünge
 - Klassisches **7-Minuten-Workout**
 - **Trainingsmodus**: großer Countdown, Ansage der Übungen, Pieptöne, Pause/Überspringen, Bildschirm bleibt an
