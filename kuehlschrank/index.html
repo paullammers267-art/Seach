@@ -266,9 +266,8 @@
       </div>
       <div class="card" id="foodSummary"></div>
       <div class="food-add">
-        <label class="btn" for="mealPhotoInput"><span>📷</span>Mahlzeit-Foto</label>
         <button class="btn" id="btnFoodBarcode"><span>📦</span>Barcode</button>
-        <label class="btn" for="labelPhotoInput"><span>🏷️</span>Nährwerte</label>
+        <label class="btn" for="labelPhotoInput"><span>🏷️</span>Nährwert-Tabelle</label>
         <button class="btn" id="btnFoodSearch"><span>🔎</span>Suchen</button>
       </div>
       <form id="foodQuick" class="addrow" autocomplete="off">
@@ -314,18 +313,6 @@
         <div class="segmented" id="themeSwitch">
           <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button>
         </div>
-      </div>
-      <div class="card">
-        <h2>🤖 KI-Erkennung für Mahlzeit-Fotos</h2>
-        <p class="muted small">Optional: Mit einem eigenen API-Schlüssel von Anthropic erkennt Claude auf einem Foto, was auf dem Teller liegt, und schätzt Mengen und Kalorien.
-          Das Foto wird dafür an Anthropic gesendet; die Nutzung kostet pro Foto etwa 1–3 Cent über dein Anthropic-Konto.
-          Schlüssel erstellen: <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
-          Der Schlüssel bleibt nur auf diesem Gerät und ist nicht in der Sicherung enthalten.</p>
-        <form id="aiKeyForm" class="addrow" autocomplete="off">
-          <input id="aiKeyInput" type="password" placeholder="sk-ant-…" autocomplete="off">
-          <button class="btn" type="submit">Speichern</button>
-        </form>
-        <p class="small" id="aiKeyState"></p>
       </div>
       <div class="card">
         <h2>🌤️ Wetter-Ort</h2>
@@ -726,7 +713,6 @@
     </form>
   </dialog>
 
-  <input id="mealPhotoInput" type="file" accept="image/*" capture="environment" hidden>
   <input id="labelPhotoInput" type="file" accept="image/*" capture="environment" hidden>
 
   <!-- Lebensmittel-Eintrag -->

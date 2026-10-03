@@ -627,7 +627,7 @@ dialog form { grid-template-columns: minmax(0, 1fr); }
 dialog form > *, .row > *, .addrow > * { min-width: 0; }
 .addrow input { flex: 1; }
 img, svg, video { max-width: 100%; }
-.food-add { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.food-add { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .food-add .btn { min-width: 0; padding: 10px 2px; overflow-wrap: anywhere; hyphens: auto; }
 @media (max-width: 360px) { .food-add .btn { font-size: .7rem; } }
 dialog .dialog-actions { flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; }

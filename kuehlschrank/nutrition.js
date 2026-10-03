@@ -261,39 +261,5 @@
     return out;
   }
 
-  /** JSON-Schema für die KI-Schätzung aus einem Foto. */
-  const PHOTO_SCHEMA = {
-    type: 'object',
-    additionalProperties: false,
-    required: ['items', 'note'],
-    properties: {
-      items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['name', 'grams', 'kcal', 'protein_g', 'carbs_g', 'fat_g'],
-          properties: {
-            name: { type: 'string', description: 'Deutscher Name des Lebensmittels/Gerichts' },
-            grams: { type: 'number', description: 'Geschätzte Menge in Gramm (Getränke in ml)' },
-            kcal: { type: 'number' },
-            protein_g: { type: 'number' },
-            carbs_g: { type: 'number' },
-            fat_g: { type: 'number' },
-          },
-        },
-      },
-      note: { type: 'string', description: 'Kurzer Hinweis auf Deutsch, z. B. Unsicherheiten der Schätzung; leer, wenn keiner' },
-    },
-  };
-
-  /** Ergebnis der KI prüfen und in Einträge umwandeln (unplausible Werte verwerfen). */
-  function fromPhotoEstimate(json) {
-    if (!json || !Array.isArray(json.items)) return [];
-    return json.items
-      .filter((i) => i && typeof i.name === 'string' && i.name.trim() && Number.isFinite(i.kcal) && i.kcal >= 0 && i.kcal < 5000 && i.grams >= 0 && i.grams < 5000)
-      .map((i) => ({ name: i.name.trim().slice(0, 80), grams: Math.round(i.grams), kcal: Math.round(i.kcal), p: r1(i.protein_g || 0), c: r1(i.carbs_g || 0), f: r1(i.fat_g || 0) }));
-  }
-
-  return { FOODS, searchFoods, scale, ACTIVITY, GOALS, dailyGoal, totals, MEALS, mealForHour, burned, parseNutritionLabel, fromOpenFoodFacts, parseFoodText, PHOTO_SCHEMA, fromPhotoEstimate };
+  return { FOODS, searchFoods, scale, ACTIVITY, GOALS, dailyGoal, totals, MEALS, mealForHour, burned, parseNutritionLabel, fromOpenFoodFacts, parseFoodText };
 });

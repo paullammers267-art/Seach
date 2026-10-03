@@ -39,16 +39,13 @@ test('Tagessumme, Mahlzeit, Training', () => {
   assert.equal(N.burned({ seconds: 1200, focus: 'ganz' }, 80), 133);
 });
 
-test('Nährwerttabelle, Open Food Facts, KI-Antwort', () => {
+test('Nährwerttabelle, Open Food Facts', () => {
   assert.deepEqual(N.parseNutritionLabel('Nährwerte pro 100 g\nBrennwert 1046 kJ / 250 kcal\nFett 9,5 g\ndavon gesättigte Fettsäuren 6 g\nKohlenhydrate 30 g\ndavon Zucker 20 g\nEiweiß 8,2 g'), { kcal: 250, p: 8.2, c: 30, f: 9.5 });
   assert.deepEqual(N.parseNutritionLabel('Energy 1500 kJ\nFat 3.1 g\nCarbohydrate 70 g\nProtein 10 g'), { kcal: 359, p: 10, c: 70, f: 3.1 });
   assert.equal(N.parseNutritionLabel('Zutaten: Milch, Zucker'), null);
   assert.deepEqual(N.fromOpenFoodFacts({ nutriments: { 'energy-kcal_100g': 539, proteins_100g: 6.3, carbohydrates_100g: 57.5, fat_100g: 30.9 }, serving_size: '15 g' }),
     { per100: { kcal: 539, p: 6.3, c: 57.5, f: 30.9 }, serving: 15 });
   assert.equal(N.fromOpenFoodFacts({ nutriments: {} }), null);
-  assert.deepEqual(N.fromPhotoEstimate({ items: [{ name: ' Spaghetti Bolognese ', grams: 380.4, kcal: 570.2, protein_g: 25.15, carbs_g: 70, fat_g: 18 }, { name: '', grams: 1, kcal: 1 }, { name: 'Unsinn', grams: 10, kcal: 99999 }], note: '' }),
-    [{ name: 'Spaghetti Bolognese', grams: 380, kcal: 570, p: 25.2, c: 70, f: 18 }]);
-  assert.deepEqual(N.fromPhotoEstimate(null), []);
 });
 
 test('Nährwerttabelle: typische Lesefehler der Texterkennung', () => {

@@ -1,4 +1,4 @@
-/* Kalorien-Tracker (Foto per KI, Barcode, Nährwerttabelle, Suche, Text/Sprache) und Darstellung (Hell/Dunkel).
+/* Kalorien-Tracker (Barcode, Nährwerttabelle per Foto, Suche, Text/Sprache) – komplett kostenlos und Darstellung (Hell/Dunkel).
    Baut auf window.App (app.js) und window.FridgeNutrition (nutrition.js) auf. */
 (() => {
   'use strict';
@@ -11,8 +11,6 @@
   const st = () => A.state;
   const today = () => A.today();
   const addDays = window.FridgeLife.addDays;
-  const SDK_URL = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.131.0/+esm';
-  const KEY_STORE = 'alltagsheld.aiKey'; // bewusst getrennt vom App-Zustand: nicht in Sicherungen enthalten
   const num = (v) => (v === '' || v == null ? null : L.parsePrice(String(v)));
   const fmt = (v, d = 0) => (v == null ? '–' : Number(v).toLocaleString('de-DE', { maximumFractionDigits: d }));
 
@@ -20,7 +18,6 @@
   if (!st().settings.nutrition) st().settings.nutrition = { sex: 'w', age: null, activity: 1.375, goal: 'keep', manual: null, weight: null };
 
   let foodDate = today();
-  let pendingPhoto = null; // Foto, das dem nächsten Eintrag beigefügt wird (Mahlzeit-Foto ohne KI)
 
   // =====================================================================
   // Darstellung (Hell/Dunkel)
@@ -240,7 +237,6 @@
       name: $('#fdName').value.trim() || 'Essen', grams: num($('#fdGrams').value), kcal: Math.round(kcal),
       p: num($('#fdP').value), c: num($('#fdC').value), f: num($('#fdF').value), meal: fdMeal, ...fdExtra,
     };
-    if (pendingPhoto && !data.photo) { data.photo = pendingPhoto; pendingPhoto = null; }
     fdDlg.close();
     if (fdEditing) { Object.assign(st().food.find((x) => x.id === fdEditing.id), data); A.save(); A.render(); }
     else addEntries([data], { meal: fdMeal });
@@ -285,9 +281,9 @@
     if (!b) return;
     const f = N.FOODS.find((x) => x.id === b.dataset.fid);
     fsDlg.close();
-    openFoodDialog({ name: f.name, grams: f.portion, per100: { kcal: f.kcal, p: f.p, c: f.c, f: f.f }, portion: f.portion, portionLabel: f.portionLabel, source: 'db', meal: searchMeal, photo: pendingPhoto });
+    openFoodDialog({ name: f.name, grams: f.portion, per100: { kcal: f.kcal, p: f.p, c: f.c, f: f.f }, portion: f.portion, portionLabel: f.portionLabel, source: 'db', meal: searchMeal });
   });
-  $('#fsManual').onclick = () => { fsDlg.close(); openFoodDialog({ name: $('#fsInput').value.trim(), source: 'manual', meal: searchMeal, photo: pendingPhoto }); };
+  $('#fsManual').onclick = () => { fsDlg.close(); openFoodDialog({ name: $('#fsInput').value.trim(), source: 'manual', meal: searchMeal }); };
   $('#fsCancel').onclick = () => fsDlg.close();
   $('#btnFoodSearch').onclick = () => openSearch(null);
 
@@ -348,7 +344,7 @@
   });
 
   // =====================================================================
-  // Prüf-Dialog (KI-Foto, Text/Sprache)
+  // Prüf-Dialog (Text/Sprache)
   // =====================================================================
   const mrDlg = $('#mealReview');
   let mrItems = [];
@@ -403,7 +399,7 @@
     $('#fsInput').value = q;
     renderSearch();
   });
-  $('#mrCancel').onclick = () => { mrDlg.close(); pendingPhoto = null; };
+  $('#mrCancel').onclick = () => mrDlg.close();
   $('#mrSave').onclick = () => {
     const chosen = mrItems.filter((i) => i.use && !i.missing).map(({ use, missing, text, ...rest }, idx) => ({ ...rest, photo: idx === 0 ? mrPhoto : null }));
     mrDlg.close();
@@ -436,109 +432,8 @@
   if (A.listen) $('#micFood').hidden = false;
   $('#micFood').onclick = () => A.listen($('#micFood'), reviewText);
 
-  // =====================================================================
-  // Mahlzeit-Foto mit KI (Claude, eigener API-Schlüssel)
-  // =====================================================================
-  const getKey = () => { try { return localStorage.getItem(KEY_STORE) || ''; } catch (e) { return ''; } };
-  function renderKeyState() {
-    const k = getKey();
-    $('#aiKeyState').innerHTML = k
-      ? `✅ Schlüssel gespeichert (…${esc(k.slice(-4))}) <button class="link-btn" id="aiKeyRemove">entfernen</button>`
-      : '<span class="muted">Kein Schlüssel – Mahlzeit-Fotos werden dann ohne KI gespeichert, die Lebensmittel wählst du selbst.</span>';
-    if ($('#aiKeyRemove')) $('#aiKeyRemove').onclick = () => { localStorage.removeItem(KEY_STORE); renderKeyState(); A.toast('Schlüssel entfernt'); };
-  }
-  $('#aiKeyForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const k = $('#aiKeyInput').value.trim();
-    if (!/^sk-ant-/.test(k)) { A.toast('Das sieht nicht nach einem Anthropic-Schlüssel aus (beginnt mit sk-ant-)'); return; }
-    try { localStorage.setItem(KEY_STORE, k); } catch (err) { /* privat */ }
-    $('#aiKeyInput').value = '';
-    renderKeyState();
-    A.toast('🤖 KI-Erkennung ist aktiv');
-  });
-
-  const SYSTEM_PROMPT = [
-    'Du bist ein Ernährungsassistent in einer deutschen Alltags-App.',
-    'Erkenne alle Speisen und Getränke auf dem Foto und schätze für jede die Menge in Gramm (Getränke in ml) anhand von Tellergröße, Besteck und Verpackungen.',
-    'Gib für genau diese Menge Kalorien, Eiweiß, Kohlenhydrate und Fett an. Orientiere dich an typischen deutschen Rezepturen und Portionsgrößen.',
-    'Fasse Gerichte, deren Bestandteile man nicht sinnvoll trennen kann (z. B. Lasagne, Eintopf), als einen Eintrag zusammen; trenne klar getrennte Komponenten (z. B. Schnitzel, Pommes, Salat).',
-    'Verwende kurze deutsche Namen. Ist kein Essen zu sehen, gib eine leere Liste zurück und erkläre das in note.',
-  ].join(' ');
-
-  /** Fragt Claude nach einer Schätzung. Liefert das validierte JSON-Objekt. */
-  async function estimateMeal(base64) {
-    const { default: Anthropic } = await import(SDK_URL);
-    const client = new Anthropic({ apiKey: getKey(), dangerouslyAllowBrowser: true, maxRetries: 1 });
-    const params = {
-      model: 'claude-opus-5-5',
-      max_tokens: 8000,
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: N.PHOTO_SCHEMA } },
-      system: SYSTEM_PROMPT,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-          { type: 'text', text: 'Was ist auf diesem Foto, und wie viele Kalorien hat es ungefähr?' },
-        ],
-      }],
-    };
-    let res;
-    try {
-      // Bei einer Sicherheits-Ablehnung springt automatisch ein passendes Ersatzmodell ein
-      res = await client.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
-    } catch (err) {
-      if (err instanceof Anthropic.BadRequestError) res = await client.messages.create(params); // Fallback-Option nicht verfügbar -> ohne
-      else throw err;
-    }
-    if (res.stop_reason === 'refusal') throw Object.assign(new Error('refusal'), { kind: 'refusal' });
-    if (res.stop_reason === 'max_tokens') throw Object.assign(new Error('max_tokens'), { kind: 'incomplete' });
-    const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
-    return { json: JSON.parse(text), Anthropic };
-  }
-
-  function aiErrorText(err, Anthropic) {
-    if (Anthropic && err instanceof Anthropic.AuthenticationError) return '🔑 Der API-Schlüssel ist ungültig. Bitte unter Mehr → KI-Erkennung prüfen.';
-    if (Anthropic && err instanceof Anthropic.PermissionDeniedError) return '🔑 Der Schlüssel hat keinen Zugriff auf das Modell.';
-    if (Anthropic && err instanceof Anthropic.RateLimitError) return '⏳ Zu viele Anfragen – bitte gleich nochmal versuchen.';
-    if (Anthropic && err instanceof Anthropic.APIConnectionError) return '📶 Keine Verbindung zur KI. Bist du online?';
-    if (Anthropic && err instanceof Anthropic.APIError) return `⚠️ Fehler der KI (${err.status || '?'}). Bitte später erneut versuchen.`;
-    if (err && err.kind === 'refusal') return 'Die KI hat dieses Foto nicht ausgewertet.';
-    if (err && err.kind === 'incomplete') return 'Die Antwort war unvollständig – bitte nochmal versuchen.';
-    return '⚠️ Die Antwort konnte nicht gelesen werden. Bitte nochmal versuchen.';
-  }
-
-  $('#mealPhotoInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    const thumb = (await shrink(file, 240, 0.6)).dataUrl;
-    if (!getKey()) {
-      pendingPhoto = thumb;
-      openReview('📷 Mahlzeit', thumb, `Ohne KI-Schlüssel kann ich das Foto nicht automatisch auswerten. Wähle die Lebensmittel selbst – das Foto wird dem Eintrag beigefügt.
-        <div class="row tight"><button class="btn small primary" id="mrPick">🔎 Lebensmittel wählen</button><button class="btn small" id="mrSetup">🤖 KI einrichten</button></div>`);
-      $('#mrPick').onclick = () => { mrDlg.close(); openSearch(mrMeal); };
-      $('#mrSetup').onclick = () => { mrDlg.close(); pendingPhoto = null; A.showView('settings'); setTimeout(() => $('#aiKeyInput').scrollIntoView({ block: 'center' }), 50); };
-      return;
-    }
-    openReview('📷 Mahlzeit', thumb, '🤖 Claude schaut sich das Foto an … (dauert ein paar Sekunden)');
-    let Anthropic = null;
-    try {
-      const big = (await shrink(file, 1280, 0.8)).dataUrl.split(',')[1];
-      const r = await estimateMeal(big);
-      Anthropic = r.Anthropic;
-      const items = N.fromPhotoEstimate(r.json);
-      mrItems = items.map((it) => ({ ...it, use: true, source: 'ai' }));
-      $('#mrStatus').innerHTML = items.length
-        ? `Geschätzt von Claude – Mengen und Kalorien sind Näherungen (oft ±20–30 %). Passe die Gramm an, wenn du es genauer weißt.${r.json.note ? `<br><i>${esc(r.json.note)}</i>` : ''}`
-        : `Kein Essen erkannt.${r.json.note ? ' ' + esc(r.json.note) : ''} <button class="link-btn" id="mrPick2">Selbst auswählen</button>`;
-      if ($('#mrPick2')) $('#mrPick2').onclick = () => { pendingPhoto = thumb; mrDlg.close(); openSearch(mrMeal); };
-      renderReview();
-    } catch (err) {
-      try { Anthropic = Anthropic || (await import(SDK_URL)).default; } catch (e2) { /* offline */ }
-      $('#mrStatus').innerHTML = esc(aiErrorText(err, Anthropic)) + ' <button class="link-btn" id="mrPick3">Selbst auswählen</button>';
-      $('#mrPick3').onclick = () => { pendingPhoto = thumb; mrDlg.close(); openSearch(mrMeal); };
-    }
-  });
+  // Früher gespeicherten KI-Schlüssel (entfernte Funktion) vom Gerät löschen
+  try { localStorage.removeItem('alltagsheld.aiKey'); } catch (e) { /* egal */ }
 
   // =====================================================================
   // Startseite, Mehr, Schnellmenü
@@ -549,15 +444,15 @@
     const t = N.totals(dayEntries(today()));
     if (!st().food.length && !g) {
       $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">🍽️ Kalorien</div>
-        <div class="home-line muted">Mahlzeit fotografieren, Barcode scannen oder „1 Apfel“ eintippen – ich zähle mit.</div></button>
-        <label class="btn small primary" for="mealPhotoInput">📷 Mahlzeit fotografieren</label></div>`;
+        <div class="home-line muted">Barcode scannen, Nährwerttabelle fotografieren oder „1 Apfel“ eintippen – ich zähle mit.</div></button>
+        <button class="btn small primary" data-goto="food">＋ Mahlzeit eintragen</button></div>`;
       return;
     }
     const left = g ? g.kcal + burnedOn(today()) - t.kcal : null;
     $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">🍽️ Kalorien heute</div>
       <div class="home-line"><b>${fmt(t.kcal)}</b>${g ? ` von ${fmt(g.kcal)} kcal · ${left >= 0 ? 'noch ' + fmt(left) : '<span class="warn-text">' + fmt(-left) + ' zu viel</span>'}` : ' kcal'}</div>
       ${g ? `<div class="meter ${left < 0 ? 'over' : ''}"><i style="width:${Math.min(100, (t.kcal / g.kcal) * 100)}%"></i></div>` : ''}</button>
-      <div class="row tight"><label class="btn small primary" for="mealPhotoInput">📷 Mahlzeit</label><button class="btn small" data-goto="food">＋ Eintragen</button></div></div>`;
+      <div class="row tight"><button class="btn small primary" data-goto="food">＋ Eintragen</button><button class="btn small" data-foodbarcode>📦 Barcode</button></div></div>`;
   }
   function renderHubFood() {
     const g = goal();
@@ -566,6 +461,7 @@
   }
 
   A.actions.meal = () => { foodDate = today(); A.showView('food'); };
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-foodbarcode]')) { foodDate = today(); A.showView('food'); A.scanBarcode(foodFromBarcode); } });
   A.actions.habit = () => A.showView('habits');
   A.actions.search = () => { A.showView('home'); setTimeout(() => $('#globalSearch').focus(), 50); };
   A.calendarSources.push((from, to) => {
@@ -580,7 +476,6 @@
   A.onRender(renderFood);
   A.onRender(renderHomeFood);
   A.onRender(renderHubFood);
-  A.onRender(renderKeyState);
   A.onRender(applyTheme);
   A.render();
   const view = new URLSearchParams(location.search).get('view');
