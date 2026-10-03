@@ -1,7 +1,7 @@
 {
-  "name": "Frischecheck – Kühlschrank & Ablaufdaten",
+  "name": "Frischecheck – Alltagshelfer",
   "short_name": "Frischecheck",
-  "description": "Ablaufdaten scannen, Vorrat im Blick behalten, passende Rezepte finden.",
+  "description": "Vorrat & Ablaufdaten, Einkauf, Rezepte, Sport für zuhause, Kalender und Ausgaben.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -11,7 +11,10 @@
   "shortcuts": [
     { "name": "Produkt hinzufügen", "short_name": "Hinzufügen", "url": "./?neu" },
     { "name": "Einkaufsliste", "short_name": "Einkauf", "url": "./?view=shopping" },
-    { "name": "Rezepte", "short_name": "Rezepte", "url": "./?view=recipes" }
+    { "name": "Rezepte", "short_name": "Rezepte", "url": "./?view=recipes" },
+    { "name": "Training", "short_name": "Sport", "url": "./?view=sport" },
+    { "name": "Kalender", "short_name": "Kalender", "url": "./?view=calendar" },
+    { "name": "Ausgaben", "short_name": "Ausgaben", "url": "./?view=expenses" }
   ],
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

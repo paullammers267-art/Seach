@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Frischecheck</title>
-  <meta name="description" content="Ablaufdaten scannen, Vorrat im Blick behalten, passende Rezepte finden.">
+  <title>Frischecheck – Alltagshelfer</title>
+  <meta name="description" content="Alltagshelfer: Vorrat & Ablaufdaten, Einkauf, Rezepte, Sport für zuhause, Kalender und Ausgaben.">
   <meta name="theme-color" content="#2f855a">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -20,7 +20,13 @@
 
   <main>
     <!-- Vorrat -->
-    <section id="view-stock" class="view active">
+    <!-- Heute -->
+    <section id="view-home" class="view active">
+      <div class="hello"><h2 id="homeHello">Hallo!</h2><div class="muted" id="homeDate"></div></div>
+      <div id="homeCards"></div>
+    </section>
+
+    <section id="view-stock" class="view">
       <div class="toolbar">
         <input id="search" type="search" placeholder="Vorrat durchsuchen …" autocomplete="off">
         <div class="chips" id="locFilter">
@@ -62,6 +68,7 @@
 
     <!-- Rezepte -->
     <section id="view-recipes" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🍳 Rezepte</h2></div>
       <div class="segmented" id="recipeTabs">
         <button class="active" data-sub="suggest">💡 Vorschläge</button>
         <button data-sub="plan">📅 Woche</button>
@@ -94,8 +101,95 @@
       </div>
     </section>
 
-    <!-- Einstellungen -->
+    <!-- Sport -->
+    <section id="view-sport" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🏋️ Sport</h2></div>
+      <div id="sportStats" class="statgrid card"></div>
+      <div class="card">
+        <h2>Training zusammenstellen</h2>
+        <label class="field">Dauer</label>
+        <div class="chips" id="woMinutes">
+          <button class="chip" data-v="10">10 Min</button><button class="chip active" data-v="20">20 Min</button><button class="chip" data-v="30">30 Min</button><button class="chip" data-v="45">45 Min</button>
+        </div>
+        <label class="field">Schwerpunkt</label>
+        <div class="chips" id="woFocus"></div>
+        <label class="field">Level</label>
+        <div class="chips" id="woLevel"></div>
+        <label class="toggle"><input type="checkbox" id="woQuiet"> 🤫 leise – keine Sprünge (Wohnung, Nachbarn)</label>
+        <label class="toggle"><input type="checkbox" id="woVoice" checked> 🔊 Übungen ansagen</label>
+        <div class="row tight">
+          <button class="btn primary" id="btnWoGenerate">✨ Training erstellen</button>
+          <button class="btn" id="btnWoSeven">⏱️ 7-Minuten-Workout</button>
+        </div>
+      </div>
+      <div id="woPreview"></div>
+      <div class="card">
+        <h2>Wochenziel</h2>
+        <div class="chips" id="woGoal"></div>
+      </div>
+      <details class="card ex-card">
+        <summary><b>📖 Alle Übungen mit Anleitung</b></summary>
+        <input id="exSearch" type="search" placeholder="Übung suchen …" autocomplete="off">
+        <div id="exList"></div>
+      </details>
+      <div class="card" id="woHistoryCard">
+        <h2>Verlauf</h2>
+        <div id="woHistory"></div>
+      </div>
+    </section>
+
+    <!-- Kalender -->
+    <section id="view-calendar" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📅 Kalender</h2></div>
+      <div class="cal-head">
+        <button class="btn small" id="calPrev" aria-label="Vormonat">‹</button>
+        <h2 id="calTitle"></h2>
+        <button class="btn small" id="calNext" aria-label="Nächster Monat">›</button>
+        <button class="btn small" id="calToday">Heute</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend muted small"><i class="lg dot-ev"></i>Termin <i class="lg dot-exp"></i>läuft ab <i class="lg dot-meal"></i>Essen <i class="lg dot-sport"></i>Training</div>
+      <div class="row tight cal-actions">
+        <button class="btn primary" id="btnNewEvent">＋ Termin</button>
+        <button class="btn" id="btnIcsAll">📲 In Handy-Kalender</button>
+      </div>
+      <p class="muted small">🔔 Erinnerungen kommen, solange die App geöffnet ist. Für Erinnerungen auch bei geschlossener App: <b>📲 In Handy-Kalender</b>.</p>
+      <h3 id="calDayTitle" class="section"></h3>
+      <div id="calDay"></div>
+      <h3 class="section">Demnächst</h3>
+      <div id="calUpcoming"></div>
+    </section>
+
+    <!-- Ausgaben -->
+    <section id="view-expenses" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💶 Ausgaben</h2></div>
+      <form id="expQuick" class="addrow" autocomplete="off">
+        <input id="expQuickInput" placeholder="z. B. 12,50 Tanken" inputmode="text">
+        <button class="btn mic" type="button" id="micExp" aria-label="Spracheingabe" hidden>🎤</button>
+        <button class="btn primary" type="submit" aria-label="Buchen">＋</button>
+      </form>
+      <div class="cal-head">
+        <button class="btn small" id="expPrev" aria-label="Vormonat">‹</button>
+        <h2 id="expTitle"></h2>
+        <button class="btn small" id="expNext" aria-label="Nächster Monat">›</button>
+      </div>
+      <div class="card" id="expSummary"></div>
+      <div id="expList"></div>
+      <div class="row tight">
+        <button class="btn" id="btnExpNew">＋ Ausgabe mit Details</button>
+        <button class="btn" id="btnExpBudget">🎯 Budget</button>
+        <button class="btn" id="btnExpCsv">⬇️ CSV (Excel)</button>
+      </div>
+    </section>
+
+    <!-- Mehr -->
     <section id="view-settings" class="view">
+      <div class="hub">
+        <button class="hub-tile" data-goto="recipes"><span>🍳</span>Rezepte<small id="hubRecipes"></small></button>
+        <button class="hub-tile" data-goto="sport"><span>🏋️</span>Sport<small id="hubSport"></small></button>
+        <button class="hub-tile" data-goto="calendar"><span>📅</span>Kalender<small id="hubCal"></small></button>
+        <button class="hub-tile" data-goto="expenses"><span>💶</span>Ausgaben<small id="hubExp"></small></button>
+      </div>
       <div class="card">
         <h2>Erinnerungen</h2>
         <p class="muted">Beim Öffnen der App wirst du benachrichtigt, wenn etwas heute oder morgen abläuft.</p>
@@ -156,11 +250,11 @@
   </main>
 
   <nav class="tabbar">
-    <button class="tab active" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
+    <button class="tab active" data-view="home"><span>🏠</span>Heute</button>
+    <button class="tab" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
+    <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab add" id="btnAdd" aria-label="Produkt hinzufügen"><span>＋</span>Neu</button>
-    <button class="tab" data-view="recipes"><span>🍳</span>Rezepte</button>
-    <button class="tab" data-view="settings"><span>⚙️</span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses"><span>☰</span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -306,6 +400,116 @@
     </form>
   </dialog>
 
+ <!-- Schnellmenü ＋ -->
+  <dialog id="actionSheet" class="sheet">
+    <div class="sheet-grid">
+      <button data-action="product"><span>📦</span>Produkt</button>
+      <button data-action="receipt"><span>🧾</span>Kassenbon</button>
+      <button data-action="shopping"><span>🛒</span>Einkauf</button>
+      <button data-action="event"><span>📅</span>Termin</button>
+      <button data-action="expense"><span>💶</span>Ausgabe</button>
+      <button data-action="workout"><span>🏋️</span>Training</button>
+    </div>
+    <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
+  </dialog>
+
+  <!-- Termin -->
+  <dialog id="eventDialog">
+    <form id="eventForm" method="dialog">
+      <h2 id="eventTitle">Termin</h2>
+      <label>Was?
+        <input id="evTitle" required placeholder="z. B. Zahnarzt, Geburtstag Oma" autocomplete="off">
+      </label>
+      <div class="chips" id="evType"></div>
+      <div class="row">
+        <label>Datum
+          <input id="evDate" type="date" required>
+        </label>
+        <label>Uhrzeit
+          <input id="evTime" type="time">
+        </label>
+      </div>
+      <div class="row">
+        <label>Wiederholen
+          <select id="evRepeat"></select>
+        </label>
+        <label>Erinnern
+          <select id="evRemind">
+            <option value="">nicht</option>
+            <option value="0">zur Startzeit</option>
+            <option value="15">15 Min vorher</option>
+            <option value="60">1 Std vorher</option>
+            <option value="180">3 Std vorher</option>
+            <option value="1440">1 Tag vorher</option>
+            <option value="2880">2 Tage vorher</option>
+            <option value="10080">1 Woche vorher</option>
+          </select>
+        </label>
+      </div>
+      <label id="evBirthWrap" hidden>Geburtsjahr (optional, für das Alter)
+        <input id="evBirthYear" inputmode="numeric" maxlength="4" placeholder="z. B. 1958">
+      </label>
+      <label>Notiz
+        <input id="evNote" placeholder="z. B. Versichertenkarte mitnehmen" autocomplete="off">
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="evDelete" hidden>Löschen</button>
+        <button type="button" class="btn" id="evIcs" hidden title="In den Handy-Kalender">📲</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="evCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ausgabe -->
+  <dialog id="expenseDialog">
+    <form id="expenseForm" method="dialog">
+      <h2 id="expDlgTitle">Ausgabe</h2>
+      <div class="row">
+        <label>Betrag (€)
+          <input id="exAmount" inputmode="decimal" required placeholder="0,00" autocomplete="off">
+        </label>
+        <label>Datum
+          <input id="exDate" type="date" required>
+        </label>
+      </div>
+      <div class="chips" id="exCategory"></div>
+      <label>Notiz
+        <input id="exNote" placeholder="z. B. Wocheneinkauf" autocomplete="off">
+      </label>
+      <label class="toggle"><input type="checkbox" id="exRepeat"> 🔁 jeden Monat (Fixkosten wie Miete, Handy, Abos)</label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="exDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="exCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Trainingsmodus -->
+  <dialog id="workoutDialog" class="cookmode workout">
+    <div class="cook-head">
+      <div><b id="woTitle"></b><div class="muted small" id="woCount"></div></div>
+      <button class="icon-sm big-x" id="woClose" aria-label="Training beenden">✕</button>
+    </div>
+    <div class="wo-progress"><i id="woBar"></i></div>
+    <div class="wo-main">
+      <div class="wo-phase" id="woPhase"></div>
+      <div class="wo-emoji" id="woEmoji"></div>
+      <div class="wo-name" id="woName"></div>
+      <div class="wo-time" id="woTime"></div>
+      <div class="wo-cues muted" id="woCues"></div>
+      <div class="wo-next muted small" id="woNext"></div>
+    </div>
+    <div class="cook-nav">
+      <button class="btn big" id="woBack">⏮</button>
+      <button class="btn big primary" id="woPause">⏸ Pause</button>
+      <button class="btn big" id="woSkip">⏭</button>
+    </div>
+  </dialog>
+
   <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 
   <!-- Kassenbon -->
@@ -313,6 +517,7 @@
     <h2>🧾 Kassenbon</h2>
     <div id="receiptStatus" class="muted small"></div>
     <div id="receiptList"></div>
+    <label class="toggle" id="receiptExpWrap"><input type="checkbox" id="receiptAsExpense" checked> 💶 <span id="receiptExpText">Als Ausgabe (Lebensmittel) buchen</span></label>
     <div class="dialog-actions">
       <span class="spacer"></span>
       <button class="btn" id="receiptCancel">Abbrechen</button>
@@ -340,6 +545,9 @@
   <script src="logic.js"></script>
   <script src="imageprep.js"></script>
   <script src="recipes.js"></script>
+  <script src="sport.js"></script>
+  <script src="planner.js"></script>
   <script src="app.js"></script>
+  <script src="alltag.js"></script>
 </body>
 </html>

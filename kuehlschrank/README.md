@@ -1,6 +1,28 @@
-# 🥬 Frischecheck – Kühlschrank & Ablaufdaten
+# 🥬 Frischecheck – Alltagshelfer
 
-Web-App (installierbar aufs Handy), mit der du deinen Vorrat im Blick behältst:
+Web-App (installierbar aufs Handy) für den Alltag. Startseite **🏠 Heute** zeigt Termine, was bald abläuft, das geplante Essen,
+den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellmenü (Produkt, Kassenbon, Einkauf, Termin, Ausgabe, Training).
+
+## 🏋️ Sport für zuhause
+- ~50 Übungen ohne Geräte mit Anleitung (Aufwärmen, Beine & Po, Bauch & Rücken, Oberkörper, Cardio, Dehnen)
+- **Workout-Generator**: Dauer (10–45 Min), Schwerpunkt, Level (Intervalle 30/30, 40/20, 45/15), **🤫 leise** ohne Sprünge
+- Klassisches **7-Minuten-Workout**
+- **Trainingsmodus**: großer Countdown, Ansage der Übungen, Pieptöne, Pause/Überspringen, Bildschirm bleibt an
+- Wochenziel, Serie (Tage in Folge), Verlauf
+
+## 📅 Kalender
+- Monatsansicht, Termine mit Art (Arzt, Geburtstag, Müllabfuhr …), Uhrzeit, Notiz
+- Wiederholung: wöchentlich, alle 2 Wochen (Müll), monatlich, jährlich (Geburtstage mit Alter)
+- Ablaufdaten, Essensplan und Trainings erscheinen automatisch
+- Erinnerungen, solange die App offen ist; **📲 Export in den Handy-Kalender** (.ics, inkl. Wiederholung und Erinnerung)
+
+## 💶 Ausgaben
+- Schnell erfassen: „12,50 Tanken“ eintippen oder sagen – Kategorie wird erkannt
+- Monatsübersicht mit Kategorien, Vergleich zum Vormonat, **Budget** mit „pro Tag noch …“
+- **Fixkosten** (Miete, Abos) monatlich automatisch, CSV-Export für Excel
+- Kassenbon-Summe wird automatisch als Lebensmittel-Ausgabe gebucht
+
+## 🧊 Küche & Einkauf
 
 - **Barcode scannen** → Produktname, Bild und Zutat kommen automatisch von [Open Food Facts](https://world.openfoodfacts.org).
   Unbekannte Produkte tippst du einmal ein – beim nächsten Scan sind sie gemerkt.
@@ -43,6 +65,9 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `logic.js` | Datumserkennung, Ablauf-Status, Zuordnung Produkt → Zutat, Rezept-Bewertung, Haltbarkeit nach Öffnen/Einfrieren, Statistik |
 | `imageprep.js` | Bildaufbereitung für die Texterkennung (Punktmatrix, Kontrast, Hell/Dunkel) |
 | `recipes.js` | ~45 Rezepte |
+| `sport.js` | Übungen, Workout-Generator, Trainings-Statistik |
+| `planner.js` | Kalender (Wiederholungen, Erinnerungen, iCal) und Ausgaben (Kategorien, Budget, CSV) |
+| `alltag.js` | Oberfläche für Heute, Sport, Kalender, Ausgaben |
 | `sw.js`, `manifest.webmanifest` | Offline & Installation |
 
 Tests: `npm test` (im Hauptordner).

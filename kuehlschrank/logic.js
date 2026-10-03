@@ -621,6 +621,17 @@
     return out;
   }
 
+  /** Endbetrag eines Kassenbons ("SUMME EUR 19,98", "ZU ZAHLEN 19,98") oder null. */
+  function parseReceiptTotal(text) {
+    for (const raw of String(text || '').split('\n')) {
+      const line = norm(raw);
+      if (!/(summe|zu zahlen|gesamtbetrag|total|betrag)/.test(line) || /zwischen/.test(line)) continue;
+      const m = raw.match(/(\d{1,4}[,.]\d{2})\s*(?:€|eur)?\s*$/i);
+      if (m) return parseFloat(m[1].replace(',', '.'));
+    }
+    return null;
+  }
+
   // ---------- Kochmodus ----------
 
   /** Zeitangaben in einem Rezeptschritt: "20 Min.", "1,5 Std.", "10–15 Minuten" -> Minuten (größerer Wert) */
@@ -662,6 +673,6 @@
     parseDates, parseDateCandidates, parseTypedDate, createDateVoter, cleanOcr, norm, INGREDIENTS, detectIngredient, suggestExpiry, suggestRecipes,
     CARE, afterOpening, afterFreezing, expiredAdvice, isVegetarian, missingIngredients, shoppingText,
     nextDays, monthlyStats, topWasted, parsePrice, formatEuro,
-    parseSpokenList, parseSpokenItem, relativeDate, parseReceipt, findTimers, formatTimer, encodeShare, decodeShare,
+    parseSpokenList, parseSpokenItem, relativeDate, parseReceipt, parseReceiptTotal, findTimers, formatTimer, encodeShare, decodeShare,
   };
 });

@@ -19,6 +19,8 @@
   const defaults = () => ({
     items: [], products: {}, stats: { consumed: 0, wasted: 0 }, lastNotified: null,
     shopping: [], favorites: [], customRecipes: [], plan: {}, history: [], staples: [],
+    events: [], expenses: [], workouts: [], notified: [],
+    settings: { weeklyGoal: 3, budget: 0, voice: true, woMinutes: 20, woFocus: 'ganz', woLevel: 1, woQuiet: false },
   });
   let state = load();
   let undoSnapshot = null;
@@ -31,7 +33,7 @@
   function load() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE));
-      if (s && Array.isArray(s.items)) return { ...defaults(), ...s };
+      if (s && Array.isArray(s.items)) return { ...defaults(), ...s, settings: { ...defaults().settings, ...(s.settings || {}) } };
     } catch (e) { /* leerer Start */ }
     return defaults();
   }
@@ -80,14 +82,22 @@
   }
 
   // ---------- Navigation ----------
+  let currentView = 'home';
+  let previousView = 'settings';
   function showView(name) {
     if (!$('#view-' + name)) return;
+    if (name !== currentView) { previousView = currentView; currentView = name; }
     $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
-    $$('.tab[data-view]').forEach((t) => t.classList.toggle('active', t.dataset.view === name));
+    $$('.tab[data-view]').forEach((t) => t.classList.toggle('active', t.dataset.view === name || (t.dataset.hub || '').split(' ').includes(name)));
     window.scrollTo(0, 0);
     render();
   }
   $$('.tab[data-view]').forEach((t) => (t.onclick = () => showView(t.dataset.view)));
+  document.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-goto]');
+    if (go) { showView(go.dataset.goto); return; }
+    if (e.target.closest('[data-back]')) showView(previousView === currentView ? 'settings' : previousView);
+  });
 
   // ---------- Rendern ----------
   function render() {
@@ -98,7 +108,9 @@
     renderStats();
     renderStaples();
     renderGuide();
+    renderHooks.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
   }
+  const renderHooks = [];
 
   function renderSummary() {
     const c = { expired: 0, today: 0, soon: 0 };
@@ -107,7 +119,7 @@
     if (c.expired) parts.push(`<span class="pill expired">${c.expired} abgelaufen</span>`);
     if (c.today) parts.push(`<span class="pill today">${c.today} heute</span>`);
     if (c.soon) parts.push(`<span class="pill soon">${c.soon} bald</span>`);
-    if (!parts.length) parts.push(`<span class="pill ok">${state.items.length} Produkt${state.items.length === 1 ? '' : 'e'} · alles frisch</span>`);
+    if (!parts.length && state.items.length) parts.push(`<span class="pill ok">${state.items.length} Produkt${state.items.length === 1 ? '' : 'e'} · alles frisch</span>`);
     $('#summary').innerHTML = parts.join('');
     const urgent = c.expired + c.today;
     $('#badgeStock').hidden = !urgent;
@@ -674,18 +686,22 @@
   // ---------- Kassenbon ----------
   const receiptDlg = $('#receiptDialog');
   let receiptItems = [];
+  let receiptTotal = 0;
   $('#receiptInput').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     e.target.value = '';
     if (!file) return;
     if (dlg.open) dlg.close();
     receiptItems = [];
+    receiptTotal = 0;
     renderReceipt();
     $('#receiptStatus').textContent = 'Lese Kassenbon … (beim ersten Mal lädt die Texterkennung, das dauert etwas)';
     receiptDlg.showModal();
     try {
       const img = await createImageBitmap(file);
-      receiptItems = (await ocrReceipt(img)).map((r) => ({ ...r, use: !!r.ingredient }));
+      const res = await ocrReceipt(img);
+      receiptTotal = res.total || Math.round(res.items.reduce((sum, r) => sum + r.price, 0) * 100) / 100;
+      receiptItems = res.items.map((r) => ({ ...r, use: !!r.ingredient }));
       $('#receiptStatus').textContent = receiptItems.length
         ? `${receiptItems.length} Produkte erkannt. Haken = kommt in den Vorrat (Namen kannst du ändern).`
         : 'Keine Produkte erkannt. Tipp: Bon glatt hinlegen, gut beleuchtet und nur den Bon fotografieren.';
@@ -702,8 +718,10 @@
         <span class="price">${L.formatEuro(r.price)}</span>
       </div>`).join('');
     const n = receiptItems.filter((r) => r.use).length;
-    $('#receiptSave').disabled = !n;
-    $('#receiptSave').textContent = n ? `${n} in den Vorrat` : 'In den Vorrat';
+    $('#receiptExpWrap').hidden = !receiptTotal;
+    $('#receiptExpText').textContent = `Bon über ${L.formatEuro(receiptTotal)} als Ausgabe (Lebensmittel) buchen`;
+    $('#receiptSave').disabled = !n && !(receiptTotal && $('#receiptAsExpense').checked);
+    $('#receiptSave').textContent = n ? `${n} in den Vorrat` : 'Ausgabe buchen';
   }
   $('#receiptList').addEventListener('change', (e) => {
     const row = e.target.closest('.receipt-row');
@@ -713,6 +731,7 @@
     else { r.name = e.target.value.trim() || r.name; r.ingredient = L.detectIngredient(r.name); }
     renderReceipt();
   });
+  $('#receiptAsExpense').addEventListener('change', renderReceipt);
   $('#receiptCancel').onclick = () => receiptDlg.close();
   $('#receiptSave').onclick = () => {
     snapshot();
@@ -726,8 +745,10 @@
       });
       if (r.ingredient) state.shopping = state.shopping.filter((s) => s.done || s.ingredient !== r.ingredient);
     }
+    const booked = receiptTotal && $('#receiptAsExpense').checked;
+    if (booked) state.expenses.push({ id: uid(), date: today(), amount: receiptTotal, category: 'lebensmittel', note: 'Einkauf (Kassenbon)', created: new Date().toISOString() });
     save(); receiptDlg.close(); render();
-    toast(`${chosen.length} Produkte im Vorrat – mit typischer Haltbarkeit. Antippen zum Anpassen.`, { label: 'Rückgängig', fn: undo });
+    toast(`${chosen.length} Produkte im Vorrat${booked ? ` · ${L.formatEuro(receiptTotal)} als Ausgabe gebucht` : ''} – mit typischer Haltbarkeit. Antippen zum Anpassen.`, { label: 'Rückgängig', fn: undo });
   };
 
   // ---------- Kochmodus ----------
@@ -800,17 +821,24 @@
     if (!timers.length) { clearInterval(timerTick); timerTick = null; }
     renderTimers();
   }
+  let audioCtx = null;
+  /** Kurze Töne (z. B. Timer, Trainingswechsel). */
+  function beep(times = 3, freq = 880, len = 0.25) {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      for (let i = 0; i < times; i++) {
+        const t = i * (len + 0.15);
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.frequency.value = freq; o.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0.25, audioCtx.currentTime + t);
+        o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + len);
+      }
+    } catch (e) { /* kein Ton */ }
+  }
   function alarm(label) {
     if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 600]);
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [0, 0.4, 0.8].forEach((t) => {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
-        g.gain.setValueAtTime(0.25, ctx.currentTime + t);
-        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.25);
-      });
-    } catch (e) { /* kein Ton */ }
+    beep();
     toast(`⏲️ Timer abgelaufen: ${label}`);
     if ('Notification' in window && Notification.permission === 'granted') {
       navigator.serviceWorker && navigator.serviceWorker.getRegistration()
@@ -873,7 +901,20 @@
       <div><b>${esc(p.name || 'Unbekanntes Produkt')}</b>${p.info ? `<div class="muted small">${esc(p.info)}</div>` : ''}</div>`;
   }
 
-  $('#btnAdd').onclick = () => openItemDialog(null);
+  const actions = {
+    product: () => openItemDialog(null),
+    receipt: () => $('#receiptInput').click(),
+    shopping: () => { showView('shopping'); setTimeout(() => $('#shopInput').focus(), 50); },
+  };
+  $('#btnAdd').onclick = () => $('#actionSheet').showModal();
+  $('#sheetCancel').onclick = () => $('#actionSheet').close();
+  $('#actionSheet').addEventListener('click', (e) => {
+    if (e.target === $('#actionSheet')) { $('#actionSheet').close(); return; } // Tipp auf den Hintergrund
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    $('#actionSheet').close();
+    (actions[b.dataset.action] || (() => {}))();
+  });
   $('#btnCancel').onclick = () => dlg.close();
   $('#btnDelete').onclick = () => {
     snapshot();
@@ -1279,14 +1320,16 @@
     await worker.setParameters({ tessedit_char_whitelist: '', tessedit_pageseg_mode: '4' });
     try {
       let best = [];
+      let total = null;
       const full = { x: 0, y: 0, w: img.width, h: img.height };
       for (const v of [{ width: Math.min(1800, Math.max(1000, img.width)), blur: 0, plain: true }, { width: Math.min(1800, Math.max(1000, img.width)), blur: 0 }]) {
         const { text } = await ocrRect(img, full, v);
         const items = L.parseReceipt(text);
+        total = total || L.parseReceiptTotal(text);
         if (items.length > best.length) best = items;
         if (best.length >= 3) break;
       }
-      return best;
+      return { items: best, total };
     } finally {
       await worker.setParameters({ tessedit_char_whitelist: DATE_WHITELIST, tessedit_pageseg_mode: '6' });
     }
@@ -1402,6 +1445,23 @@
   }
   window.addEventListener('storage', (e) => { if (e.key === STORE) { state = load(); render(); } });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); checkNotifications(); } });
+  /** Schnittstelle für die Bereiche Sport, Kalender, Ausgaben und Heute (alltag.js). */
+  window.App = {
+    get state() { return state; },
+    L, save, render, toast, esc, uid, today, showView, openItemDialog, findRecipe, sortedItems, ingEmoji, ingLabel,
+    beep, listen: SpeechRec ? listen : null, onRender: (fn) => renderHooks.push(fn), actions,
+    get view() { return currentView; },
+    notify: async (title, body, tag) => {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+      try {
+        const reg = navigator.serviceWorker && (await navigator.serviceWorker.getRegistration());
+        if (reg) await reg.showNotification(title, { body, icon: 'icon.svg', tag });
+        else new Notification(title, { body, icon: 'icon.svg', tag });
+        return true;
+      } catch (e) { return false; }
+    },
+  };
+
   render();
   checkNotifications();
 
