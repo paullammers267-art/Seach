@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Frischecheck</title>
+  <meta name="description" content="Ablaufdaten scannen, Vorrat im Blick behalten, passende Rezepte finden.">
+  <meta name="theme-color" content="#2f855a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>🥬 Frischecheck</h1>
+    <div id="summary" class="summary"></div>
+  </header>
+
+  <main>
+    <!-- Vorrat -->
+    <section id="view-stock" class="view active">
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Vorrat durchsuchen …" autocomplete="off">
+        <div class="chips" id="locFilter">
+          <button class="chip active" data-loc="">Alle</button>
+          <button class="chip" data-loc="kuehlschrank">🧊 Kühlschrank</button>
+          <button class="chip" data-loc="gefrierfach">❄️ Gefrierfach</button>
+          <button class="chip" data-loc="vorrat">🗄️ Vorrat</button>
+        </div>
+      </div>
+      <div id="stockList"></div>
+    </section>
+
+    <!-- Rezepte -->
+    <section id="view-recipes" class="view">
+      <div id="urgentBox"></div>
+      <label class="toggle"><input type="checkbox" id="showAll"> auch Rezepte zeigen, bei denen mehr fehlt</label>
+      <div id="recipeList"></div>
+    </section>
+
+    <!-- Einstellungen -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <h2>Erinnerungen</h2>
+        <p class="muted">Beim Öffnen der App wirst du benachrichtigt, wenn etwas heute oder morgen abläuft.</p>
+        <button id="btnNotify" class="btn">🔔 Benachrichtigungen erlauben</button>
+        <p id="notifyState" class="muted small"></p>
+      </div>
+      <div class="card">
+        <h2>Statistik</h2>
+        <div id="stats"></div>
+      </div>
+      <div class="card">
+        <h2>Daten</h2>
+        <p class="muted">Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherung kannst du den Vorrat auf ein anderes Gerät übertragen.</p>
+        <div class="row">
+          <button id="btnExport" class="btn">⬇️ Sicherung speichern</button>
+          <label class="btn">⬆️ Sicherung laden<input id="importFile" type="file" accept="application/json" hidden></label>
+        </div>
+        <button id="btnClear" class="btn danger">Alles löschen</button>
+      </div>
+      <p class="muted small center">Produktdaten: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL) ·
+        Texterkennung: Tesseract.js · Barcodes: ZXing</p>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-view="stock"><span>🧊</span>Vorrat</button>
+    <button class="tab add" id="btnAdd" aria-label="Produkt hinzufügen"><span>＋</span>Scannen</button>
+    <button class="tab" data-view="recipes"><span>🍳</span>Rezepte</button>
+    <button class="tab" data-view="settings"><span>⚙️</span>Mehr</button>
+  </nav>
+
+  <!-- Produkt hinzufügen / bearbeiten -->
+  <dialog id="itemDialog">
+    <form id="itemForm" method="dialog">
+      <h2 id="itemTitle">Produkt hinzufügen</h2>
+
+      <div class="scanrow">
+        <button type="button" class="btn big" id="btnScanBarcode">📷 Barcode scannen</button>
+        <button type="button" class="btn big" id="btnScanDate">📅 Datum scannen</button>
+      </div>
+
+      <div id="productPreview" class="preview" hidden></div>
+
+      <label>Produkt
+        <input id="fName" required placeholder="z. B. Vollmilch 1 l" autocomplete="off">
+      </label>
+      <label>Zutat (für Rezepte)
+        <select id="fIngredient"></select>
+      </label>
+      <label>Ablaufdatum (MHD / Verbrauchsdatum)
+        <input id="fExpiry" type="date">
+      </label>
+      <div class="chips" id="quickDates">
+        <button type="button" class="chip" data-days="1">morgen</button>
+        <button type="button" class="chip" data-days="3">+3 Tage</button>
+        <button type="button" class="chip" data-days="7">+1 Woche</button>
+        <button type="button" class="chip" data-days="14">+2 Wochen</button>
+        <button type="button" class="chip" data-days="30">+1 Monat</button>
+        <button type="button" class="chip" data-days="suggest">typisch</button>
+        <button type="button" class="chip" data-days="none">ohne</button>
+      </div>
+      <div id="dateCandidates" class="chips"></div>
+      <div class="row">
+        <label>Menge
+          <input id="fQty" type="number" min="1" value="1" inputmode="numeric">
+        </label>
+        <label>Ort
+          <select id="fLocation">
+            <option value="kuehlschrank">🧊 Kühlschrank</option>
+            <option value="gefrierfach">❄️ Gefrierfach</option>
+            <option value="vorrat">🗄️ Vorrat</option>
+          </select>
+        </label>
+      </div>
+      <input id="fBarcode" type="hidden">
+      <input id="fImage" type="hidden">
+
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="btnDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnCancel">Abbrechen</button>
+        <button type="submit" class="btn primary" id="btnSave">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Kamera -->
+  <div id="scanner" class="scanner" hidden>
+    <video id="video" playsinline muted></video>
+    <div class="frame" id="scanFrame"></div>
+    <div class="scan-hint" id="scanHint"></div>
+    <div class="scan-actions">
+      <label class="btn">🖼️ Foto<input id="photoInput" type="file" accept="image/*" capture="environment" hidden></label>
+      <button class="btn primary" id="btnCapture" hidden>Aufnehmen</button>
+      <button class="btn" id="btnTorch" hidden>🔦</button>
+      <button class="btn" id="btnCloseScan">Schließen</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="logic.js"></script>
+  <script src="recipes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

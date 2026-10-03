@@ -1,5 +1,7 @@
 # Beförderungsunternehmen in der Umgebung
 
+> Ebenfalls in diesem Repository: **[🥬 Frischecheck](kuehlschrank/)** – Ablaufdaten scannen, Kühlschrank-Vorrat verwalten, passende Rezepte finden.
+
 Web-App, die alle Beförderungsunternehmen rund um einen Standort auf einer Karte und als Liste anzeigt:
 
 - 🚕 Taxi & Mietwagen · 🚌 Bus & Reisen · 🚑 Krankentransport · 📦 Umzüge

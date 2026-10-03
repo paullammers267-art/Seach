@@ -1,0 +1,14 @@
+{
+  "name": "Frischecheck – Kühlschrank & Ablaufdaten",
+  "short_name": "Frischecheck",
+  "description": "Ablaufdaten scannen, Vorrat im Blick behalten, passende Rezepte finden.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f3",
+  "theme_color": "#2f855a",
+  "lang": "de",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
