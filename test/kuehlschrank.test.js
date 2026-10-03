@@ -87,3 +87,33 @@ test('suggestExpiry nutzt typische Haltbarkeit', () => {
   assert.equal(L.suggestExpiry('hackfleisch', TODAY), '2026-10-04');
   assert.equal(L.suggestExpiry('', TODAY), '2026-10-10');
 });
+
+test('createDateVoter übernimmt nur sichere Ergebnisse', () => {
+  let v = L.createDateVoter(TODAY);
+  assert.equal(v.add('a5. 10. 30'), null);             // einmal gelesen, ohne MHD: noch unsicher
+  assert.equal(v.add('05.10.26 L7'), null);
+  assert.deepEqual(v.add('05.10.26 14:34')[0], '2026-10-05'); // zweimal gelesen
+  v = L.createDateVoter(TODAY);
+  assert.deepEqual(v.add('MHD 05.10.2026'), ['2026-10-05']); // direkt hinter MHD
+  v = L.createDateVoter(TODAY);
+  v.add('xx 07.12.26');
+  assert.deepEqual(v.best(), ['2026-12-07']);
+});
+
+test('parseDates verwirft Daten mehr als 5 Jahre in der Zukunft', () => {
+  assert.deepEqual(L.parseDates('05.10.34', TODAY), []);
+  assert.deepEqual(L.parseDates('MHD 05.10.2029', TODAY), ['2029-10-05']);
+});
+
+test('parseTypedDate versteht schnelle Eingaben', () => {
+  assert.equal(L.parseTypedDate('051026', TODAY), '2026-10-05');
+  assert.equal(L.parseTypedDate('05102026', TODAY), '2026-10-05');
+  assert.equal(L.parseTypedDate('5.10.26', TODAY), '2026-10-05');
+  assert.equal(L.parseTypedDate('05.10.2026', TODAY), '2026-10-05');
+  assert.equal(L.parseTypedDate('2010', TODAY), '2026-10-20');   // TTMM, dieses Jahr
+  assert.equal(L.parseTypedDate('0110', TODAY), '2027-10-01');   // schon vorbei -> nächstes Jahr
+  assert.equal(L.parseTypedDate('5.10.', TODAY), '2026-10-05');
+  assert.equal(L.parseTypedDate('31.02.26', TODAY), null);
+  assert.equal(L.parseTypedDate('05102', TODAY), null);
+  assert.equal(L.parseTypedDate('', TODAY), null);
+});

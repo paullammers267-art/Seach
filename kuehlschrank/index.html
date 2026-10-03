@@ -91,9 +91,15 @@
       <label>Zutat (für Rezepte)
         <select id="fIngredient"></select>
       </label>
-      <label>Ablaufdatum (MHD / Verbrauchsdatum)
-        <input id="fExpiry" type="date">
-      </label>
+      <div class="row">
+        <label>Datum eintippen
+          <input id="fExpiryText" inputmode="numeric" placeholder="TTMMJJ, z. B. 051026" autocomplete="off" maxlength="10">
+        </label>
+        <label>oder wählen
+          <input id="fExpiry" type="date">
+        </label>
+      </div>
+      <div id="expiryHint" class="muted small"></div>
       <div class="chips" id="quickDates">
         <button type="button" class="chip" data-days="1">morgen</button>
         <button type="button" class="chip" data-days="3">+3 Tage</button>
@@ -144,6 +150,7 @@
   <div id="toast" class="toast" hidden></div>
 
   <script src="logic.js"></script>
+  <script src="imageprep.js"></script>
   <script src="recipes.js"></script>
   <script src="app.js"></script>
 </body>

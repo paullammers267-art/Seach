@@ -242,7 +242,7 @@
     $('#itemTitle').textContent = item ? 'Produkt bearbeiten' : 'Produkt hinzufügen';
     $('#fName').value = item ? item.name : '';
     ingSelect.value = item ? item.ingredient || '' : '';
-    $('#fExpiry').value = item ? item.expiry || '' : '';
+    setExpiry(item ? item.expiry || '' : '');
     $('#fQty').value = item ? item.qty : 1;
     $('#fLocation').value = item ? item.location : (filterLoc || 'kuehlschrank');
     $('#fBarcode').value = item ? item.barcode || '' : '';
@@ -278,22 +278,37 @@
   });
   ingSelect.addEventListener('change', () => (ingredientTouched = true));
 
+  /** Ablaufdatum setzen und beide Felder (Eintippen + Datumsauswahl) synchron halten. */
+  function setExpiry(iso) {
+    $('#fExpiry').value = iso || '';
+    $('#fExpiryText').value = iso ? L.formatDate(iso) : '';
+    $('#expiryHint').textContent = iso ? L.statusText(iso) : '';
+  }
+  $('#fExpiry').addEventListener('change', () => setExpiry($('#fExpiry').value));
+  $('#fExpiryText').addEventListener('input', () => {
+    const raw = $('#fExpiryText').value;
+    const iso = L.parseTypedDate(raw);
+    $('#fExpiry').value = iso || '';
+    $('#expiryHint').textContent = iso ? `${L.formatDate(iso)} · ${L.statusText(iso)}` : (raw.trim() ? 'z. B. 051026 für 05.10.2026' : '');
+  });
+  $('#fExpiryText').addEventListener('blur', () => { const iso = L.parseTypedDate($('#fExpiryText').value); if (iso) setExpiry(iso); });
+
   $('#quickDates').addEventListener('click', (e) => {
     const b = e.target.closest('.chip');
     if (!b) return;
     const d = b.dataset.days;
-    if (d === 'none') $('#fExpiry').value = '';
-    else if (d === 'suggest') $('#fExpiry').value = L.suggestExpiry(ingSelect.value);
+    if (d === 'none') setExpiry('');
+    else if (d === 'suggest') setExpiry(L.suggestExpiry(ingSelect.value));
     else {
       const dt = new Date();
       dt.setDate(dt.getDate() + Number(d));
-      $('#fExpiry').value = L.toISODate(dt);
+      setExpiry(L.toISODate(dt));
     }
   });
   $('#dateCandidates').addEventListener('click', (e) => {
     const b = e.target.closest('.chip');
     if (!b) return;
-    $('#fExpiry').value = b.dataset.iso;
+    setExpiry(b.dataset.iso);
     $$('#dateCandidates .chip').forEach((c) => c.classList.toggle('active', c === b));
   });
 
@@ -430,13 +445,31 @@
 
   /** Schneidet den mittleren Bereich (wo der Rahmen ist) aus Video oder Bild aus. */
   function cropToCanvas(src, w, h, fw, fh, maxW) {
-    const cw = Math.round(w * fw), ch = Math.round(h * fh);
-    const scale = Math.min(1, maxW / cw);
-    work.width = Math.round(cw * scale);
-    work.height = Math.round(ch * scale);
+    return rectToCanvas(src, { x: (w - w * fw) / 2, y: (h - h * fh) / 2, w: w * fw, h: h * fh }, maxW, false);
+  }
+
+  /** Zeichnet einen Bildausschnitt auf die Arbeitsfläche, skaliert auf `width` (bei upscale auch vergrößert). */
+  function rectToCanvas(src, r, width, upscale = true) {
+    const scale = upscale ? width / r.w : Math.min(1, width / r.w);
+    work.width = Math.max(1, Math.round(r.w * scale));
+    work.height = Math.max(1, Math.round(r.h * scale));
     const ctx = work.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(src, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, work.width, work.height);
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, r.x, r.y, r.w, r.h, 0, 0, work.width, work.height);
     return work;
+  }
+
+  /** Bereich des Videobilds, der im Rahmen auf dem Bildschirm zu sehen ist (object-fit: cover), plus etwas Rand. */
+  function frameRect() {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const v = video.getBoundingClientRect(), f = $('#scanFrame').getBoundingClientRect();
+    const scale = Math.max(v.width / vw, v.height / vh);
+    const offX = (v.width - vw * scale) / 2, offY = (v.height - vh * scale) / 2;
+    let x = (f.left - v.left - offX) / scale, y = (f.top - v.top - offY) / scale;
+    let w = f.width / scale, h = f.height / scale;
+    x -= w * 0.08; w *= 1.16; y -= h * 0.25; h *= 1.5;
+    x = Math.max(0, x); y = Math.max(0, y);
+    return { x, y, w: Math.min(w, vw - x), h: Math.min(h, vh - y) };
   }
 
   async function initBarcode() {
@@ -506,57 +539,84 @@
     return ocrWorker;
   }
 
-  /** Graustufen + Kontrast verbessert die Texterkennung auf glänzenden Verpackungen deutlich. */
-  function enhance(canvas) {
+  /** Erkennt Text in einem Bildausschnitt mit einer Aufbereitungs-Variante (siehe imageprep.js). */
+  async function ocrRect(source, rect, variant) {
+    const worker = await initOcr();
+    const canvas = rectToCanvas(source, rect, variant.width);
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = img.data;
-    let min = 255, max = 0;
-    for (let i = 0; i < d.length; i += 4) {
-      const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-      d[i] = g;
-      if (g < min) min = g;
-      if (g > max) max = g;
-    }
-    const range = Math.max(1, max - min);
-    for (let i = 0; i < d.length; i += 4) {
-      const v = ((d[i] - min) / range) * 255;
-      d[i] = d[i + 1] = d[i + 2] = v;
-    }
+    ImagePrep.prepare(img.data, canvas.width, canvas.height, variant);
     ctx.putImageData(img, 0, 0);
-    return canvas;
-  }
-
-  async function ocrDates(source, w, h, fw, fh) {
-    const worker = await initOcr();
-    const canvas = enhance(cropToCanvas(source, w, h, fw, fh, 1400));
     const { data } = await worker.recognize(canvas);
-    return { dates: L.parseDates(data.text), text: data.text };
+    if (window.__ocrLog) window.__ocrLog.push({ variant, text: data.text, dates: L.parseDates(data.text) });
+    return { text: data.text, lines: data.lines || [], scale: canvas.width / rect.w };
   }
 
   async function dateLoop() {
     try { await initOcr(); } catch (e) { setHint('Texterkennung konnte nicht geladen werden (offline?). Datum bitte von Hand eingeben.'); return; }
     setHint('Ablaufdatum in den Rahmen halten …');
     let tries = 0;
+    let voter = L.createDateVoter();
     while (scanning && scanMode === 'date') {
-      if (video.readyState >= 2) {
-        const { dates, text } = await ocrDates(video, video.videoWidth, video.videoHeight, 0.8, 0.3);
-        if (!scanning) return;
-        if (dates.length) { acceptDates(dates); return; }
+      if (video.readyState >= 2 && video.videoWidth) {
+        const variant = ImagePrep.VARIANTS[tries % ImagePrep.VARIANTS.length];
+        const { text } = await ocrRect(video, frameRect(), variant);
+        if (!scanning || scanMode !== 'date') return;
+        const sure = voter.add(text);
+        if (sure) { acceptDates(sure); return; }
         tries++;
+        // nach zwei Runden durch alle Varianten das Beste nehmen, sonst neu zählen (Kamera bewegt)
+        if (tries % (ImagePrep.VARIANTS.length * 2) === 0) {
+          if (voter.best().length) { acceptDates(voter.best()); return; }
+          voter = L.createDateVoter();
+        }
         const seen = text.replace(/\s+/g, ' ').trim().slice(0, 40);
-        setHint(tries > 4
-          ? 'Noch nichts erkannt. Tipp: näher ran, Licht an 🔦, oder Datum unten von Hand wählen.'
+        setHint(tries > 12
+          ? 'Noch nichts erkannt. Tipp: näher ran, Licht an 🔦, 🖼️ Foto machen oder Datum unten eintippen.'
           : 'Suche Datum …' + (seen ? ` (lese: „${seen}“)` : ''));
       }
-      await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 150));
     }
+  }
+
+  /**
+   * Datum in einem Foto suchen: erst das ganze Bild, dann gezielt die Textzeilen mit Ziffern
+   * (vergrößert und in allen Varianten) – so werden auch kleine Daten auf großen Fotos gefunden.
+   */
+  async function ocrPhoto(img, onProgress) {
+    const full = { x: 0, y: 0, w: img.width, h: img.height };
+    const voter = L.createDateVoter();
+    const first = await ocrRect(img, full, { width: Math.min(2000, img.width), blur: 0, plain: true });
+    let sure = voter.add(first.text);
+    if (sure) return sure;
+    const second = await ocrRect(img, full, { width: Math.min(2000, img.width), blur: 0 });
+    if ((sure = voter.add(second.text))) return sure;
+    first.lines = first.lines.concat(second.lines);
+    const regions = [];
+    for (const line of first.lines) {
+      if (!/\d.*\d/.test(line.text)) continue;
+      const b = line.bbox, s = first.scale;
+      const h = (b.y1 - b.y0) / s;
+      // großzügig erweitern: die Zeilenerkennung schneidet bei schwachem Druck oft Teile ab
+      const x = Math.max(0, b.x0 / s - 3 * h), y = Math.max(0, b.y0 / s - h);
+      regions.push({ x, y, w: Math.min(img.width - x, (b.x1 - b.x0) / s + 6 * h), h: Math.min(img.height - y, h * 3) });
+    }
+    // Falls Tesseract gar keine Zeilen gefunden hat: Bild in überlappende Streifen teilen
+    if (!regions.length) for (let i = 0; i < 4; i++) regions.push({ x: 0, y: img.height * i * 0.25 - (i ? img.height * 0.05 : 0), w: img.width, h: img.height * 0.3 });
+    const jobs = [];
+    for (const r of regions.slice(0, 4)) for (const v of ImagePrep.VARIANTS) jobs.push([r, { ...v, width: Math.min(1400, Math.max(600, v.width)) }]);
+    for (let i = 0; i < jobs.length; i++) {
+      if (onProgress) onProgress(i + 1, jobs.length);
+      const { text } = await ocrRect(img, ...jobs[i]);
+      if ((sure = voter.add(text))) return sure;
+    }
+    return voter.best();
   }
 
   function acceptDates(dates) {
     if (navigator.vibrate) navigator.vibrate(80);
     closeScanner();
-    $('#fExpiry').value = dates[0];
+    setExpiry(dates[0]);
     const cands = dates.slice(0, 4);
     $('#dateCandidates').innerHTML = cands.length > 1
       ? '<span class="muted small">Erkannt:</span>' + cands.map((d, i) => `<button type="button" class="chip ${i === 0 ? 'active' : ''}" data-iso="${d}">${L.formatDate(d)}</button>`).join('')
@@ -589,8 +649,14 @@
     } else {
       setHint('Lese Datum aus dem Foto …');
       try {
-        const { dates } = await ocrDates(img, img.width, img.height, 1, 1);
-        if (dates.length) acceptDates(dates); else setHint('Im Foto wurde kein Datum gefunden. Tipp: Foto nah am Datum aufnehmen.');
+        const wasLive = scanning;
+        scanning = false; // Live-Erkennung pausieren, damit das Foto schneller geht
+        const dates = await ocrPhoto(img, (i, n) => setHint(`Lese Datum aus dem Foto … (${i}/${n})`));
+        if (dates.length) acceptDates(dates);
+        else {
+          setHint('Im Foto wurde kein Datum gefunden. Tipp: Foto nah am Datum aufnehmen oder Datum eintippen.');
+          if (wasLive && scanMode === 'date') { scanning = true; dateLoop(); }
+        }
       } catch (err) { setHint('Texterkennung nicht verfügbar (offline?).'); }
     }
   });

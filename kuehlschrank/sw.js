@@ -1,6 +1,6 @@
 /* Offline-Unterstützung: App-Dateien zwischenspeichern, Netzwerk bevorzugen. */
-const CACHE = 'frischecheck-v2';
-const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'recipes.js', 'app.js', 'icon.svg', 'manifest.webmanifest'];
+const CACHE = 'frischecheck-v3';
+const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'app.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));

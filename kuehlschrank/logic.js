@@ -122,6 +122,11 @@
    * Daten nach "MHD"/"verbrauchen bis" etc. werden bevorzugt, sonst das späteste plausible Datum.
    */
   function parseDates(text, today = new Date()) {
+    return parseDateCandidates(text, today).map((f) => f.iso);
+  }
+
+  /** Wie parseDates, aber mit Details: { iso, keyword (stand hinter MHD o. ä.), precise (mit Tag) }. */
+  function parseDateCandidates(text, today = new Date()) {
     if (!text) return [];
     const src = cleanOcr(String(text));
     const lower = src.toLowerCase().replace(/ä/g, 'ae');
@@ -129,7 +134,7 @@
     const add = (dt, index, precise) => {
       if (!dt) return;
       const diff = (startOfDay(dt) - startOfDay(today)) / DAY;
-      if (diff < -366 || diff > 366 * 10) return; // unplausibel
+      if (diff < -366 || diff > 366 * 5) return; // unplausibel
       const before = lower.slice(Math.max(0, index - 30), index);
       found.push({ iso: toISODate(dt), keyword: KEYWORDS.test(before), precise, index });
     };
@@ -179,8 +184,49 @@
       .sort((a, b) =>
         (b.keyword - a.keyword) ||
         (b.precise - a.precise) ||
-        (a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0))
-      .map((f) => f.iso);
+        (a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0));
+  }
+
+  /** Eingetipptes Datum: "051026", "05102026", "0510", "5.10.26", "5.10." -> ISO (oder null). */
+  function parseTypedDate(str, today = new Date()) {
+    const s = String(str || '').trim();
+    let d, m, y;
+    if (/[^\d\s]/.test(s)) {
+      const p = s.split(/[^\d]+/).filter(Boolean);
+      if (p.length < 2) return null;
+      [d, m, y] = p;
+    } else {
+      const n = s.replace(/\s/g, '');
+      if (n.length === 4) { d = n.slice(0, 2); m = n.slice(2); }
+      else if (n.length === 6 || n.length === 8) { d = n.slice(0, 2); m = n.slice(2, 4); y = n.slice(4); }
+      else return null;
+    }
+    if (y !== undefined && y.length !== 2 && y.length !== 4) return null;
+    let year = y ? fullYear(y) : today.getFullYear();
+    let dt = validDate(year, +m, +d);
+    if (dt && !y && dt < startOfDay(today)) dt = validDate(year + 1, +m, +d);
+    return dt ? toISODate(dt) : null;
+  }
+
+  /**
+   * Sammelt Erkennungen über mehrere Kamerabilder/Varianten, weil die Texterkennung sich
+   * gelegentlich verliest (z. B. 26 -> 34). add() liefert die Daten (bestes zuerst), sobald ein
+   * Ergebnis sicher ist: direkt hinter "MHD"/"haltbar bis" oder mindestens zweimal gelesen.
+   */
+  function createDateVoter(today = new Date()) {
+    const score = new Map();
+    const ranked = () => [...score.keys()].sort((a, b) => score.get(b) - score.get(a));
+    return {
+      add(text) {
+        const c = parseDateCandidates(text, today);
+        // nur Monat/Jahr (z. B. "11.2026") zählt weniger – oft ist es ein abgeschnittenes Datum
+        c.forEach((f, i) => score.set(f.iso, (score.get(f.iso) || 0) + (i === 0 ? 2 : 1) * (f.precise ? 1 : 0.5)));
+        if (c[0] && c[0].keyword && c[0].precise) return [c[0].iso, ...ranked().filter((d) => d !== c[0].iso)];
+        const r = ranked();
+        return r.length && score.get(r[0]) >= 4 ? r : null;
+      },
+      best: ranked,
+    };
   }
 
   // ---------- Zutaten ----------
@@ -328,6 +374,6 @@
 
   return {
     toISODate, fromISODate, daysUntil, status, statusText, formatDate,
-    parseDates, cleanOcr, norm, INGREDIENTS, detectIngredient, suggestExpiry, suggestRecipes,
+    parseDates, parseDateCandidates, parseTypedDate, createDateVoter, cleanOcr, norm, INGREDIENTS, detectIngredient, suggestExpiry, suggestRecipes,
   };
 });

@@ -106,7 +106,8 @@ input:focus, select:focus { outline: 2px solid var(--primary); outline-offset: -
 .btn.active { background: var(--soon); color: #000; }
 .link { background: none; border: 0; color: var(--primary); font: inherit; font-weight: 700; cursor: pointer; padding: 0 0 0 8px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-.row > label { flex: 1; min-width: 120px; }
+.row > label { flex: 1; min-width: 0; }
+input[type=date] { min-width: 0; -webkit-appearance: none; appearance: none; min-height: 44px; }
 .spacer { flex: 1; }
 
 .card {
