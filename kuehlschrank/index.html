@@ -28,16 +28,66 @@
           <button class="chip" data-loc="kuehlschrank">🧊 Kühlschrank</button>
           <button class="chip" data-loc="gefrierfach">❄️ Gefrierfach</button>
           <button class="chip" data-loc="vorrat">🗄️ Vorrat</button>
+          <button class="chip" data-loc="haushalt">🧴 Bad &amp; Haushalt</button>
+        </div>
+        <div class="row tight">
+          <select id="sortBy" aria-label="Sortierung">
+            <option value="expiry">Sortieren: Ablaufdatum</option>
+            <option value="name">Sortieren: Name</option>
+            <option value="added">Sortieren: zuletzt hinzugefügt</option>
+            <option value="location">Sortieren: Ort</option>
+          </select>
         </div>
       </div>
       <div id="stockList"></div>
     </section>
 
+    <!-- Einkaufsliste -->
+    <section id="view-shopping" class="view">
+      <form id="shopForm" class="addrow" autocomplete="off">
+        <input id="shopInput" placeholder="Was brauchst du? z. B. Milch" list="shopSuggest">
+        <datalist id="shopSuggest"></datalist>
+        <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
+      </form>
+      <div id="shopSuggestions"></div>
+      <div id="shopList"></div>
+      <div class="row" id="shopActions">
+        <button class="btn" id="btnShopToStock">📥 Gekauftes in den Vorrat</button>
+        <button class="btn" id="btnShopShare">📤 Teilen</button>
+        <button class="btn" id="btnShopClear">Erledigte löschen</button>
+      </div>
+    </section>
+
     <!-- Rezepte -->
     <section id="view-recipes" class="view">
-      <div id="urgentBox"></div>
-      <label class="toggle"><input type="checkbox" id="showAll"> auch Rezepte zeigen, bei denen mehr fehlt</label>
-      <div id="recipeList"></div>
+      <div class="segmented" id="recipeTabs">
+        <button class="active" data-sub="suggest">💡 Vorschläge</button>
+        <button data-sub="plan">📅 Woche</button>
+        <button data-sub="all">📚 Alle</button>
+      </div>
+      <div id="recipeFilters" class="toolbar">
+        <input id="recipeSearch" type="search" placeholder="Rezept suchen …" autocomplete="off">
+        <div class="chips">
+          <button class="chip" data-filter="fav">⭐ Favoriten</button>
+          <button class="chip" data-filter="veg">🥕 Vegetarisch</button>
+          <button class="chip" data-filter="quick">⚡ bis 20 Min</button>
+          <button class="chip" data-filter="own">✍️ Eigene</button>
+        </div>
+      </div>
+      <div id="sub-suggest" class="sub active">
+        <div id="urgentBox"></div>
+        <label class="toggle"><input type="checkbox" id="showAll"> auch Rezepte zeigen, bei denen mehr fehlt</label>
+        <div id="recipeList"></div>
+      </div>
+      <div id="sub-plan" class="sub">
+        <p class="muted small">Plane die nächsten Tage – fehlende Zutaten kommen mit einem Tipp auf die Einkaufsliste.</p>
+        <div id="planList"></div>
+        <button class="btn" id="btnPlanShop">🛒 Fehlendes einkaufen</button>
+      </div>
+      <div id="sub-all" class="sub">
+        <button class="btn" id="btnNewRecipe">✍️ Eigenes Rezept anlegen</button>
+        <div id="allRecipeList"></div>
+      </div>
     </section>
 
     <!-- Einstellungen -->
@@ -51,6 +101,41 @@
       <div class="card">
         <h2>Statistik</h2>
         <div id="stats"></div>
+      </div>
+      <div class="card">
+        <h2>Immer im Haus</h2>
+        <p class="muted small">Wähle, was du immer da haben willst. Ist es aufgebraucht, landet es automatisch auf der Einkaufsliste.</p>
+        <div class="chips" id="staples"></div>
+      </div>
+      <div class="card">
+        <h2>Ratgeber</h2>
+        <details class="guide">
+          <summary>MHD oder Verbrauchsdatum – was ist der Unterschied?</summary>
+          <p><b>Mindestens haltbar bis (MHD):</b> Bis dahin garantiert der Hersteller Geschmack und Qualität. Danach ist das Lebensmittel meist noch gut – <b>schauen, riechen, probieren</b>. Gilt z. B. für Joghurt, Käse, Nudeln, Konserven.</p>
+          <p><b>Zu verbrauchen bis:</b> Steht auf leicht verderblichem Frischfleisch, Hackfleisch, Geflügel, Fisch und Rohmilch. Danach <b>nicht mehr essen</b> – auch wenn es noch gut aussieht.</p>
+        </details>
+        <details class="guide">
+          <summary>Wo im Kühlschrank liegt was richtig?</summary>
+          <ul>
+            <li><b>Oben (ca. 8 °C):</b> Käse, Reste, Geöffnetes</li>
+            <li><b>Mitte (ca. 5 °C):</b> Milchprodukte, Joghurt, Quark</li>
+            <li><b>Unten über dem Gemüsefach (ca. 2 °C):</b> Fleisch, Wurst, Fisch – am kältesten</li>
+            <li><b>Gemüsefach:</b> Gemüse, Salat, Obst (nicht kälteempfindliches)</li>
+            <li><b>Tür:</b> Butter, Eier, Getränke, Soßen</li>
+            <li><b>Nicht in den Kühlschrank:</b> Tomaten, Kartoffeln, Zwiebeln, Knoblauch, Bananen, Brot</li>
+          </ul>
+        </details>
+        <details class="guide">
+          <summary>Richtig einfrieren</summary>
+          <ul>
+            <li>Portionsweise und flach einfrieren – taut schneller auf.</li>
+            <li>Mit Datum beschriften (in der App: „❄️ Einfrieren“ setzt das neue Datum automatisch).</li>
+            <li>Aufgetautes nicht wieder einfrieren, sondern zügig verbrauchen – Fleisch im Kühlschrank auftauen.</li>
+            <li>Gut einfrierbar: Brot, Butter, Hack, Beeren, Bananen, geriebener Käse, Kräuter.</li>
+          </ul>
+        </details>
+        <input id="guideSearch" type="search" placeholder="Lagertipp suchen, z. B. Tomaten" autocomplete="off">
+        <div id="guideList"></div>
       </div>
       <div class="card">
         <h2>Daten</h2>
@@ -67,8 +152,9 @@
   </main>
 
   <nav class="tabbar">
-    <button class="tab active" data-view="stock"><span>🧊</span>Vorrat</button>
-    <button class="tab add" id="btnAdd" aria-label="Produkt hinzufügen"><span>＋</span>Scannen</button>
+    <button class="tab active" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
+    <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
+    <button class="tab add" id="btnAdd" aria-label="Produkt hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="recipes"><span>🍳</span>Rezepte</button>
     <button class="tab" data-view="settings"><span>⚙️</span>Mehr</button>
   </nav>
@@ -85,6 +171,17 @@
 
       <div id="productPreview" class="preview" hidden></div>
 
+      <details id="quickAddBox" class="quickadd">
+        <summary>⚡ Ohne Scannen: häufige Lebensmittel</summary>
+        <div class="chips" id="quickAdd"></div>
+      </details>
+
+      <div id="itemTools" class="chips" hidden>
+        <button type="button" class="chip" id="btnOpened">🥛 Heute geöffnet</button>
+        <button type="button" class="chip" id="btnFreeze">❄️ Einfrieren</button>
+        <button type="button" class="chip" id="btnToShop">🛒 Auf Einkaufsliste</button>
+      </div>
+
       <label>Produkt
         <input id="fName" placeholder="z. B. Vollmilch 1 l" autocomplete="off">
       </label>
@@ -100,6 +197,7 @@
         </label>
       </div>
       <div id="expiryHint" class="muted small"></div>
+      <div id="itemAdvice" class="advice" hidden></div>
       <div class="chips" id="quickDates">
         <button type="button" class="chip" data-days="1">morgen</button>
         <button type="button" class="chip" data-days="3">+3 Tage</button>
@@ -111,6 +209,17 @@
       </div>
       <div id="dateCandidates" class="chips"></div>
       <div class="row">
+        <label>Art des Datums
+          <select id="fDateType">
+            <option value="mhd">Mindestens haltbar bis</option>
+            <option value="verbrauch">Zu verbrauchen bis</option>
+          </select>
+        </label>
+        <label>Preis (optional)
+          <input id="fPrice" inputmode="decimal" placeholder="z. B. 1,99" autocomplete="off">
+        </label>
+      </div>
+      <div class="row">
         <label>Menge
           <input id="fQty" type="number" min="1" value="1" inputmode="numeric">
         </label>
@@ -119,10 +228,15 @@
             <option value="kuehlschrank">🧊 Kühlschrank</option>
             <option value="gefrierfach">❄️ Gefrierfach</option>
             <option value="vorrat">🗄️ Vorrat</option>
+            <option value="haushalt">🧴 Bad &amp; Haushalt</option>
           </select>
         </label>
       </div>
+      <label>Notiz (optional)
+        <input id="fNote" placeholder="z. B. für Sonntagskuchen" autocomplete="off">
+      </label>
       <input id="fBarcode" type="hidden">
+      <input id="fOpened" type="hidden">
       <input id="fImage" type="hidden">
 
       <div class="dialog-actions">
@@ -145,6 +259,43 @@
       <button class="btn" id="btnTorch" hidden>🔦</button>
       <button class="btn" id="btnCloseScan">Schließen</button>
     </div>
+  </dialog>
+
+  <!-- Auswahl (Rezept für einen Tag, Tag für ein Rezept) -->
+  <dialog id="pickDialog">
+    <h2 id="pickTitle"></h2>
+    <input id="pickSearch" type="search" placeholder="Suchen …" autocomplete="off">
+    <div id="pickList" class="picklist"></div>
+    <div class="dialog-actions"><span class="spacer"></span><button class="btn" id="pickCancel">Abbrechen</button></div>
+  </dialog>
+
+  <!-- Eigenes Rezept -->
+  <dialog id="recipeDialog">
+    <form id="recipeForm" method="dialog">
+      <h2 id="recipeTitle">Eigenes Rezept</h2>
+      <div class="row">
+        <label style="flex:3">Name
+          <input id="rName" required placeholder="z. B. Omas Linsensuppe" autocomplete="off">
+        </label>
+        <label style="flex:1">Emoji
+          <input id="rEmoji" maxlength="4" placeholder="🍲" autocomplete="off">
+        </label>
+      </div>
+      <label>Zeit (Minuten)
+        <input id="rMinutes" type="number" min="1" value="30" inputmode="numeric">
+      </label>
+      <label>Hauptzutaten <span class="muted small">(antippen)</span></label>
+      <div class="chips ingpick" id="rIngredients"></div>
+      <label>Zubereitung <span class="muted small">(ein Schritt pro Zeile)</span>
+        <textarea id="rSteps" rows="5" placeholder="Zwiebeln anbraten …"></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="rDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="rCancel">Abbrechen</button>
+        <button type="submit" class="btn primary">Speichern</button>
+      </div>
+    </form>
   </dialog>
 
   <div id="toast" class="toast" hidden></div>

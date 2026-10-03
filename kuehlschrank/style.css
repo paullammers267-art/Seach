@@ -38,7 +38,7 @@
   }
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; }
 body {
   font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -243,3 +243,103 @@ dialog label input, dialog label select { color: var(--text); font-weight: 400; 
 }
 .toast .link { color: #9ae6b4; }
 [hidden] { display: none !important; }
+
+/* ---------- Erweiterungen ---------- */
+.tab { position: relative; }
+.tab-badge {
+  position: absolute; top: 4px; left: calc(50% + 6px);
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--expired); color: #fff; font-size: .68rem; font-style: normal; font-weight: 700;
+  display: grid; place-items: center;
+}
+#badgeShop { background: var(--primary); color: var(--primary-text); }
+.row.tight { gap: 6px; margin: 6px 0 0; }
+.grow { flex: 1; min-width: 0; }
+textarea { font: inherit; color: inherit; width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); resize: vertical; }
+
+.tag { display: inline-block; font-size: .7rem; font-weight: 600; padding: 1px 7px; margin-left: 6px; border-radius: 99px; background: var(--bg); color: var(--muted); vertical-align: middle; }
+.tag.strict { background: var(--expired-bg); color: var(--expired); }
+.tag.note { font-weight: 400; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.advice-line { font-size: .78rem; color: var(--today); }
+.advice-line.strict { color: var(--expired); font-weight: 600; }
+.advice { font-size: .85rem; background: var(--bg); border-radius: 10px; padding: 10px 12px; line-height: 1.4; }
+.quickadd summary { color: var(--primary); }
+.quickadd .chips { margin-top: 8px; }
+
+/* Segmente (Rezepte) */
+.segmented { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin-bottom: 12px; }
+.segmented button { flex: 1; font: inherit; font-size: .9rem; border: 0; background: none; color: var(--muted); padding: 8px 4px; border-radius: 9px; cursor: pointer; }
+.segmented button.active { background: var(--primary); color: var(--primary-text); font-weight: 700; }
+.sub { display: none; }
+.sub.active { display: block; }
+#btnNewRecipe { width: 100%; margin-bottom: 12px; }
+.star { background: none; border: 0; font-size: 1.6rem; line-height: 1; cursor: pointer; color: var(--muted); padding: 4px; }
+.star.on { color: #e3a008; }
+
+/* Wochenplan */
+.plan-day {
+  display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px;
+}
+.plan-day > b { width: 76px; flex: none; font-size: .9rem; }
+.plan-day .btn { margin-left: auto; }
+.plan-day.filled { border-left: 5px solid var(--primary); }
+.plan-recipe { flex: 1; min-width: 0; cursor: pointer; }
+.plan-recipe .muted { display: block; }
+#btnPlanShop { width: 100%; margin-top: 6px; }
+
+/* Einkaufsliste */
+.addrow { display: flex; gap: 8px; margin-bottom: 10px; }
+.addrow .btn { font-size: 1.3rem; padding: 6px 16px; }
+#shopSuggestions { margin-bottom: 12px; }
+#shopSuggestions .chips { margin-top: 4px; }
+.shop-item {
+  display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 10px; margin-bottom: 6px;
+}
+.shop-item .check {
+  width: 30px; height: 30px; flex: none; border-radius: 8px; border: 2px solid var(--primary); background: none;
+  color: var(--primary-text); font-weight: 700; cursor: pointer;
+}
+.shop-item.done .check { background: var(--primary); }
+.shop-item.done .shop-name { text-decoration: line-through; color: var(--muted); }
+.shop-name { flex: 1; min-width: 0; cursor: pointer; }
+.icon-sm { background: none; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 6px; }
+.section { margin: 14px 0 6px; }
+#shopActions { margin-top: 12px; }
+
+/* Auswahl-Dialog */
+.picklist { display: grid; gap: 6px; max-height: 55vh; overflow: auto; margin: 10px 0; }
+.pick {
+  font: inherit; text-align: left; cursor: pointer; display: grid; gap: 2px;
+  padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
+}
+#pickDialog h2 { margin-bottom: 10px; }
+.ingpick { max-height: 180px; overflow: auto; padding: 2px; }
+
+/* Statistik */
+.bars { display: flex; gap: 8px; align-items: flex-end; height: 120px; margin: 16px 0 6px; }
+.bar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.bar span { font-size: .72rem; color: var(--muted); }
+.stack { width: 100%; max-width: 36px; display: flex; flex-direction: column; border-radius: 6px 6px 2px 2px; overflow: hidden; min-height: 2px; }
+.stack i, .legend i { display: block; }
+.c { background: var(--ok); }
+.w { background: var(--expired); }
+.legend { display: flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-left: 6px; }
+
+/* Ratgeber */
+.guide { border-top: 1px solid var(--border); padding: 10px 0; }
+.guide p, .guide ul { font-size: .9rem; margin: 8px 0 0; }
+.guide ul { padding-left: 20px; }
+#guideSearch { margin-top: 8px; }
+.guide-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: grid; gap: 3px; }
+/* Aktionsleiste im Dialog bleibt unten sichtbar */
+dialog .dialog-actions {
+  position: sticky; bottom: -18px; z-index: 1;
+  background: var(--surface); margin: 0 -18px -18px; padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+}
+.row > label.btn { flex: 1; min-width: 150px; font-size: inherit; color: var(--text); }
+.row > .btn { flex: 1; min-width: 150px; }
+.row.tight > .btn { flex: 0 1 auto; min-width: 0; }

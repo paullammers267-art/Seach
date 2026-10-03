@@ -372,8 +372,173 @@
     return results.sort((a, b) => b.score - a.score);
   }
 
+
+  // ---------- Haltbarkeit nach dem Öffnen / Einfrieren, Lagertipps ----------
+
+  /** opened = Tage nach dem Öffnen, freeze = Monate im Gefrierfach (0 = nicht geeignet), tip = Lagertipp. */
+  const CARE = {
+    milch: { opened: 3, freeze: 2, tip: 'Geöffnet in der Kühlschranktür, innerhalb von 3 Tagen aufbrauchen. H-Milch ungeöffnet ohne Kühlung lagern.' },
+    sahne: { opened: 3, freeze: 3, tip: 'Geöffnet 2–3 Tage. Eingefroren flockt sie leicht, zum Kochen aber gut.' },
+    sauresahne: { opened: 5, freeze: 0, tip: 'Geöffnet ca. 5 Tage, mit sauberem Löffel entnehmen.' },
+    butter: { opened: 30, freeze: 6, tip: 'Gut verpackt lagern, nimmt sonst Gerüche an. Lässt sich sehr gut einfrieren.' },
+    kaese: { opened: 10, freeze: 3, tip: 'In Wachs-/Käsepapier oder Box im Gemüsefach. Hartkäse gerieben einfrieren.' },
+    mozzarella: { opened: 2, freeze: 1, tip: 'Geöffnet in der Lake 1–2 Tage. Eingefroren nur noch zum Überbacken.' },
+    parmesan: { opened: 30, freeze: 6, tip: 'Am Stück in Papier lange haltbar, Schimmel großzügig wegschneiden.' },
+    feta: { opened: 5, freeze: 2, tip: 'In der eigenen Lake oder mit Salzwasser bedeckt lagern.' },
+    frischkaese: { opened: 7, freeze: 0, tip: 'Geöffnet ca. eine Woche. Einfrieren verändert die Konsistenz.' },
+    joghurt: { opened: 4, freeze: 1, tip: 'MHD oft weit überschreitbar – Geruch und Aussehen prüfen.' },
+    quark: { opened: 4, freeze: 2, tip: 'Molke obenauf ist normal, einfach unterrühren.' },
+    eier: { opened: 2, freeze: 0, tip: 'Spitze nach unten im Kühlschrank. Schwimmtest: liegt flach = frisch, steht = älter, schwimmt = weg damit.' },
+    schinken: { opened: 3, freeze: 2, tip: 'Geöffnete Packung luftdicht verschließen, 2–3 Tage.' },
+    speck: { opened: 7, freeze: 3, tip: 'Gewürfelt portionsweise einfrieren – direkt gefroren anbraten.' },
+    hackfleisch: { opened: 0, freeze: 3, tip: 'Am Kauftag verbrauchen oder sofort flach einfrieren (taut schneller auf). Nie roh essen nach Ablauf.' },
+    haehnchen: { opened: 1, freeze: 6, tip: 'Unterste Ablage, auf Teller. Immer vollständig durchgaren.' },
+    rind: { opened: 2, freeze: 6, tip: 'Unterste Ablage (kältester Bereich). Am Stück länger haltbar als geschnitten.' },
+    schwein: { opened: 2, freeze: 4, tip: 'Unterste Ablage. Portionsweise einfrieren.' },
+    wurst: { opened: 5, freeze: 2, tip: 'Angebrochene Wurst in eine Box, nicht in der offenen Packung.' },
+    lachs: { opened: 1, freeze: 3, tip: 'Frischer Fisch am Kauftag, geräucherter Lachs geöffnet 2–3 Tage.' },
+    fisch: { opened: 1, freeze: 3, tip: 'Am Kauftag zubereiten oder einfrieren.' },
+    thunfisch: { opened: 2, freeze: 0, tip: 'Geöffnete Dose umfüllen und abgedeckt kühlen.' },
+    tofu: { opened: 4, freeze: 3, tip: 'Geöffnet in Wasser im Kühlschrank, Wasser täglich wechseln. Eingefroren wird er fester – super zum Braten.' },
+    tomaten: { opened: 2, freeze: 6, tip: 'Nicht im Kühlschrank, sondern bei Zimmertemperatur – so bleiben sie aromatisch.' },
+    passata: { opened: 4, freeze: 3, tip: 'Geöffnet umfüllen, 3–5 Tage. Reste portionsweise einfrieren.' },
+    paprika: { opened: 3, freeze: 6, tip: 'Im Gemüsefach ca. 1 Woche. Geschnitten einfrieren für Pfannengerichte.' },
+    zwiebeln: { opened: 3, freeze: 6, tip: 'Kühl, dunkel und luftig lagern – nicht neben Kartoffeln.' },
+    knoblauch: { opened: 7, freeze: 6, tip: 'Trocken und luftig, nicht im Kühlschrank (keimt sonst).' },
+    karotten: { opened: 5, freeze: 9, tip: 'Grün abschneiden, im Gemüsefach bis zu 3 Wochen.' },
+    zucchini: { opened: 3, freeze: 6, tip: 'Im Gemüsefach. Geraspelt einfrieren für Puffer und Soßen.' },
+    gurke: { opened: 2, freeze: 0, tip: 'Mag es nicht zu kalt – am besten im Gemüsefach oben oder kühl im Raum. Nicht neben Tomaten/Äpfeln.' },
+    champignons: { opened: 2, freeze: 6, tip: 'In Papiertüte im Kühlschrank, nicht in Plastik (werden schmierig).' },
+    spinat: { opened: 1, freeze: 10, tip: 'Sehr kurz haltbar – blanchiert einfrieren.' },
+    salat: { opened: 2, freeze: 0, tip: 'In ein feuchtes Tuch gewickelt im Gemüsefach. Welker Salat erholt sich in kaltem Wasser.' },
+    brokkoli: { opened: 2, freeze: 10, tip: 'Röschen blanchieren und einfrieren.' },
+    blumenkohl: { opened: 3, freeze: 10, tip: 'Im Gemüsefach, Röschen blanchiert einfrieren.' },
+    lauch: { opened: 4, freeze: 6, tip: 'In Ringen roh einfrieren – perfekt für Suppen.' },
+    kartoffeln: { opened: 2, freeze: 0, tip: 'Dunkel und kühl, nicht im Kühlschrank. Grüne Stellen und Keime großzügig entfernen.' },
+    kuerbis: { opened: 4, freeze: 10, tip: 'Ganz monatelang haltbar, angeschnitten in Folie 4–5 Tage.' },
+    erbsen: { opened: 3, freeze: 10, tip: 'TK-Erbsen direkt gefroren verwenden.' },
+    mais: { opened: 3, freeze: 6, tip: 'Geöffnete Dose umfüllen.' },
+    bohnen: { opened: 3, freeze: 6, tip: 'Geöffnete Dose umfüllen, abgespült einfrieren.' },
+    kichererbsen: { opened: 3, freeze: 6, tip: 'Kochwasser (Aquafaba) als Eiersatz nutzen.' },
+    linsen: { opened: 180, freeze: 0, tip: 'Trocken und luftdicht lagern.' },
+    kokosmilch: { opened: 4, freeze: 3, tip: 'Reste im Eiswürfelbehälter einfrieren.' },
+    aepfel: { opened: 1, freeze: 8, tip: 'Getrennt von anderem Obst lagern – Äpfel lassen es schneller reifen.' },
+    bananen: { opened: 1, freeze: 4, tip: 'Überreif geschält einfrieren – ideal für Smoothies und Bananenbrot.' },
+    beeren: { opened: 1, freeze: 10, tip: 'Erst kurz vor dem Essen waschen. Ausgebreitet einfrieren, dann umfüllen.' },
+    zitrone: { opened: 5, freeze: 4, tip: 'Angeschnitten mit Schnittfläche nach unten auf einen Teller.' },
+    nudeln: { opened: 365, freeze: 0, tip: 'Trocken lagern. Gekochte Nudeln 3 Tage im Kühlschrank.' },
+    reis: { opened: 365, freeze: 0, tip: 'Gekochten Reis schnell abkühlen und max. 1–2 Tage kühlen.' },
+    mehl: { opened: 180, freeze: 0, tip: 'Luftdicht gegen Mehlmotten lagern.' },
+    brot: { opened: 3, freeze: 3, tip: 'Im Brotkasten, nicht im Kühlschrank (wird schneller altbacken). Scheiben einfrieren und toasten.' },
+    wraps: { opened: 5, freeze: 3, tip: 'Geöffnet gut verschließen.' },
+    gnocchi: { opened: 3, freeze: 3, tip: 'Geöffnet innerhalb von 3 Tagen.' },
+    haferflocken: { opened: 180, freeze: 0, tip: 'Luftdicht lagern.' },
+    schokolade: { opened: 60, freeze: 0, tip: 'Weißer Belag (Fettreif) ist harmlos.' },
+    pesto: { opened: 7, freeze: 3, tip: 'Mit Öl bedeckt halten, dann ca. eine Woche.' },
+    getraenk: { opened: 3, freeze: 0, tip: 'Säfte geöffnet gekühlt 3–5 Tage.' },
+  };
+
+  /** Neues Ablaufdatum nach dem Öffnen: das frühere aus aufgedrucktem Datum und "heute + Tage nach Öffnen". */
+  function afterOpening(expiryIso, ingredientKey, today = new Date()) {
+    const care = CARE[ingredientKey];
+    const days = care ? care.opened : 3;
+    const opened = toISODate(new Date(startOfDay(today).getTime() + days * DAY));
+    return expiryIso && expiryIso < opened ? expiryIso : opened;
+  }
+
+  /** Ablaufdatum beim Einfrieren (null = Einfrieren nicht empfohlen). */
+  function afterFreezing(ingredientKey, today = new Date()) {
+    const care = CARE[ingredientKey];
+    const months = care ? care.freeze : 3;
+    if (!months) return null;
+    const d = startOfDay(today);
+    d.setMonth(d.getMonth() + months);
+    return toISODate(d);
+  }
+
+  /** Hinweis bei überschrittenem Datum – MHD ist kein Wegwerfdatum, Verbrauchsdatum schon. */
+  function expiredAdvice(item, today = new Date()) {
+    const d = daysUntil(item.expiry, today);
+    if (d === null || d >= 0) return '';
+    if (item.dateType === 'verbrauch') return 'Verbrauchsdatum überschritten – nicht mehr essen.';
+    return 'MHD überschritten – oft noch gut: Aussehen, Geruch und Geschmack prüfen.';
+  }
+
+  // ---------- Rezepte: Filter, Einkauf ----------
+
+  const MEAT_FISH = ['schinken', 'speck', 'hackfleisch', 'haehnchen', 'rind', 'schwein', 'wurst', 'lachs', 'fisch', 'thunfisch'];
+
+  function isVegetarian(recipe) {
+    return !recipe.ingredients.some((i) => MEAT_FISH.includes(i));
+  }
+
+  /** Zutaten eines Rezepts, die nicht im Vorrat sind. */
+  function missingIngredients(recipe, items) {
+    const have = new Set(items.map((i) => i.ingredient).filter(Boolean));
+    return recipe.ingredients.filter((i) => !have.has(i));
+  }
+
+  /** Einkaufsliste als Text zum Teilen. */
+  function shoppingText(list) {
+    const open = list.filter((i) => !i.done);
+    return '🛒 Einkaufsliste\n' + open.map((i) => '☐ ' + i.name + (i.note ? ` (${i.note})` : '')).join('\n');
+  }
+
+  const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+
+  /** Die nächsten n Tage ab heute: [{ iso, label }] */
+  function nextDays(n, today = new Date()) {
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const d = startOfDay(today);
+      d.setDate(d.getDate() + i);
+      const label = i === 0 ? 'Heute' : i === 1 ? 'Morgen' : `${WEEKDAYS[d.getDay()]} ${d.getDate()}.${d.getMonth() + 1}.`;
+      out.push({ iso: toISODate(d), label });
+    }
+    return out;
+  }
+
+  // ---------- Statistik ----------
+
+  /** Verlauf [{ date, kind: 'consumed'|'wasted', name, price }] -> letzte n Monate. */
+  function monthlyStats(history, months = 6, today = new Date()) {
+    const out = [];
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      out.push({ key, label: d.toLocaleDateString('de-DE', { month: 'short' }), consumed: 0, wasted: 0, wastedValue: 0, savedValue: 0 });
+    }
+    const byKey = new Map(out.map((m) => [m.key, m]));
+    for (const h of history) {
+      const m = byKey.get(String(h.date).slice(0, 7));
+      if (!m) continue;
+      m[h.kind] += 1;
+      if (h.price) m[h.kind === 'wasted' ? 'wastedValue' : 'savedValue'] += h.price;
+    }
+    return out;
+  }
+
+  /** Was landet am häufigsten im Müll? */
+  function topWasted(history, n = 3) {
+    const count = new Map();
+    for (const h of history) if (h.kind === 'wasted') count.set(h.name, (count.get(h.name) || 0) + 1);
+    return [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([name, times]) => ({ name, times }));
+  }
+
+  /** Preis aus Eingabe wie "1,99" oder "2.49 €" -> Zahl oder null. */
+  function parsePrice(str) {
+    const m = String(str || '').replace(',', '.').match(/\d+(\.\d+)?/);
+    return m ? Math.round(parseFloat(m[0]) * 100) / 100 : null;
+  }
+
+  function formatEuro(v) {
+    return (v || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+  }
+
   return {
     toISODate, fromISODate, daysUntil, status, statusText, formatDate,
     parseDates, parseDateCandidates, parseTypedDate, createDateVoter, cleanOcr, norm, INGREDIENTS, detectIngredient, suggestExpiry, suggestRecipes,
+    CARE, afterOpening, afterFreezing, expiredAdvice, isVegetarian, missingIngredients, shoppingText,
+    nextDays, monthlyStats, topWasted, parsePrice, formatEuro,
   };
 });

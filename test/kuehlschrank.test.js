@@ -117,3 +117,44 @@ test('parseTypedDate versteht schnelle Eingaben', () => {
   assert.equal(L.parseTypedDate('05102', TODAY), null);
   assert.equal(L.parseTypedDate('', TODAY), null);
 });
+
+test('Öffnen und Einfrieren passen das Datum an', () => {
+  assert.equal(L.afterOpening('2026-11-30', 'milch', TODAY), '2026-10-06');   // 3 Tage nach Öffnen
+  assert.equal(L.afterOpening('2026-10-04', 'milch', TODAY), '2026-10-04');   // aufgedrucktes Datum früher
+  assert.equal(L.afterOpening(null, null, TODAY), '2026-10-06');
+  assert.equal(L.afterFreezing('hackfleisch', TODAY), '2027-01-03');
+  assert.equal(L.afterFreezing('salat', TODAY), null);
+});
+
+test('expiredAdvice unterscheidet MHD und Verbrauchsdatum', () => {
+  assert.match(L.expiredAdvice({ expiry: '2026-10-01' }, TODAY), /oft noch gut/);
+  assert.match(L.expiredAdvice({ expiry: '2026-10-01', dateType: 'verbrauch' }, TODAY), /nicht mehr essen/);
+  assert.equal(L.expiredAdvice({ expiry: '2026-10-05' }, TODAY), '');
+});
+
+test('Rezeptfilter, fehlende Zutaten, Einkaufsliste', () => {
+  const carbonara = RECIPES.find((r) => r.id === 'carbonara');
+  assert.equal(L.isVegetarian(carbonara), false);
+  assert.equal(L.isVegetarian(RECIPES.find((r) => r.id === 'pfannkuchen')), true);
+  assert.deepEqual(L.missingIngredients(carbonara, [{ ingredient: 'nudeln' }, { ingredient: 'eier' }]), ['speck', 'parmesan']);
+  assert.equal(L.shoppingText([{ name: 'Milch' }, { name: 'Brot', done: true }, { name: 'Eier', note: '10 Stück' }]),
+    '🛒 Einkaufsliste\n☐ Milch\n☐ Eier (10 Stück)');
+});
+
+test('nextDays, Statistik, Preise', () => {
+  const days = L.nextDays(3, TODAY);
+  assert.deepEqual(days.map((d) => d.iso), ['2026-10-03', '2026-10-04', '2026-10-05']);
+  assert.equal(days[2].label, 'Mo 5.10.');
+  const hist = [
+    { date: '2026-10-01', kind: 'wasted', name: 'Salat', price: 1.5 },
+    { date: '2026-10-02', kind: 'wasted', name: 'Salat', price: 1.5 },
+    { date: '2026-10-02', kind: 'consumed', name: 'Milch', price: 1.1 },
+    { date: '2026-09-15', kind: 'wasted', name: 'Brot' },
+    { date: '2025-01-01', kind: 'wasted', name: 'Alt' },
+  ];
+  const m = L.monthlyStats(hist, 2, TODAY);
+  assert.deepEqual(m.map((x) => [x.key, x.consumed, x.wasted, x.wastedValue]), [['2026-09', 0, 1, 0], ['2026-10', 1, 2, 3]]);
+  assert.deepEqual(L.topWasted(hist, 1), [{ name: 'Salat', times: 2 }]);
+  assert.equal(L.parsePrice('1,99 €'), 1.99);
+  assert.equal(L.parsePrice(''), null);
+});
