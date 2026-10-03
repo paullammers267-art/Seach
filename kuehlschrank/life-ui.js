@@ -122,6 +122,7 @@
       </div>`);
     }
     $('#homeTop').innerHTML = parts.join('');
+    if (A.applyHomeHidden) A.applyHomeHidden();
     loadWeather();
   }
 

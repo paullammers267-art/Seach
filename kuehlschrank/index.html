@@ -27,13 +27,20 @@
     <!-- Vorrat -->
     <!-- Heute -->
     <section id="view-home" class="view active">
-      <div class="hello"><h2 id="homeHello">Hallo!</h2><div class="muted" id="homeDate"></div></div>
+      <div class="hello"><h2 id="homeHello">Hallo!</h2><div class="muted" id="homeDate"></div>
+        <div class="glance" id="homeGlance"></div></div>
       <input id="globalSearch" type="search" placeholder="🔍 Alles durchsuchen …" autocomplete="off">
       <div id="searchResults"></div>
-      <div id="homeTop"></div>
-      <div id="homeFood"></div>
-      <div id="homeExtras"></div>
-      <div id="homeCards"></div>
+      <div class="home-flow" id="homeFlow">
+        <h3 class="sec-title" data-sec="today">Heute</h3>
+        <h3 class="sec-title" data-sec="kitchen">Küche &amp; Essen</h3>
+        <h3 class="sec-title" data-sec="fit">Fitness &amp; Finanzen</h3>
+        <h3 class="sec-title" data-sec="review">Rückblick</h3>
+        <div id="homeTop"></div>
+        <div id="homeFood"></div>
+        <div id="homeExtras"></div>
+        <div id="homeCards"></div>
+      </div>
     </section>
 
     <section id="view-stock" class="view">
@@ -406,32 +413,46 @@
 
     <!-- Mehr -->
     <section id="view-settings" class="view">
-      <div class="hub">
-        <button class="hub-tile" data-goto="recipes"><span>🍳</span>Rezepte<small id="hubRecipes"></small></button>
-        <button class="hub-tile" data-goto="sport"><span>🏋️</span>Sport<small id="hubSport"></small></button>
-        <button class="hub-tile" data-goto="calendar"><span>📅</span>Kalender<small id="hubCal"></small></button>
-        <button class="hub-tile" data-goto="expenses"><span>💶</span>Ausgaben<small id="hubExp"></small></button>
-        <button class="hub-tile" data-goto="tasks"><span>✅</span>Aufgaben<small id="hubTasks"></small></button>
-        <button class="hub-tile" data-goto="habits"><span>💧</span>Gewohnheiten<small id="hubHabits"></small></button>
-        <button class="hub-tile" data-goto="health"><span>❤️</span>Gesundheit<small id="hubHealth"></small></button>
-        <button class="hub-tile" data-goto="notes"><span>📝</span>Notizen<small id="hubNotes"></small></button>
-        <button class="hub-tile" data-goto="food"><span>🍽️</span>Kalorien<small id="hubFood"></small></button>
-        <button class="hub-tile" data-goto="meds"><span>💊</span>Medikamente<small id="hubMeds"></small></button>
-        <button class="hub-tile" data-goto="deadlines"><span>📄</span>Fristen<small id="hubDeadlines"></small></button>
-        <button class="hub-tile" data-goto="meters"><span>🔢</span>Zählerstände<small id="hubMeters"></small></button>
-        <button class="hub-tile" data-goto="tools"><span>🧰</span>Werkzeuge<small>Timer, Umrechner …</small></button>
-        <button class="hub-tile" data-goto="achievements"><span>🏆</span>Erfolge<small id="hubAch"></small></button>
+      <h3 class="sec-title">Küche &amp; Essen</h3>
+      <div class="hub" data-group="kitchen">
+        <button class="hub-tile" data-goto="recipes"><span class="hub-ic">🍳</span><b>Rezepte</b><small id="hubRecipes"></small></button>
+        <button class="hub-tile" data-goto="food"><span class="hub-ic">🍽️</span><b>Kalorien</b><small id="hubFood"></small></button>
       </div>
-      <div class="card">
-        <h2>🏠 Startseite anpassen</h2>
-        <p class="muted small">Welche Karten sollen auf „Heute“ erscheinen?</p>
-        <div class="chips" id="homeCardToggles"></div>
+      <h3 class="sec-title">Planen &amp; Organisieren</h3>
+      <div class="hub" data-group="plan">
+        <button class="hub-tile" data-goto="calendar"><span class="hub-ic">📅</span><b>Kalender</b><small id="hubCal"></small></button>
+        <button class="hub-tile" data-goto="tasks"><span class="hub-ic">✅</span><b>Aufgaben</b><small id="hubTasks"></small></button>
+        <button class="hub-tile" data-goto="notes"><span class="hub-ic">📝</span><b>Notizen</b><small id="hubNotes"></small></button>
+        <button class="hub-tile" data-goto="deadlines"><span class="hub-ic">📄</span><b>Fristen</b><small id="hubDeadlines"></small></button>
       </div>
+      <h3 class="sec-title">Gesundheit &amp; Fitness</h3>
+      <div class="hub" data-group="health">
+        <button class="hub-tile" data-goto="sport"><span class="hub-ic">🏋️</span><b>Sport</b><small id="hubSport"></small></button>
+        <button class="hub-tile" data-goto="habits"><span class="hub-ic">💧</span><b>Gewohnheiten</b><small id="hubHabits"></small></button>
+        <button class="hub-tile" data-goto="health"><span class="hub-ic">❤️</span><b>Gesundheit</b><small id="hubHealth"></small></button>
+        <button class="hub-tile" data-goto="meds"><span class="hub-ic">💊</span><b>Medikamente</b><small id="hubMeds"></small></button>
+      </div>
+      <h3 class="sec-title">Haushalt &amp; Finanzen</h3>
+      <div class="hub" data-group="money">
+        <button class="hub-tile" data-goto="expenses"><span class="hub-ic">💶</span><b>Ausgaben</b><small id="hubExp"></small></button>
+        <button class="hub-tile" data-goto="meters"><span class="hub-ic">🔢</span><b>Zählerstände</b><small id="hubMeters"></small></button>
+      </div>
+      <h3 class="sec-title">Extras</h3>
+      <div class="hub" data-group="extra">
+        <button class="hub-tile" data-goto="tools"><span class="hub-ic">🧰</span><b>Werkzeuge</b><small>Timer, Umrechner …</small></button>
+        <button class="hub-tile" data-goto="achievements"><span class="hub-ic">🏆</span><b>Erfolge</b><small id="hubAch"></small></button>
+      </div>
+      <h3 class="sec-title">Einstellungen</h3>
       <div class="card">
         <h2>🎨 Darstellung</h2>
         <div class="segmented" id="themeSwitch">
           <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button>
         </div>
+      </div>
+      <div class="card">
+        <h2>🏠 Startseite anpassen</h2>
+        <p class="muted small">Welche Karten sollen auf „Heute“ erscheinen?</p>
+        <div class="chips" id="homeCardToggles"></div>
       </div>
       <div class="card">
         <h2>🌤️ Wetter-Ort</h2>
@@ -443,22 +464,23 @@
         </form>
       </div>
       <div class="card">
-        <h2>Erinnerungen</h2>
+        <h2>🔔 Erinnerungen</h2>
         <p class="muted">Beim Öffnen der App wirst du benachrichtigt, wenn etwas heute oder morgen abläuft.</p>
         <button id="btnNotify" class="btn">🔔 Benachrichtigungen erlauben</button>
         <p id="notifyState" class="muted small"></p>
       </div>
+      <h3 class="sec-title">Küche &amp; Vorrat</h3>
       <div class="card">
-        <h2>Statistik</h2>
-        <div id="stats"></div>
-      </div>
-      <div class="card">
-        <h2>Immer im Haus</h2>
+        <h2>📌 Immer im Haus</h2>
         <p class="muted small">Wähle, was du immer da haben willst. Ist es aufgebraucht, landet es automatisch auf der Einkaufsliste.</p>
         <div class="chips" id="staples"></div>
       </div>
       <div class="card">
-        <h2>Ratgeber</h2>
+        <h2>📈 Statistik</h2>
+        <div id="stats"></div>
+      </div>
+      <div class="card">
+        <h2>📖 Ratgeber</h2>
         <details class="guide">
           <summary>MHD oder Verbrauchsdatum – was ist der Unterschied?</summary>
           <p><b>Mindestens haltbar bis (MHD):</b> Bis dahin garantiert der Hersteller Geschmack und Qualität. Danach ist das Lebensmittel meist noch gut – <b>schauen, riechen, probieren</b>. Gilt z. B. für Joghurt, Käse, Nudeln, Konserven.</p>
@@ -487,8 +509,9 @@
         <input id="guideSearch" type="search" placeholder="Lagertipp suchen, z. B. Tomaten" autocomplete="off">
         <div id="guideList"></div>
       </div>
+      <h3 class="sec-title">Daten &amp; Sicherung</h3>
       <div class="card">
-        <h2>Daten</h2>
+        <h2>💾 Daten</h2>
         <p class="muted">Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherung kannst du den Vorrat auf ein anderes Gerät übertragen.</p>
         <div class="row">
           <button id="btnExport" class="btn">⬇️ Sicherung speichern</button>

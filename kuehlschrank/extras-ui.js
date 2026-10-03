@@ -592,6 +592,13 @@
     weather: '🌤️ Wetter', tasks: '✅ Aufgaben', habits: '💧 Gewohnheiten', food: '🍽️ Kalorien', meds: '💊 Medikamente', deadlines: '📄 Fristen',
     events: '📅 Termine', kitchen: '🧊 Küche', sport: '🏋️ Sport', expenses: '💶 Ausgaben', shopping: '🛒 Einkauf', review: '📊 Wochenrückblick', backup: '💾 Sicherung',
   };
+  // Reihenfolge und Bereich der Karten auf der Startseite
+  const HOME_ORDER = {
+    weather: [1, 'top'], events: [11, 'today'], tasks: [12, 'today'], meds: [13, 'today'], habits: [14, 'today'], deadlines: [15, 'today'],
+    kitchen: [21, 'kitchen'], food: [22, 'kitchen'], shopping: [23, 'kitchen'],
+    sport: [31, 'fit'], expenses: [32, 'fit'], backup: [41, 'review'], review: [42, 'review'],
+  };
+  const SEC_ORDER = { today: 10, kitchen: 20, fit: 30, review: 40 };
   const GOTO_KEY = { calendar: 'events', stock: 'kitchen', sport: 'sport', expenses: 'expenses', shopping: 'shopping', tasks: 'tasks', habits: 'habits', food: 'food', meds: 'meds', deadlines: 'deadlines', achievements: 'review' };
   function renderHomeExtras() {
     if (A.view !== 'home') return;
@@ -639,7 +646,37 @@
         if (key) c.dataset.card = key;
       }
       c.hidden = hidden.includes(key);
+      const o = HOME_ORDER[key] || [90, 'review'];
+      c.style.order = o[0];
+      c.dataset.sec = o[1];
     });
+    // Überschriften nur zeigen, wenn im Bereich auch etwas steht
+    $$('#homeFlow .sec-title').forEach((h) => {
+      h.style.order = SEC_ORDER[h.dataset.sec];
+      h.hidden = !$$(`#homeFlow .home-card[data-sec="${h.dataset.sec}"]`).some((c) => !c.hidden);
+    });
+    renderGlance();
+  }
+  A.applyHomeHidden = applyHomeHidden;
+
+  /** Kurzüberblick unter der Begrüßung: was heute ansteht. */
+  function renderGlance() {
+    const t = today();
+    const chips = [];
+    const b = F.taskBuckets(st().tasks);
+    const tasks = b.overdue.length + b.today.length;
+    if (tasks) chips.push(['tasks', '✅', `${tasks} Aufgabe${tasks > 1 ? 'n' : ''}`, b.overdue.length ? 'warn' : '']);
+    const ev = P.occurrences(st().events, t, t).length;
+    if (ev) chips.push(['calendar', '📅', `${ev} Termin${ev > 1 ? 'e' : ''}`, '']);
+    const meds = X.dosesOn(st().meds, t, st().medLog).filter((d) => !d.taken).length;
+    if (meds) chips.push(['meds', '💊', `${meds} Einnahme${meds > 1 ? 'n' : ''}`, '']);
+    const exp = st().items.filter((i) => i.expiry && L.daysUntil(i.expiry) <= 1).length;
+    if (exp) chips.push(['stock', '⏰', `${exp} läuft ab`, 'warn']);
+    const shop = st().shopping.filter((i) => !i.done).length;
+    if (shop) chips.push(['shopping', '🛒', `${shop} einkaufen`, '']);
+    $('#homeGlance').innerHTML = chips.length
+      ? chips.map(([g, e, txt, cls]) => `<button class="glance-chip ${cls}" data-goto="${g}">${e} ${txt}</button>`).join('')
+      : '<span class="glance-chip calm">✨ Heute steht nichts Dringendes an</span>';
   }
   function renderHomeToggles() {
     const hidden = st().settings.homeHidden;
