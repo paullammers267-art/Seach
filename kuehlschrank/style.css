@@ -678,3 +678,5 @@ dialog.breath { background: linear-gradient(180deg, var(--surface), var(--bg)); 
 .ach { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 360px) { .ach-grid { grid-template-columns: minmax(0, 1fr); } .statgrid.review { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .meter-card .statgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
+.w-refresh { font: inherit; font-size: .75rem; color: var(--muted); background: none; border: 0; padding: 6px 0 0; cursor: pointer; }
+.w-refresh.spin { color: var(--primary); }

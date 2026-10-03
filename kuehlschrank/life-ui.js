@@ -28,25 +28,49 @@
   // Startseite: Wetter, Aufgaben heute, Gewohnheiten
   // =====================================================================
   let weatherLoading = false;
+  let lastWeatherTry = 0;
+  const WEATHER_TTL = 10 * 60000; // alle 10 Minuten frisch (Open-Meteo aktualisiert „current“ alle 15 Min.)
+  const isGpsPlace = (p) => p && (p.gps || p.name === 'Mein Standort');
+
+  /** Aktuelle Position (für „Mein Standort“), höchstens 10 Min. alt. */
+  function currentPosition() {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) return resolve(null);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: Math.round(pos.coords.latitude * 100) / 100, lon: Math.round(pos.coords.longitude * 100) / 100 }),
+        () => resolve(null), { timeout: 8000, maximumAge: 10 * 60000 });
+    });
+  }
+
   async function loadWeather(force) {
     const p = st().settings.place;
     if (!p || weatherLoading) return;
     const c = st().weatherCache;
-    if (!force && c && c.lat === p.lat && c.lon === p.lon && Date.now() - c.at < 30 * 60000) return;
+    if (!force && c && c.lat === p.lat && c.lon === p.lon && Date.now() - c.at < WEATHER_TTL) return;
+    if (!force && Date.now() - lastWeatherTry < 60000) return; // offline: nicht im Kreis versuchen
+    lastWeatherTry = Date.now();
     weatherLoading = true;
+    if (force) renderHomeTop();
     try {
+      // Unterwegs: Standort neu bestimmen, damit das Wetter zum aktuellen Ort passt
+      if (isGpsPlace(p)) {
+        const pos = await currentPosition();
+        if (pos && (pos.lat !== p.lat || pos.lon !== p.lon)) { p.lat = pos.lat; p.lon = pos.lon; p.gps = true; }
+      }
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}` +
         '&current=temperature_2m,apparent_temperature,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3';
-      const j = await (await fetch(url)).json();
+      const j = await (await fetch(url, { cache: 'no-store' })).json();
       st().weatherCache = {
         at: Date.now(), lat: p.lat, lon: p.lon,
         current: { temp: j.current.temperature_2m, feels: j.current.apparent_temperature, code: j.current.weather_code },
         daily: j.daily.time.map((d, i) => ({ date: d, code: j.daily.weather_code[i], max: j.daily.temperature_2m_max[i], min: j.daily.temperature_2m_min[i], rain: j.daily.precipitation_probability_max[i] || 0 })),
       };
       A.save();
-      renderHomeTop();
-    } catch (e) { /* offline – alter Stand bleibt */ } finally { weatherLoading = false; }
+    } catch (e) { /* offline – alter Stand bleibt */ } finally { weatherLoading = false; renderHomeTop(); }
   }
+  // Solange die Startseite offen ist, regelmäßig prüfen; beim Zurückkehren in die App sofort
+  setInterval(() => { if (A.view === 'home' && !document.hidden) loadWeather(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && A.view === 'home') loadWeather(); });
 
   function weatherCard() {
     const p = st().settings.place;
@@ -60,6 +84,8 @@
     const w = st().weatherCache;
     if (!w || w.lat !== p.lat) return `<div class="card home-card weather"><div class="home-title">🌤️ Wetter ${esc(p.name)}</div><div class="muted">Lade …</div></div>`;
     const now = F.weatherInfo(w.current.code);
+    const age = Math.round((Date.now() - w.at) / 60000);
+    const stand = weatherLoading ? 'aktualisiere …' : age < 1 ? 'gerade aktualisiert' : `Stand ${new Date(w.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
     const d0 = w.daily.find((d) => d.date === today()) || w.daily[0];
     const tips = F.weatherTips(d0);
     return `<div class="card home-card weather">
@@ -70,6 +96,7 @@
       </div>
       ${tips.length ? `<div class="w-tips">${tips.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
       <div class="w-days">${w.daily.slice(1).map((d) => { const i = F.weatherInfo(d.code); return `<span>${new Date(d.date + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short' })} ${i.emoji} ${Math.round(d.max)}°/${Math.round(d.min)}° ☔${d.rain}%</span>`; }).join('')}</div>
+      <button class="w-refresh ${weatherLoading ? 'spin' : ''}" data-weather="refresh" aria-label="Wetter aktualisieren">↻ ${stand}</button>
     </div>`;
   }
 
@@ -100,7 +127,9 @@
 
   $('#homeTop').addEventListener('click', async (e) => {
     const w = e.target.closest('[data-weather]');
-    if (w) useGps();
+    if (!w) return;
+    if (w.dataset.weather === 'refresh') loadWeather(true);
+    else useGps();
   });
 
   // =====================================================================
@@ -572,9 +601,9 @@
   function useGps() {
     if (!navigator.geolocation) { A.toast('Standort wird nicht unterstützt – bitte Ort eingeben'); A.showView('settings'); return; }
     navigator.geolocation.getCurrentPosition(
-      (pos) => setPlace({ name: 'Mein Standort', lat: Math.round(pos.coords.latitude * 100) / 100, lon: Math.round(pos.coords.longitude * 100) / 100 }),
+      (pos) => setPlace({ name: 'Mein Standort', gps: true, lat: Math.round(pos.coords.latitude * 100) / 100, lon: Math.round(pos.coords.longitude * 100) / 100 }),
       () => { A.toast('Standort nicht freigegeben – bitte Ort eingeben'); A.showView('settings'); setTimeout(() => $('#placeInput').focus(), 50); },
-      { timeout: 10000, maximumAge: 3600000 });
+      { timeout: 10000, maximumAge: 10 * 60000 });
   }
   $('#btnPlaceGps').onclick = useGps;
   $('#placeForm').addEventListener('submit', async (e) => {
