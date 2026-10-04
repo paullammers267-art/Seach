@@ -135,6 +135,8 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
       if ((o.method || 'GET') === 'DELETE') { subs = subs.filter((s) => `eq.${s.id}` !== u.searchParams.get('id')); return reply(204); }
       return reply(200, subs.filter((s) => !u.searchParams.get('user_id') || u.searchParams.get('user_id') === `eq.${s.user_id}`));
     }
+    if (u.pathname === '/rest/v1/calendar_members') return reply(200, [{ user_id: 'u1', calendar_id: 'c1' }]);
+    if (u.pathname === '/rest/v1/shared_events') return reply(200, [{ id: 'se1', calendar_id: 'c1', data: { title: 'Grillen', date: '2026-10-03', time: '09:00', remind: 60 } }]);
     if (u.pathname === '/rest/v1/user_data') return reply(200, [{ user_id: 'u1', data: { meds: [{ id: 'm', name: 'Ramipril', times: ['08:00'] }] } }]);
     if (u.pathname === '/rest/v1/push_sent') {
       if (o.method === 'DELETE') return reply(204);
@@ -150,13 +152,14 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
     const cron = () => handler(new Request('https://f/push', { method: 'POST', headers: { 'x-cron-secret': 'geheim' }, body: '{}' }));
     assert.equal((await handler(new Request('https://f/push', { method: 'POST', body: '{}' }))).status, 403, 'ohne Geheimnis kein Versand');
     let r = await (await cron()).json();
-    assert.deepEqual(r, { subscriptions: 2, users: 1, sent: 1 });
+    assert.deepEqual(r, { subscriptions: 2, users: 1, sent: 2 });
+    assert.equal(delivered[1].body, 'Grillen – heute um 09:00 Uhr', 'Termin aus gemeinsamem Kalender');
     assert.deepEqual(delivered[0], { key: 'med:m@2026-10-03T08:00', title: 'Medikament', body: 'Ramipril – 08:00 Uhr', view: 'meds', tag: 'med:m@2026-10-03T08:00' });
     assert.deepEqual(subs.map((s) => s.id), ['s1'], 'abgemeldetes Gerät entfernt');
     r = await (await cron()).json();
     assert.equal(r.sent, 0, 'zweiter Lauf: nichts doppelt');
     const t = await (await handler(new Request('https://f/push', { method: 'POST', headers: { Authorization: 'Bearer user-token' }, body: '{"test":true}' }))).json();
     assert.deepEqual(t, { devices: 1, sent: 1 });
-    assert.match(delivered[1].body, /Push funktioniert/);
+    assert.match(delivered[2].body, /Push funktioniert/);
   } finally { globalThis.fetch = realFetch; Date.now = realNow; delete globalThis.Deno; }
 });

@@ -37,7 +37,7 @@
     const cards = [];
 
     // Termine
-    const occ = P.occurrences(st().events, today, tomorrow);
+    const occ = P.occurrences(A.allEvents ? A.allEvents() : st().events, today, tomorrow);
     if (occ.length) cards.push(`<button class="card home-card" data-goto="calendar">
       <div class="home-title">Termine</div>
       ${occ.length ? occ.slice(0, 4).map((o) => `<div class="home-line"><b>${o.date === today ? 'Heute' : 'Morgen'}${o.event.time ? ' ' + o.event.time : ''}</b> ${eventEmoji(o.event)} ${esc(eventTitle(o.event, o.date))}</div>`).join('')
@@ -91,7 +91,7 @@
 
   function renderHub() {
     const today = nowIso();
-    const next = P.occurrences(st().events, today, P.addDays(today, 60))[0];
+    const next = P.occurrences(A.allEvents ? A.allEvents() : st().events, today, P.addDays(today, 60))[0];
     $('#hubCal').textContent = next ? `${next.date === today ? 'heute' : L.formatDate(next.date).slice(0, 6)} ${eventTitle(next.event, next.date)}` : 'keine Termine';
     $('#hubExp').textContent = euro(P.summarize(P.monthEntries(st().expenses, ym(today)).filter((e) => !P.isIncome(e))).total) + ' diesen Monat';
     const wk = S.thisWeek(st().workouts);
@@ -305,8 +305,6 @@
   // =====================================================================
   // Kalender
   // =====================================================================
-  let calMonth = ym(nowIso());
-  let calDay = nowIso();
   let editingEvent = null;
   let evType = 'termin';
 
@@ -331,69 +329,15 @@
     return out;
   }
 
-  function renderCalendar() {
-    if (A.view !== 'calendar') return;
-    const [y, m] = calMonth.split('-').map(Number);
-    $('#calTitle').textContent = P.monthLabel(calMonth);
-    const weeks = P.monthGrid(y, m - 1);
-    const from = weeks[0][0].iso, to = weeks[weeks.length - 1][6].iso;
-    const occ = P.occurrences(st().events, from, to);
-    const auto = autoEntries(from, to);
-    const today = nowIso();
-    $('#calGrid').innerHTML = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => `<div class="cal-wd">${d}</div>`).join('') +
-      weeks.flat().map((d) => {
-        const ev = occ.filter((o) => o.date === d.iso);
-        const kinds = new Set(auto.filter((a) => a.date === d.iso).map((a) => a.kind));
-        return `<button class="cal-cell ${d.out ? 'out' : ''} ${d.iso === today ? 'today' : ''} ${d.iso === calDay ? 'sel' : ''}" data-day="${d.iso}">
-          <span class="n">${d.day}</span>
-          <span class="dots">${ev.length ? `<i class="dot-ev">${ev.length > 1 ? ev.length : ''}</i>` : ''}${kinds.has('exp') ? '<i class="dot-exp"></i>' : ''}${kinds.has('meal') ? '<i class="dot-meal"></i>' : ''}${kinds.has('sport') ? '<i class="dot-sport"></i>' : ''}${kinds.has('task') ? '<i class="dot-task"></i>' : ''}</span>
-        </button>`;
-      }).join('');
+  // Darstellung (Monat/Woche/Liste), gemeinsame Kalender und Teilen: calendar-ui.js
+  A.autoEntries = autoEntries;
+  A.eventEmoji = eventEmoji;
+  A.eventTitle = eventTitle;
 
-    const dayLabel = calDay === today ? 'Heute' : calDay === P.addDays(today, 1) ? 'Morgen' : new Date(calDay + 'T12:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-    $('#calDayTitle').textContent = dayLabel;
-    const dayEv = P.occurrences(st().events, calDay, calDay);
-    const dayAuto = autoEntries(calDay, calDay);
-    $('#calDay').innerHTML = dayEv.map(eventRow).join('') + dayAuto.map((a) => `<button class="ev-row auto" data-goto="${a.go}"><span class="ev-time">${a.emoji}</span><span>${esc(a.text)}</span></button>`).join('') ||
-      `<p class="muted small">Nichts eingetragen. <button class="link-btn" id="calAddHere">＋ Termin an diesem Tag</button></p>`;
-    if ($('#calAddHere')) $('#calAddHere').onclick = () => openEventDialog(null, calDay);
-
-    const seen = new Set();
-    const up = P.occurrences(st().events, today, P.addDays(today, 60))
-      .filter((o) => !(o.date === today && calDay === today) && !seen.has(o.event.id) && seen.add(o.event.id)).slice(0, 8); // je Termin nur das nächste Mal
-    $('#calUpcoming').innerHTML = up.length ? up.map((o) => eventRow(o, true)).join('') : '<p class="muted small">In den nächsten Wochen nichts geplant.</p>';
-  }
-
-  function eventRow(o, withDate) {
-    const ev = o.event;
-    const d = L.daysUntil(o.date);
-    const when = withDate ? (d === 0 ? 'heute' : d === 1 ? 'morgen' : `in ${d} Tagen`) : '';
-    return `<button class="ev-row" data-ev="${esc(ev.id)}">
-      <span class="ev-time">${ev.time || eventEmoji(ev)}</span>
-      <span class="grow">${ev.time ? eventEmoji(ev) + ' ' : ''}${esc(eventTitle(ev, o.date))}
-        <span class="muted small">${withDate ? L.formatDate(o.date).slice(0, 6) + ' · ' + when : ''}${ev.repeat && ev.repeat !== 'none' ? ' · 🔁 ' + P.REPEATS[ev.repeat] : ''}${ev.remind !== '' && ev.remind != null ? ' · 🔔' : ''}${ev.note ? ' · ' + esc(ev.note) : ''}</span></span>
-    </button>`;
-  }
-
-  $('#calGrid').addEventListener('click', (e) => {
-    const c = e.target.closest('[data-day]');
-    if (!c) return;
-    if (calDay === c.dataset.day) { openEventDialog(null, calDay); return; } // zweimal tippen = neuer Termin
-    calDay = c.dataset.day;
-    if (ym(calDay) !== calMonth) calMonth = ym(calDay);
-    renderCalendar();
-  });
-  $('#view-calendar').addEventListener('click', (e) => {
-    const r = e.target.closest('[data-ev]');
-    if (r) openEventDialog(st().events.find((x) => x.id === r.dataset.ev));
-  });
-  $('#calPrev').onclick = () => { calMonth = P.shiftMonth(calMonth, -1); renderCalendar(); };
-  $('#calNext').onclick = () => { calMonth = P.shiftMonth(calMonth, 1); renderCalendar(); };
-  $('#calToday').onclick = () => { calDay = nowIso(); calMonth = ym(calDay); renderCalendar(); };
-  $('#btnNewEvent').onclick = () => openEventDialog(null, calDay);
   $('#btnIcsAll').onclick = () => {
-    if (!st().events.length) { A.toast('Noch keine Termine'); return; }
-    download('termine.ics', P.toICS(st().events), 'text/calendar');
+    const all = A.allEvents ? A.allEvents() : st().events;
+    if (!all.length) { A.toast('Noch keine Termine'); return; }
+    download('termine.ics', P.toICS(all), 'text/calendar');
     A.toast('Kalenderdatei erstellt – öffnen, um die Termine samt Erinnerung in den Handy-Kalender zu übernehmen');
   };
 
@@ -414,8 +358,18 @@
   }
   $('#evType').addEventListener('click', (e) => { const c = e.target.closest('[data-v]'); if (c) setEvType(c.dataset.v, !editingEvent); });
 
-  function openEventDialog(ev, day) {
+  function openEventDialog(ev, day, cal) {
     editingEvent = ev || null;
+    const cals = A.calChoices ? A.calChoices() : [];
+    $('#evCal').innerHTML = cals.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+    $('#evCalWrap').hidden = cals.length < 2;
+    $('#evCal').value = ev ? ev.cal || 'me' : cal || (A.calDefault ? A.calDefault() : 'me');
+    $('#evEnd').value = ev ? ev.endTime || '' : '';
+    $('#evLocation').value = ev ? ev.location || '' : '';
+    $('#evShare').hidden = !ev;
+    const meta = ev && ev.cal && A.calMeta ? A.calMeta(ev) : '';
+    $('#evMeta').hidden = !meta;
+    $('#evMeta').textContent = meta;
     $('#eventTitle').textContent = ev ? 'Termin bearbeiten' : 'Neuer Termin';
     $('#evTitle').value = ev ? ev.title : '';
     $('#evDate').value = ev ? ev.date : (day || nowIso());
@@ -426,11 +380,11 @@
     $('#evNote').value = ev ? ev.note || '' : '';
     setEvType(ev ? ev.type || 'termin' : 'termin', false);
     $('#evDelete').hidden = !ev;
-    $('#evIcs').hidden = !ev;
     evDlg.showModal();
   }
   A.actions.event = () => openEventDialog(null, nowIso());
-  A.openEvent = (id) => { A.showView('calendar'); openEventDialog(st().events.find((x) => x.id === id)); };
+  A.openEvent = (id) => { A.showView('calendar'); openEventDialog(st().events.find((x) => x.id === id) || (A.findSharedEvent && A.findSharedEvent(id))); };
+  A.openEventDialog = openEventDialog;
   A.newEvent = (type) => { openEventDialog(null, nowIso()); setEvType(type || 'termin', true); };
 
   // Bei Geburtstagen mit Geburtsjahr im Datum: Datum = Geburtstag, Wiederholung jährlich
@@ -446,13 +400,22 @@
       repeat: $('#evRepeat').value,
       remind: remind === '' ? '' : Number(remind),
       note: $('#evNote').value.trim(),
+      endTime: $('#evTime').value && $('#evEnd').value > $('#evTime').value ? $('#evEnd').value : '',
+      location: $('#evLocation').value.trim(),
       birthYear: evType === 'geburtstag' && /^\d{4}$/.test($('#evBirthYear').value) ? Number($('#evBirthYear').value) : undefined,
     };
     if (!ev.date) return;
+    const cal = $('#evCal').value || 'me';
+    if (cal !== 'me' || (editingEvent && editingEvent.cal)) {
+      // gemeinsamer Kalender (oder Wechsel zwischen eigenem und gemeinsamem Kalender)
+      if (!A.saveSharedEvent) return;
+      A.saveSharedEvent(ev, cal, editingEvent).then((ok) => { if (ok) { evDlg.close(); if (A.calFocus) A.calFocus(ev.date); A.render(); } });
+      return;
+    }
     st().events = st().events.filter((x) => x.id !== ev.id).concat(ev);
     st().notified = st().notified.filter((k) => !k.startsWith(ev.id + '@')); // geänderte Zeit -> neu erinnern
     A.save(); evDlg.close();
-    calDay = ev.date; calMonth = ym(ev.date);
+    if (A.calFocus) A.calFocus(ev.date);
     if (A.view !== 'calendar') A.showView('calendar'); else A.render();
     A.toast(`${ev.title} gespeichert${ev.remind !== '' ? ' 🔔' : ''}`);
     if (ev.remind !== '' && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission();
@@ -460,17 +423,15 @@
   $('#evCancel').onclick = () => evDlg.close();
   $('#evDelete').onclick = () => {
     if (!confirm(`„${editingEvent.title}“ löschen?${editingEvent.repeat !== 'none' ? ' (alle Wiederholungen)' : ''}`)) return;
+    if (editingEvent.cal) { A.deleteSharedEvent(editingEvent).then((ok) => { if (ok) { evDlg.close(); A.render(); } }); return; }
     st().events = st().events.filter((x) => x.id !== editingEvent.id);
     A.save(); evDlg.close(); A.render();
   };
-  $('#evIcs').onclick = () => {
-    const ev = st().events.find((x) => x.id === editingEvent.id);
-    download(`${ev.title.replace(/[^\wäöüÄÖÜß -]/g, '').trim() || 'termin'}.ics`, P.toICS([ev]), 'text/calendar');
-  };
+  $('#evShare').onclick = () => { if (A.shareEvent) A.shareEvent(editingEvent); };
 
   // ---------- Erinnerungen (solange die App offen ist) ----------
   async function checkReminders() {
-    const due = P.dueReminders(st().events, Date.now(), st().notified);
+    const due = P.dueReminders(A.allEvents ? A.allEvents() : st().events, Date.now(), st().notified);
     if (!due.length) return;
     for (const o of due) {
       const ev = o.event;
@@ -613,7 +574,6 @@
   A.onRender(renderHome);
   A.onRender(renderHub);
   A.onRender(renderSport);
-  A.onRender(renderCalendar);
   A.onRender(renderExpenses);
   if (!preview) renderPreview();
   A.render();

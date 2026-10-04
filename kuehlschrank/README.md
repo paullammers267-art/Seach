@@ -12,12 +12,12 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - **Trainingsmodus**: großer Countdown, Ansage der Übungen, Pieptöne, Pause/Überspringen, Bildschirm bleibt an
 - Wochenziel, Serie (Tage in Folge), Verlauf
 
-## 📅 Kalender
-- Monatsansicht, Termine mit Art (Arzt, Geburtstag, Müllabfuhr …), Uhrzeit, Notiz
-- Wiederholung: wöchentlich, alle 2 Wochen (Müll), monatlich, jährlich (Geburtstage mit Alter)
-- Ablaufdaten, Essensplan und Trainings erscheinen automatisch
-- Erinnerungen, solange die App offen ist; **📲 Export in den Handy-Kalender** (.ics, inkl. Wiederholung und Erinnerung)
-
+## Kalender
+- Ansichten **Monat**, **Woche** (mit Kalenderwoche) und **Liste** (alles Kommende nach Tagen)
+- Termine mit Beginn und Ende, Ort, Erinnerung, Wiederholung (täglich, werktags, wöchentlich, alle 2 Wochen, monatlich, jährlich), Geburtstage mit Alter
+- **Ebenen** ein-/ausblenden: eigene und gemeinsame Kalender, Aufgaben, Ablaufdaten, Essensplan, Training, Fristen & Müll
+- **Teilen**: einzelnen Termin als Nachricht (mit Link zum Übernehmen in Alltagsheld) oder als Kalenderdatei; alle Termine in den Handy-Kalender exportieren
+- **Gemeinsame Kalender** (Konto nötig): z. B. „Familie“ anlegen, per Link einladen, alle sehen und bearbeiten dieselben Termine („eingetragen von …“), Farben je Kalender, Mitglieder verwalten, verlassen/löschen; Erinnerungen auch per Push. Einrichtung: `supabase/calendar.sql` im SQL Editor ausführen.
 ## 💶 Ausgaben
 - Schnell erfassen: „12,50 Tanken“ eintippen oder sagen – Kategorie wird erkannt
 - Monatsübersicht mit Kategorien, Vergleich zum Vormonat, **Budget** mit „pro Tag noch …“

@@ -299,8 +299,16 @@ async function handler(req) {
   const ids = Object.keys(byUser);
   let sent = 0, users = 0;
   for (let i = 0; i < ids.length; i += 50) {
-    const rows = await db(`user_data?select=user_id,data&user_id=in.(${ids.slice(i, i + 50).join(',')})`);
+    const chunk = ids.slice(i, i + 50);
+    const rows = await db(`user_data?select=user_id,data&user_id=in.(${chunk.join(',')})`);
+    // Termine aus gemeinsamen Kalendern dazunehmen (falls eingerichtet)
+    const mem = await db(`calendar_members?select=user_id,calendar_id&user_id=in.(${chunk.join(',')})`).catch(() => []);
+    const calIds = [...new Set(mem.map((m) => m.calendar_id))];
+    const shared = calIds.length ? await db(`shared_events?select=id,calendar_id,data&calendar_id=in.(${calIds.join(',')})`).catch(() => []) : [];
     for (const row of rows) {
+      const mine = new Set(mem.filter((m) => m.user_id === row.user_id).map((m) => m.calendar_id));
+      const extra = shared.filter((e) => mine.has(e.calendar_id)).map((e) => ({ ...e.data, id: e.id }));
+      if (extra.length) row.data = { ...(row.data || {}), events: ((row.data && row.data.events) || []).concat(extra) };
       const list = byUser[row.user_id];
       const tz = list.map((s) => s.tz).filter(Boolean)[0] || 'Europe/Berlin';
       const msgs = dueMessages(row.data, now, tz);

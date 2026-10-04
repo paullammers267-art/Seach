@@ -177,23 +177,17 @@
 
     <!-- Kalender -->
     <section id="view-calendar" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Kalender</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Kalender</h2><span class="spacer"></span><button class="top-btn" id="calLayersBtn" aria-label="Kalender &amp; Teilen"><i class="ic ic-layers"></i></button></div>
+      <div class="segmented" id="calMode"><button data-m="month" class="active">Monat</button><button data-m="week">Woche</button><button data-m="list">Liste</button></div>
       <div class="cal-head">
-        <button class="btn small" id="calPrev" aria-label="Vormonat">‹</button>
+        <button class="btn small" id="calPrev" aria-label="Zurück">‹</button>
         <h2 id="calTitle"></h2>
-        <button class="btn small" id="calNext" aria-label="Nächster Monat">›</button>
+        <button class="btn small" id="calNext" aria-label="Weiter">›</button>
         <button class="btn small" id="calToday">Heute</button>
       </div>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-legend muted small"><i class="lg dot-ev"></i>Termin <i class="lg dot-exp"></i>läuft ab <i class="lg dot-meal"></i>Essen <i class="lg dot-sport"></i>Training <i class="lg dot-task"></i>Aufgabe</div>
-      <div class="row tight cal-actions">
-        <button class="btn primary" id="btnNewEvent">＋ Termin</button>
-        <button class="btn" id="btnIcsAll">In Handy-Kalender</button>
-      </div>
-      <h3 id="calDayTitle" class="section"></h3>
-      <div id="calDay"></div>
-      <h3 class="section">Demnächst</h3>
-      <div id="calUpcoming"></div>
+      <div id="calBody"></div>
+      <div id="calDayBox"><h3 id="calDayTitle" class="sec-title"></h3><div id="calDay"></div></div>
+      <button class="btn primary cal-fab" id="btnNewEvent" aria-label="Neuer Termin">＋ Termin</button>
     </section>
 
     <!-- Ausgaben -->
@@ -944,18 +938,28 @@
   <dialog id="eventDialog">
     <form id="eventForm" method="dialog">
       <h2 id="eventTitle">Termin</h2>
+      <p class="muted small" id="evMeta" hidden></p>
       <label>Was?
         <input id="evTitle" required placeholder="z. B. Zahnarzt, Geburtstag Oma" autocomplete="off">
+      </label>
+      <label id="evCalWrap" hidden>Kalender
+        <select id="evCal"></select>
       </label>
       <div class="chips" id="evType"></div>
       <div class="row">
         <label>Datum
           <input id="evDate" type="date" required>
         </label>
-        <label>Uhrzeit
+        <label>Von
           <input id="evTime" type="time">
         </label>
+        <label>Bis
+          <input id="evEnd" type="time">
+        </label>
       </div>
+      <label>Ort
+        <input id="evLocation" placeholder="z. B. Praxis Dr. Meyer, Marktstr. 3" autocomplete="off">
+      </label>
       <div class="row">
         <label>Wiederholen
           <select id="evRepeat"></select>
@@ -981,7 +985,7 @@
       </label>
       <div class="dialog-actions">
         <button type="button" class="btn danger" id="evDelete" hidden>Löschen</button>
-        <button type="button" class="btn" id="evIcs" hidden title="In den Handy-Kalender">📲</button>
+        <button type="button" class="btn" id="evShare" hidden><i class="ic ic-share"></i> Teilen</button>
         <span class="spacer"></span>
         <button type="button" class="btn" id="evCancel">Abbrechen</button>
         <button type="submit" class="btn primary">Speichern</button>
@@ -1372,6 +1376,48 @@
     </div>
   </dialog>
 
+  <!-- Kalender & Teilen -->
+  <dialog id="calLayers" class="sheet">
+    <h2>Kalender</h2>
+    <div id="calList"></div>
+    <div class="row tight"><button class="btn" id="calCreate">＋ Gemeinsamer Kalender</button><button class="btn" id="calJoin">Beitreten</button></div>
+    <h3 class="sec-title">Ebenen</h3>
+    <div class="chips" id="calLayerChips"></div>
+    <button class="btn wide" id="btnIcsAll"><i class="ic ic-download"></i> In Handy-Kalender exportieren</button>
+    <button class="btn sheet-cancel" id="calLayersClose">Fertig</button>
+  </dialog>
+
+  <dialog id="calShareDialog">
+    <div class="cal-share">
+      <h2 id="csTitle"></h2>
+      <p class="muted small" id="csInfo"></p>
+      <div class="cs-link"><input id="csLink" readonly><button class="btn" id="csCopy">Kopieren</button></div>
+      <button class="btn primary big" id="csShare"><i class="ic ic-share"></i> Einladung senden</button>
+      <h3 class="sec-title">Mitglieder</h3>
+      <div id="csMembers"></div>
+      <div class="row tight"><button class="btn small" id="csNewCode" hidden>Neuen Link erzeugen</button><button class="btn small danger" id="csLeave"></button></div>
+      <button class="btn sheet-cancel" id="csClose">Schließen</button>
+    </div>
+  </dialog>
+
+  <dialog id="calNewDialog">
+    <form id="calNewForm" method="dialog">
+      <h2>Gemeinsamer Kalender</h2>
+      <label>Name<input id="cnName" required maxlength="60" placeholder="z. B. Familie, WG, Fußball" autocomplete="off"></label>
+      <div class="swatches" id="cnColors"></div>
+      <div class="dialog-actions"><span class="spacer"></span><button type="button" class="btn" id="cnCancel">Abbrechen</button><button class="btn primary">Erstellen</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="calAskDialog">
+    <form id="calAskForm" method="dialog" class="cal-ask">
+      <h2 id="caTitle"></h2>
+      <div id="caBody"></div>
+      <label id="caInputWrap" hidden><span id="caInputLabel"></span><input id="caInput" autocomplete="off"></label>
+      <div class="dialog-actions"><span class="spacer"></span><button type="button" class="btn" id="caCancel">Abbrechen</button><button class="btn primary" id="caOk"></button></div>
+    </form>
+  </dialog>
+
   <!-- Atemübung -->
   <dialog id="breathDialog" class="cookmode breath">
     <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
@@ -1436,5 +1482,7 @@
   <script src="auth-ui.js"></script>
   <script src="push-ui.js"></script>
   <script src="widgets-ui.js"></script>
+  <script src="calendar.js"></script>
+  <script src="calendar-ui.js"></script>
 </body>
 </html>

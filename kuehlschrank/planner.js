@@ -28,7 +28,7 @@
   };
 
   const REPEATS = {
-    none: 'einmalig', weekly: 'jede Woche', biweekly: 'alle 2 Wochen', monthly: 'jeden Monat', yearly: 'jedes Jahr',
+    none: 'einmalig', daily: 'täglich', weekdays: 'werktags (Mo–Fr)', weekly: 'jede Woche', biweekly: 'alle 2 Wochen', monthly: 'jeden Monat', yearly: 'jedes Jahr',
   };
 
   /** Fällt ein (wiederholter) Termin auf dieses Datum? */
@@ -39,6 +39,8 @@
     if (r === 'none') return day === ev.date;
     const a = parse(ev.date), b = parse(day);
     const diff = Math.round((b - a) / DAY);
+    if (r === 'daily') return true;
+    if (r === 'weekdays') { const wd = b.getDay(); return wd >= 1 && wd <= 5; }
     if (r === 'weekly') return diff % 7 === 0;
     if (r === 'biweekly') return diff % 14 === 0;
     if (r === 'monthly') {
@@ -118,7 +120,7 @@
   function toICS(events, stamp = new Date()) {
     const dt = (d, t) => d.replace(/-/g, '') + (t ? 'T' + t.replace(':', '') + '00' : '');
     const st = stamp.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
-    const rr = { weekly: 'FREQ=WEEKLY', biweekly: 'FREQ=WEEKLY;INTERVAL=2', monthly: 'FREQ=MONTHLY', yearly: 'FREQ=YEARLY' };
+    const rr = { daily: 'FREQ=DAILY', weekdays: 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', weekly: 'FREQ=WEEKLY', biweekly: 'FREQ=WEEKLY;INTERVAL=2', monthly: 'FREQ=MONTHLY', yearly: 'FREQ=YEARLY' };
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Frischecheck//Alltagshelfer//DE', 'CALSCALE:GREGORIAN'];
     for (const ev of events) {
       const type = EVENT_TYPES[ev.type] || EVENT_TYPES.termin;
@@ -132,6 +134,7 @@
       }
       lines.push(`SUMMARY:${icsEscape(type.emoji + ' ' + ev.title)}`);
       if (ev.note) lines.push(`DESCRIPTION:${icsEscape(ev.note)}`);
+      if (ev.location) lines.push(`LOCATION:${icsEscape(ev.location)}`);
       if (ev.repeat && rr[ev.repeat]) lines.push('RRULE:' + rr[ev.repeat] + (ev.until ? ';UNTIL=' + dt(ev.until) : ''));
       if (ev.remind != null && ev.remind !== '' && ev.remind >= 0) {
         lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsEscape(ev.title)}`, `TRIGGER:-PT${Number(ev.remind)}M`, 'END:VALARM');
