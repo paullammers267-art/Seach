@@ -197,3 +197,11 @@ test('Kochmodus-Timer und Teilen-Link', () => {
   assert.deepEqual(L.decodeShare(L.encodeShare(list)), list);
   assert.equal(L.decodeShare('kaputt!!'), null);
 });
+
+test('Drogerie-Artikel sind keine Zutaten', () => {
+  const L = require('../kuehlschrank/logic.js');
+  assert.equal(L.detectIngredient('Zahnpasta'), null);
+  assert.equal(L.detectIngredient('Spülmittel'), null);
+  assert.equal(L.detectIngredient('Vollkornnudeln'), 'nudeln');
+  assert.equal(L.detectIngredient('Vollmilch'), 'milch');
+});

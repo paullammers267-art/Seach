@@ -311,8 +311,11 @@
    * Ordnet einen Produktnamen (und optional Open-Food-Facts-Kategorien) einer kanonischen Zutat zu.
    * Gewinnt der längste Treffer, damit z. B. "Milchschokolade" nicht als Milch zählt.
    */
+  // Drogerie & Haushalt sind keine Lebensmittel („Zahnpasta“ ist keine Pasta, „Katzenfutter“ kein Fleisch)
+  const NON_FOOD = ['zahnpasta', 'zahnburste', 'zahnbuerste', 'shampoo', 'duschgel', 'spulmittel', 'spuelmittel', 'waschmittel', 'weichspuler', 'klopapier', 'toilettenpapier', 'katzenfutter', 'hundefutter', 'tierfutter', 'kuchenrolle', 'kuechenrolle', 'reiniger'];
   function detectIngredient(name, categories = []) {
     const hay = ' ' + norm(name) + ' ';
+    if (NON_FOOD.some((w) => hay.includes(w))) return null;
     let best = null;
     let bestLen = 0;
     for (const [key, ing] of Object.entries(INGREDIENTS)) {

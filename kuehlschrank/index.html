@@ -454,6 +454,29 @@
       <div id="ttWeek"></div>
     </section>
 
+    <!-- Geburtstage -->
+    <section id="view-birthdays" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Geburtstage &amp; Geschenke</h2></div>
+      <div id="bdList"></div>
+      <button class="btn primary wide" id="bdAdd">＋ Geburtstag</button>
+    </section>
+
+    <!-- Tagebuch -->
+    <section id="view-journal" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Tagebuch</h2></div>
+      <form class="card jr-today" id="jrForm" autocomplete="off">
+        <div class="jr-head"><b id="jrDate"></b><span class="muted small" id="jrStreak"></span></div>
+        <div class="jr-moods" id="jrMoods"></div>
+        <label class="set-label"><span id="jrPrompt"></span><textarea id="jrText" rows="5" placeholder="Schreib einfach los …"></textarea></label>
+        <p class="set-label">Dafür bin ich heute dankbar</p>
+        <input class="jr-g" id="jrG1" placeholder="1."><input class="jr-g" id="jrG2" placeholder="2."><input class="jr-g" id="jrG3" placeholder="3.">
+        <button class="btn primary">Speichern</button>
+      </form>
+      <div id="jrFlash"></div>
+      <h3 class="sec-title">Frühere Einträge</h3>
+      <div id="jrList"></div>
+    </section>
+
     <!-- Pflanzen -->
     <section id="view-plants" class="view">
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Pflanzen</h2></div>
@@ -570,6 +593,7 @@
         <button class="hub-tile" data-goto="deadlines"><span class="hub-ic"><i class="ic ic-idcard"></i></span><b>Fristen</b><small id="hubDeadlines"></small></button>
         <button class="hub-tile" data-goto="checklists"><span class="hub-ic"><i class="ic ic-list"></i></span><b>Checklisten</b><small id="hubChecklists"></small></button>
         <button class="hub-tile" data-goto="timetable"><span class="hub-ic"><i class="ic ic-school"></i></span><b>Stundenplan</b><small id="hubTimetable"></small></button>
+        <button class="hub-tile" data-goto="birthdays"><span class="hub-ic"><i class="ic ic-gift"></i></span><b>Geburtstage</b><small id="hubBirthdays"></small></button>
         <button class="hub-tile" data-goto="countdowns"><span class="hub-ic"><i class="ic ic-hourglass"></i></span><b>Countdowns</b><small id="hubCountdowns"></small></button>
         <button class="hub-tile" data-goto="focus"><span class="hub-ic"><i class="ic ic-target"></i></span><b>Fokus-Timer</b><small id="hubFocus"></small></button>
       </div>
@@ -579,6 +603,7 @@
         <button class="hub-tile" data-goto="habits"><span class="hub-ic"><i class="ic ic-droplet"></i></span><b>Gewohnheiten</b><small id="hubHabits"></small></button>
         <button class="hub-tile" data-goto="health"><span class="hub-ic"><i class="ic ic-heart"></i></span><b>Gesundheit</b><small id="hubHealth"></small></button>
         <button class="hub-tile" data-goto="meds"><span class="hub-ic"><i class="ic ic-pill"></i></span><b>Medikamente</b><small id="hubMeds"></small></button>
+        <button class="hub-tile" data-goto="journal"><span class="hub-ic"><i class="ic ic-book"></i></span><b>Tagebuch</b><small id="hubJournal"></small></button>
         <button class="hub-tile" data-goto="emergency"><span class="hub-ic"><i class="ic ic-lifebuoy"></i></span><b>Notfallpass</b><small id="hubEmergency"></small></button>
       </div>
       <h3 class="sec-title">Zuhause &amp; Finanzen</h3>
@@ -636,9 +661,15 @@
       </div>
       <div class="card">
         <h2>Erinnerungen</h2>
-        <p class="muted">Beim Öffnen der App wirst du benachrichtigt, wenn etwas heute oder morgen abläuft.</p>
+        <p class="muted small">Benachrichtigungen der App kommen, solange sie geöffnet ist oder im Hintergrund läuft.</p>
         <button id="btnNotify" class="btn">Benachrichtigungen erlauben</button>
         <p id="notifyState" class="muted small"></p>
+        <div class="export-box">
+          <b>Auch bei geschlossener App erinnert werden</b>
+          <p class="muted small">Überträgt Medikamente, Termine &amp; Geburtstage, Aufgaben, Fristen, Kündigungsfristen, Müllabfuhr, Rückgaben und Countdowns – jeweils mit Erinnerung – in deinen Handy-Kalender. Kostenlos, ohne Konto.</p>
+          <button class="btn primary" id="btnExportReminders"><i class="ic ic-calendar"></i> Alle Erinnerungen in den Handy-Kalender</button>
+          <p class="muted small" id="exportInfo"></p>
+        </div>
       </div>
       <h3 class="sec-title">Küche &amp; Vorrat</h3>
       <div class="card">
@@ -701,7 +732,7 @@
     <button class="tab" data-view="stock"><span><i class="ic ic-box"></i></span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span><i class="ic ic-cart"></i></span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts contracts checklists timetable"><span><i class="ic ic-menu"></i></span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts contracts checklists timetable birthdays journal"><span><i class="ic ic-menu"></i></span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -877,6 +908,8 @@
       <button data-action="loan"><span><i class="ic ic-swap"></i></span>Verliehen</button>
       <button data-action="countdown"><span><i class="ic ic-hourglass"></i></span>Countdown</button>
       <button data-action="focus"><span><i class="ic ic-target"></i></span>Fokus</button>
+      <button data-action="journal"><span><i class="ic ic-book"></i></span>Tagebuch</button>
+      <button data-action="birthday"><span><i class="ic ic-gift"></i></span>Geburtstag</button>
       <button data-action="checklist"><span><i class="ic ic-list"></i></span>Checkliste</button>
       <button data-action="contract"><span><i class="ic ic-contract"></i></span>Vertrag</button>
       <button data-action="park"><span><i class="ic ic-parking"></i></span>Parken</button>
@@ -1336,5 +1369,7 @@
   <script src="daily-ui.js"></script>
   <script src="organize.js"></script>
   <script src="organize-ui.js"></script>
+  <script src="deep.js"></script>
+  <script src="deep-ui.js"></script>
 </body>
 </html>

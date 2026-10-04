@@ -431,6 +431,7 @@
   }
   A.actions.event = () => openEventDialog(null, nowIso());
   A.openEvent = (id) => { A.showView('calendar'); openEventDialog(st().events.find((x) => x.id === id)); };
+  A.newEvent = (type) => { openEventDialog(null, nowIso()); setEvType(type || 'termin', true); };
 
   // Bei Geburtstagen mit Geburtsjahr im Datum: Datum = Geburtstag, Wiederholung jährlich
   $('#eventForm').addEventListener('submit', (e) => {
@@ -508,7 +509,7 @@
       ${income ? `<div class="saldo"><span>Einnahmen <b>${euro(income)}</b></span><span>Saldo <b class="${income - sum.total < 0 ? 'warn-text' : 'ok-text'}">${income - sum.total >= 0 ? '+' : '−'}${euro(Math.abs(income - sum.total))}</b></span></div>` : ''}
       ${prev ? `<div class="muted small center">Vormonat: ${euro(prev)} (${sum.total >= prev ? '+' : '−'}${euro(Math.abs(sum.total - prev))})</div>` : ''}
       ${b ? `<div class="meter ${b.over ? 'over' : ''}"><i style="width:${b.pct}%"></i></div>
-        <div class="small center">${b.over ? `<b class="warn-text">${euro(-b.left)} über dem Budget</b>` : `Budget ${euro(b.budget)}: noch <b>${euro(b.left)}</b>${b.perDay != null ? ` · ${euro(b.perDay)} pro Tag` : ''}`}</div>` : '<div class="muted small center">Tipp: Lege mit 🎯 ein Monatsbudget fest.</div>'}
+        <div class="small center">${b.over ? `<b class="warn-text">${euro(-b.left)} über dem Budget</b>` : `Budget ${euro(b.budget)}: noch <b>${euro(b.left)}</b>${b.perDay != null ? ` · ${euro(b.perDay)} pro Tag` : ''}`}</div>` : '<div class="muted small center">Tipp: Lege unten unter „Budget“ ein Monatsbudget fest.</div>'}
       ${sum.byCategory.length ? `<div class="cat-bars">${sum.byCategory.map((c) => `<div class="cat-bar">
         <span>${catOf(c.category).emoji} ${esc(catOf(c.category).label)}</span><b>${euro(c.amount)}</b>
         <i style="width:${Math.round((c.amount / max) * 100)}%"></i></div>`).join('')}</div>` : ''}`;

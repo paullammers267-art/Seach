@@ -38,6 +38,22 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Zeigt nur, was man jeden Tag braucht: Aufgabe, Einkauf, Termin, Ausgabe, Produkt, Mahlzeit, Notiz, Timer
 - Unter Mehr → „Schnellmenü ＋ anpassen“ lässt sich alles andere dazuschalten (z. B. Parken, Paket, Getankt)
 
+## Erinnerungen auch bei geschlossener App
+- Mehr → Erinnerungen → „Alle Erinnerungen in den Handy-Kalender“: Medikamente (täglich zur Uhrzeit), Termine & Geburtstage, Aufgaben, Fristen, Kündigungsfristen, Müllabfuhr, Rückgaben, Countdowns – jeweils mit Erinnerung. Kostenlos, ohne Server.
+
+## Geburtstage & Geschenke
+- Alle Geburtstage mit Alter („wird 80“, runde Geburtstage markiert), Geschenkideen sammeln, als gekauft abhaken oder auf die Einkaufsliste setzen
+- Startseite: Geburtstage der nächsten 7 Tage mit Geschenk-Status
+
+## Tagebuch
+- Täglich eine Schreibfrage, Stimmung, drei Dinge, für die du dankbar bist; Rückblick „vor einer Woche / einem Monat / einem Jahr“, Schreib-Serie
+- Abends erinnert die Startseite daran; die Gewohnheit „Dankbarkeit notieren“ wird automatisch abgehakt
+
+## Vertieft
+- Einkaufsliste nach Supermarkt-Gängen sortiert (Obst & Gemüse, Brot, Kühlregal, … Drogerie, Haushalt) – abschaltbar
+- Ausgaben: Verlauf der letzten 6 Monate mit Durchschnitt, Monat antippen für Details
+- Gewohnheiten: Verlauf der letzten 12 Wochen als Kalender, Erfolgsquote und bester Wochentag
+
 ## Verträge & Abos
 - Handy, Internet, Strom, Versicherung, Streaming … mit Mindestlaufzeit, Verlängerung und Kündigungsfrist
 - Zeigt, bis wann du kündigen musst (Erinnerung + Startseite + Kalender) und was alles zusammen pro Monat/Jahr kostet
