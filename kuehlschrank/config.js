@@ -5,4 +5,6 @@
 window.ALLTAGSHELD_SUPABASE = {
   url: 'https://mthtdwahlhxmtczczvbn.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10aHRkd2FobGh4bXRjemN6dmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMjI2OTYsImV4cCI6MjEwNjY5ODY5Nn0.OYC3B1Tm187Vu5XFkpuYzqhrktzQlgHv-2yKbOPNhvQ',
+  // Öffentlicher Schlüssel für Push-Nachrichten (der private liegt nur in Supabase → Edge Functions → Secrets)
+  vapidPublicKey: 'BLP4WFaMDhbY4dwIqAOqkbvu3chvTEHoro3XjARw5dxNHHgvuT5CorvhTKwo2rbfWVfrXHMcNngm4y-kxCaLPuY',
 };

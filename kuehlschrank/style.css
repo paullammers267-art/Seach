@@ -1211,3 +1211,13 @@ dialog.auth-dialog { width: 100%; max-width: 440px; max-height: 100dvh; height: 
 .top-btn.avatar.synced::after, .top-btn.avatar.sync-warn::after, .top-btn.avatar.sync-busy::after { content: ""; position: absolute; right: 0; bottom: 0; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--bg); background: var(--ok); }
 .top-btn.avatar.sync-warn::after { background: var(--today); }
 .top-btn.avatar.sync-busy::after { background: var(--primary); animation: pulse 1s infinite; }
+
+/* Push-Erinnerungen */
+.push-box { margin-top: 14px; padding: 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg); display: grid; gap: 8px; }
+.push-box p { margin: 0; }
+.push-box > .btn { width: 100%; }
+.push-on { display: flex; align-items: center; gap: 8px; color: var(--ok); }
+.push-on i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
+.push-types { margin: 2px 0; }
+.push-times { margin: 0; }
+.push-box .row { margin: 0; }

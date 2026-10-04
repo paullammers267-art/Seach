@@ -199,6 +199,18 @@ Optional: Mit Konto sind die Daten auf allen Geräten gleich und bei Handyverlus
 
 Hinweis: Der kostenlose Supabase-Mailversand ist auf wenige E-Mails pro Stunde begrenzt – für den Alltag reicht das. Für viele Nutzer unter **Authentication → SMTP** einen eigenen Mailversand eintragen.
 
+## Push-Erinnerungen (auch bei geschlossener App)
+
+Mit Konto kann der Server Erinnerungen schicken, auch wenn die App zu ist: Morgen-Überblick, Medikamente, Aufgaben mit Uhrzeit, Termine & Geburtstage, Müllabfuhr am Vorabend, Fristen, Kündigungs- und Rückgabefristen, Parkuhr. Einschalten unter **Mehr → Erinnerungen → Push-Erinnerungen** (iPhone: App vorher über Teilen → „Zum Home-Bildschirm“ installieren, ab iOS 16.4).
+
+So funktioniert es: `supabase/functions/push-reminders/index.ts` läuft alle 5 Minuten (pg_cron), liest die gespeicherten App-Daten, berechnet in der Zeitzone des Geräts, was fällig ist, und verschickt verschlüsselte Web-Push-Nachrichten (RFC 8291/8292, ohne Zusatzpakete). Jede Nachricht wird nur einmal verschickt (`push_sent`), abgemeldete Geräte werden automatisch entfernt.
+
+Einrichtung:
+1. **Edge Functions → Deploy a new function → Via Editor**, Name `push-reminders`, Inhalt von `supabase/functions/push-reminders/index.ts` einfügen, deployen.
+2. **Edge Functions → Secrets**: `VAPID_PUBLIC_KEY` (steht in `config.js`), `VAPID_PRIVATE_KEY`, `CRON_SECRET` (beliebiges langes Geheimnis), optional `VAPID_SUBJECT` (z. B. `mailto:du@beispiel.de`). Der private Schlüssel gehört nie ins Repository.
+3. **SQL Editor**: `supabase/push.sql` ausführen – vorher `DEIN_ANON_KEY` und `DEIN_CRON_SECRET` ersetzen.
+4. In der App Push aktivieren und „Test-Nachricht senden“ tippen.
+
 ## Benutzen
 
 Die Kamera funktioniert nur über **https** (oder localhost). Mit GitHub Pages ist die App erreichbar unter
@@ -230,6 +242,7 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `deep.js`, `deep-ui.js` | Einkaufsliste nach Gängen, Ausgaben-Verlauf, Gewohnheits-Kalender, Erinnerungs-Export, Geburtstage, Tagebuch |
 | `auth.js`, `auth-ui.js`, `config.js` | Konto & Cloud-Sync mit Supabase (Anmeldung, Abgleich, Konflikte) |
 | `supabase/schema.sql` | Datenbank-Tabelle mit Zugriffsschutz für Supabase |
+| `push-ui.js`, `supabase/push.sql`, `supabase/functions/push-reminders/` | Push-Erinnerungen: Geräte-Anmeldung, Zeitplaner, Versand |
 | `sw.js`, `manifest.webmanifest` | Offline & Installation |
 
 Tests: `npm test` (im Hauptordner).

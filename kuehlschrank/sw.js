@@ -1,6 +1,6 @@
 /* Offline-Unterstützung: App-Dateien zwischenspeichern, Netzwerk bevorzugen. */
-const CACHE = 'alltagsheld-v21';
-const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'sport.js', 'planner.js', 'app.js', 'alltag.js', 'life.js', 'life-ui.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'nutrition.js', 'nutrition-ui.js', 'extras.js', 'extras-ui.js', 'plus.js', 'plus-ui.js', 'daily.js', 'daily-ui.js', 'organize.js', 'organize-ui.js', 'deep.js', 'deep-ui.js', 'config.js', 'auth.js', 'auth-ui.js', 'manifest.webmanifest'];
+const CACHE = 'alltagsheld-v22';
+const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'sport.js', 'planner.js', 'app.js', 'alltag.js', 'life.js', 'life-ui.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'nutrition.js', 'nutrition-ui.js', 'extras.js', 'extras-ui.js', 'plus.js', 'plus-ui.js', 'daily.js', 'daily-ui.js', 'organize.js', 'organize-ui.js', 'deep.js', 'deep-ui.js', 'config.js', 'auth.js', 'auth-ui.js', 'push-ui.js', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -29,7 +29,20 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
+// Push-Erinnerungen vom Server (Supabase), auch wenn die App geschlossen ist
+self.addEventListener('push', (e) => {
+  let m = {};
+  try { m = e.data ? e.data.json() : {}; } catch (err) { m = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(m.title || 'Alltagsheld', {
+    body: m.body || '', tag: m.tag || undefined, icon: 'icon-192.png', badge: 'icon-192.png', data: { view: m.view || 'home' },
+  }));
+});
+
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  e.waitUntil(self.clients.matchAll({ type: 'window' }).then((cs) => (cs[0] ? cs[0].focus() : self.clients.openWindow('./'))));
+  const view = (e.notification.data && e.notification.data.view) || '';
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((cs) => {
+    if (cs[0]) { cs[0].postMessage({ type: 'goto', view }); return cs[0].focus(); }
+    return self.clients.openWindow(view ? `./?view=${encodeURIComponent(view)}` : './');
+  }));
 });

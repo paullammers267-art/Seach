@@ -29,6 +29,7 @@
     return client;
   }
   makeClient();
+  A.authClient = () => client;
   const loggedIn = () => !!(client && client.user);
 
   // ---------- Sync-Status ----------
@@ -281,6 +282,7 @@
     if (e.target.closest('#accLogout')) {
       if (meta().dirty) await syncNow();
       if (!confirm('Abmelden? Deine Daten bleiben auf diesem Gerät, werden aber nicht mehr abgeglichen.')) return;
+      if (A.onBeforeSignOut) await A.onBeforeSignOut();
       await client.signOut();
       setMeta({ userId: null, remoteAt: null, dirty: false });
       setStatus('idle'); A.render(); A.toast('Abgemeldet');
@@ -289,6 +291,7 @@
     if (e.target.closest('#accDelete')) {
       if (!confirm('Konto wirklich löschen? Alle Daten in der Cloud werden endgültig gelöscht. Die Daten auf diesem Gerät bleiben erhalten.')) return;
       try {
+        if (A.onBeforeSignOut) await A.onBeforeSignOut();
         await client.deleteAccount();
         setMeta({ userId: null, remoteAt: null, dirty: false });
         setStatus('idle'); A.render(); A.toast('Konto gelöscht');

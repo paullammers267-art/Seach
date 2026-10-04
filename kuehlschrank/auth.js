@@ -183,6 +183,10 @@
       });
       return rows && rows[0] ? rows[0].updated_at : new Date(now()).toISOString();
     }
+    /** Edge Function aufrufen (mit Anmeldung) */
+    async function callFunction(name, body) {
+      return authed(`/functions/v1/${name}`, { method: 'POST', body: body || {} });
+    }
     async function deleteAccount() {
       await authed('/rest/v1/rpc/delete_user', { method: 'POST', body: {} });
       setSession(null);
@@ -193,7 +197,8 @@
       get user() { return session && session.user; },
       onChange: (fn) => listeners.push(fn),
       signUp, signIn, signOut, refresh, getSession, recover, updatePassword, fromHash,
-      peek, pull, push, deleteAccount,
+      peek, pull, push, deleteAccount, callFunction,
+      api: (path, o) => authed(path, o),
     };
   }
 
