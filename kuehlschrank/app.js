@@ -40,8 +40,10 @@
     } catch (e) { /* leerer Start */ }
     return defaults();
   }
+  const saveHooks = [];
   function save() {
-    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { toast('Speichern fehlgeschlagen'); }
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { toast('Speichern fehlgeschlagen'); return; }
+    saveHooks.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } }); // z. B. Cloud-Sync
   }
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1483,6 +1485,8 @@
   /** Schnittstelle für die Bereiche Sport, Kalender, Ausgaben und Heute (alltag.js). */
   window.App = {
     get state() { return state; },
+    onSave: (fn) => saveHooks.push(fn),
+    storeKey: STORE,
     L, save, render, toast, esc, uid, today, showView, openItemDialog, findRecipe, sortedItems, ingEmoji, ingLabel,
     beep, listen: SpeechRec ? listen : null, onRender: (fn) => renderHooks.push(fn), actions,
     calendarSources: [],

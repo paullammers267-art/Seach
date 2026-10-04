@@ -178,6 +178,27 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - **Erinnerung** beim Öffnen, wenn etwas heute/morgen abläuft (Browser-Benachrichtigung).
 - Funktioniert offline (außer Produktsuche), Sicherung als JSON exportieren/importieren. Alle Daten bleiben auf dem Gerät.
 
+## Konto & Cloud-Sync (Supabase)
+
+Optional: Mit Konto sind die Daten auf allen Geräten gleich und bei Handyverlust sicher. Ohne Konto bleibt alles wie bisher nur auf dem Gerät („Ohne Konto weiter“).
+
+- Anmelden, Konto erstellen (mit Passwort-Stärke-Anzeige), Passwort vergessen, Passwort ändern, Abmelden, Konto löschen
+- Automatischer Abgleich: Änderungen werden nach 1–2 Sekunden hochgeladen, beim Öffnen der App werden Änderungen anderer Geräte geholt; offline wird nachgeholt
+- Erste Anmeldung auf einem Gerät mit eigenen Daten: Auswahl „Daten aus dem Konto laden“ oder „Daten dieses Geräts hochladen“; bei Änderungen auf zwei Geräten gleichzeitig fragt die App, welche Version gilt
+- Jede Person sieht nur ihre eigenen Daten (Row Level Security); der anon-Schlüssel ist öffentlich und darf in der App stehen
+
+### Einrichtung (einmalig, ca. 5 Minuten, kostenlos)
+
+1. Auf [supabase.com](https://supabase.com) ein Projekt anlegen (Free Plan, Region z. B. Frankfurt).
+2. **SQL Editor** → Inhalt von `supabase/schema.sql` einfügen → **Run**. Das legt die Tabelle `user_data` mit Zugriffsschutz an.
+3. **Authentication → URL Configuration**: als *Site URL* die Adresse der App eintragen, z. B. `https://paullammers267-art.github.io/Seach/kuehlschrank/`, und dieselbe Adresse unter *Redirect URLs*. Dorthin führen die Links aus den Bestätigungs- und Passwort-E-Mails.
+4. **Project Settings → API**: *Project URL* und den *anon public*-Schlüssel kopieren und
+   - entweder in `config.js` eintragen (gilt dann für alle, die die App öffnen),
+   - oder in der App unter **Mehr → Konto** einfügen (gilt nur für dieses Gerät).
+5. Optional: Unter **Authentication → Providers → Email** lässt sich „Confirm email“ ausschalten – dann ist man nach dem Registrieren sofort angemeldet. Mit Bestätigung kommt erst eine E-Mail mit Link.
+
+Hinweis: Der kostenlose Supabase-Mailversand ist auf wenige E-Mails pro Stunde begrenzt – für den Alltag reicht das. Für viele Nutzer unter **Authentication → SMTP** einen eigenen Mailversand eintragen.
+
 ## Benutzen
 
 Die Kamera funktioniert nur über **https** (oder localhost). Mit GitHub Pages ist die App erreichbar unter
@@ -203,6 +224,12 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `alltag.js` | Oberfläche für Heute, Sport, Kalender, Ausgaben |
 | `life.js` | Aufgaben (Spracherkennung, Wiederholung), Gewohnheiten, Gesundheit, Wetter-Tipps |
 | `life-ui.js` | Oberfläche für Aufgaben, Gewohnheiten, Gesundheit, Notizen, Wetter, Suche |
+| `plus.js`, `plus-ui.js` | Pflanzen, Verliehen, Countdowns, Fokus-Timer, Notfallpass, Design anpassen |
+| `daily.js`, `daily-ui.js` | Müllabfuhr, Parken, Pakete & Retouren, Tankbuch, wichtige Nummern, Schnellmenü |
+| `organize.js`, `organize-ui.js` | Verträge & Abos, Checklisten, Stundenplan, Rechner, Kopfzeile |
+| `deep.js`, `deep-ui.js` | Einkaufsliste nach Gängen, Ausgaben-Verlauf, Gewohnheits-Kalender, Erinnerungs-Export, Geburtstage, Tagebuch |
+| `auth.js`, `auth-ui.js`, `config.js` | Konto & Cloud-Sync mit Supabase (Anmeldung, Abgleich, Konflikte) |
+| `supabase/schema.sql` | Datenbank-Tabelle mit Zugriffsschutz für Supabase |
 | `sw.js`, `manifest.webmanifest` | Offline & Installation |
 
 Tests: `npm test` (im Hauptordner).

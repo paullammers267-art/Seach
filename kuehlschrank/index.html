@@ -627,6 +627,8 @@
         <button class="hub-tile" data-goto="tools"><span class="hub-ic"><i class="ic ic-wrench"></i></span><b>Werkzeuge</b><small>Timer, Umrechner …</small></button>
         <button class="hub-tile" data-goto="achievements"><span class="hub-ic"><i class="ic ic-trophy"></i></span><b>Erfolge</b><small id="hubAch"></small></button>
       </div>
+      <h3 class="sec-title">Konto</h3>
+      <div class="card account-card" id="accountCard"></div>
       <h3 class="sec-title">Einstellungen</h3>
       <div class="card">
         <h2>Design anpassen</h2>
@@ -1312,6 +1314,48 @@
     </form>
   </dialog>
 
+  <!-- Anmeldung -->
+  <dialog id="authDialog" class="auth-dialog">
+    <div class="auth-wrap">
+      <img src="icon.svg" alt="" class="auth-logo">
+      <h2 class="auth-title">Willkommen bei Alltagsheld</h2>
+      <p class="muted auth-sub" id="authSub">Melde dich an, damit deine Daten auf all deinen Geräten gleich sind und sicher in der Cloud liegen.</p>
+      <div class="segmented" id="authTabs"><button type="button" data-mode="signin" class="active">Anmelden</button><button type="button" data-mode="signup">Konto erstellen</button></div>
+      <form id="authForm" class="auth-form" novalidate>
+        <label id="authNameWrap" hidden>Dein Vorname<input id="authName" autocomplete="given-name" placeholder="z. B. Paul"></label>
+        <label>E-Mail<input id="authEmail" type="email" autofocus autocomplete="email" inputmode="email" placeholder="du@beispiel.de" required></label>
+        <label id="authPwWrap">Passwort<span class="pw-row"><input id="authPw" type="password" autocomplete="current-password" required minlength="8"><button type="button" class="pw-eye" id="authEye" aria-label="Passwort anzeigen">zeigen</button></span></label>
+        <div class="pw-meter" id="authMeter" hidden><i></i><span></span></div>
+        <p class="auth-msg" id="authMsg" role="alert"></p>
+        <button class="btn primary big" id="authSubmit">Anmelden</button>
+        <button type="button" class="link-btn auth-forgot" id="authForgot">Passwort vergessen?</button>
+      </form>
+      <div class="auth-or"><span>oder</span></div>
+      <button type="button" class="btn auth-skip" id="authSkip">Ohne Konto weiter</button>
+      <p class="muted small auth-note">Ohne Konto bleiben deine Daten nur auf diesem Gerät. Du kannst dich später jederzeit unter Mehr → Konto anmelden.</p>
+    </div>
+  </dialog>
+
+  <!-- Neues Passwort -->
+  <dialog id="newPwDialog">
+    <form id="newPwForm" method="dialog">
+      <h2>Neues Passwort festlegen</h2>
+      <label>Neues Passwort<input id="newPw" type="password" autocomplete="new-password" minlength="8" required></label>
+      <p class="auth-msg" id="newPwMsg" role="alert"></p>
+      <div class="dialog-actions"><span class="spacer"></span><button type="button" class="btn" id="newPwCancel">Abbrechen</button><button class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Welche Daten behalten? -->
+  <dialog id="syncChoice">
+    <div class="sync-choice">
+      <h2 id="scTitle">Welche Daten möchtest du behalten?</h2>
+      <p class="muted small" id="scText"></p>
+      <button class="btn primary big" id="scRemote"></button>
+      <button class="btn big" id="scLocal"></button>
+    </div>
+  </dialog>
+
   <!-- Atemübung -->
   <dialog id="breathDialog" class="cookmode breath">
     <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
@@ -1350,6 +1394,7 @@
 
   <div id="toast" class="toast" hidden></div>
 
+  <script src="config.js"></script>
   <script src="logic.js"></script>
   <script src="imageprep.js"></script>
   <script src="recipes.js"></script>
@@ -1371,5 +1416,7 @@
   <script src="organize-ui.js"></script>
   <script src="deep.js"></script>
   <script src="deep-ui.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-ui.js"></script>
 </body>
 </html>

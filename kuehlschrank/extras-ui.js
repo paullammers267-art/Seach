@@ -630,7 +630,7 @@
     // Sicherung
     const amount = st().items.length + st().tasks.length + st().events.length + st().expenses.length + st().notes.length + (st().food || []).length;
     const last = st().settings.lastBackup;
-    if (amount >= 15 && (!last || L.daysUntil(last) < -30)) {
+    if (amount >= 15 && !A.cloudActive && (!last || L.daysUntil(last) < -30)) {
       parts.push(`<div class="card home-card backup" data-card="backup"><div class="home-title">Sicherung empfohlen</div>
         <div class="home-line muted">${last ? `Letzte Sicherung vor ${-L.daysUntil(last)} Tagen.` : 'Du hast noch keine Sicherung gemacht.'} Deine Daten liegen nur auf diesem Handy.</div>
         <button class="btn small primary" data-backup>Jetzt sichern</button></div>`);

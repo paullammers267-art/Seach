@@ -1159,3 +1159,55 @@ dialog h2 { font-size: 1.2rem; }
 .topbar .summary { display: none; }
 .topbar h1 { white-space: nowrap; }
 .brand-text { flex: 1; }
+
+/* ---------- Anmeldung & Konto ---------- */
+dialog.auth-dialog { width: 100%; max-width: 440px; max-height: 100dvh; height: auto; padding: 0; border-radius: 26px; }
+@media (max-width: 520px) { dialog.auth-dialog { max-width: none; width: 100vw; height: 100dvh; margin: 0; border-radius: 0; } }
+.auth-wrap { display: grid; gap: 10px; padding: calc(28px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom)); max-width: 420px; margin: 0 auto; }
+.auth-logo { width: 72px; height: 72px; border-radius: 20px; margin: 4px auto 2px; box-shadow: 0 10px 30px rgba(13, 148, 136, .35); }
+.auth-title { text-align: center; font-size: 1.45rem; letter-spacing: -.02em; margin: 0; }
+.auth-sub { text-align: center; margin: 0 0 6px; font-size: .92rem; }
+.auth-form { display: grid; gap: 12px; }
+.auth-form label { display: grid; gap: 5px; font-size: .85rem; font-weight: 600; color: var(--muted); }
+.auth-form input { color: var(--text); font-weight: 400; min-height: 48px; }
+.pw-row { position: relative; display: block; }
+.pw-row input { padding-right: 86px; }
+.pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font: inherit; font-size: .8rem; font-weight: 600; color: var(--primary); background: none; border: 0; padding: 8px; cursor: pointer; }
+.pw-meter { display: flex; align-items: center; gap: 10px; margin-top: -4px; font-size: .78rem; color: var(--muted); }
+.pw-meter i { flex: 0 0 90px; height: 5px; border-radius: 99px; background: var(--bg); position: relative; overflow: hidden; }
+.pw-meter i::after { content: ""; position: absolute; inset: 0; width: 8%; background: var(--expired); border-radius: inherit; transition: width .2s, background .2s; }
+.pw-meter[data-level="1"] i::after { width: 40%; background: var(--soon); }
+.pw-meter[data-level="2"] i::after { width: 70%; background: var(--ok); }
+.pw-meter[data-level="3"] i::after { width: 100%; background: var(--ok); }
+.auth-msg { margin: 0; font-size: .88rem; color: var(--expired); min-height: 0; }
+.auth-msg:empty { display: none; }
+.auth-msg.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); padding: 10px 12px; border-radius: 12px; }
+.auth-form .btn.big { width: 100%; margin-top: 2px; }
+.auth-forgot { justify-self: center; font-size: .9rem; }
+.auth-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .8rem; margin: 6px 0 0; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; border-top: 1px solid var(--border); }
+.auth-skip { width: 100%; }
+.auth-note { text-align: center; margin: 0; }
+#authTabs { margin-bottom: 4px; }
+.sync-choice { display: grid; gap: 10px; }
+.sync-choice h2 { margin: 0; }
+.sync-choice p { white-space: pre-line; margin: 0 0 6px; }
+.sync-choice .btn { width: 100%; }
+.account-card .row { margin-top: 10px; }
+.account-card .row .btn { min-width: 0; }
+.sb-form { display: grid; gap: 10px; margin-top: 8px; }
+.sb-form label { display: grid; gap: 4px; font-size: .85rem; font-weight: 600; color: var(--muted); }
+.acc-head { display: flex; align-items: center; gap: 12px; }
+.acc-avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 1.2rem; color: #fff; background: linear-gradient(135deg, color-mix(in srgb, var(--deep) 70%, #2dd4bf), var(--deep)); flex: none; }
+.acc-who { display: grid; min-width: 0; }
+.acc-who .muted { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acc-status { display: flex; align-items: center; gap: 8px; font-size: .88rem; margin-top: 12px; color: var(--muted); }
+.acc-status i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: none; }
+.acc-status.ok i { background: var(--ok); }
+.acc-status.syncing i { background: var(--primary); animation: pulse 1s infinite; }
+.acc-status.offline i, .acc-status.error i { background: var(--today); }
+.acc-status.error { color: var(--today); }
+.top-btn.avatar { position: relative; }
+.top-btn.avatar.synced::after, .top-btn.avatar.sync-warn::after, .top-btn.avatar.sync-busy::after { content: ""; position: absolute; right: 0; bottom: 0; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--bg); background: var(--ok); }
+.top-btn.avatar.sync-warn::after { background: var(--today); }
+.top-btn.avatar.sync-busy::after { background: var(--primary); animation: pulse 1s infinite; }
