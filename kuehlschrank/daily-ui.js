@@ -475,6 +475,7 @@
   }
 
   A.actions.park = () => A.showView('parking');
+  A.actions.parkNow = () => { A.showView('parking'); if (!st().parking) { parkMinutes = null; parkHere(); } };
   A.actions.parcel = () => { A.showView('parcels'); openParcel(null); };
   A.actions.fuel = () => { A.showView('car'); openFuel(null); };
 

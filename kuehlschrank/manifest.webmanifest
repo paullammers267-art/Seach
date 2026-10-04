@@ -10,39 +10,76 @@
   "lang": "de",
   "shortcuts": [
     {
-      "name": "Produkt hinzufügen",
-      "short_name": "Hinzufügen",
-      "url": "./?neu"
-    },
-    {
-      "name": "Mahlzeit erfassen",
-      "short_name": "Kalorien",
-      "url": "./?view=food"
+      "name": "Neue Aufgabe",
+      "short_name": "Aufgabe",
+      "url": "./?action=task",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Einkaufsliste",
       "short_name": "Einkauf",
-      "url": "./?view=shopping"
+      "url": "./?view=shopping",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Rezepte",
-      "short_name": "Rezepte",
-      "url": "./?view=recipes"
+      "name": "Wasser +1",
+      "short_name": "Wasser",
+      "url": "./?action=water",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Training",
-      "short_name": "Sport",
-      "url": "./?view=sport"
+      "name": "Hier geparkt",
+      "short_name": "Parken",
+      "url": "./?action=parkNow",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Kalender",
-      "short_name": "Kalender",
-      "url": "./?view=calendar"
+      "name": "Produkt hinzufügen",
+      "short_name": "Produkt",
+      "url": "./?neu",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Ausgaben",
-      "short_name": "Ausgaben",
-      "url": "./?view=expenses"
+      "name": "Ausgabe erfassen",
+      "short_name": "Ausgabe",
+      "url": "./?action=expense",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "icons": [

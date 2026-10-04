@@ -1254,3 +1254,17 @@ dialog.auth-dialog { width: 100%; max-width: 440px; max-height: 100dvh; height: 
 @media (max-width: 340px) { #view-settings .hub { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .glance-chip.calm { display: none; }
 
+
+/* ---------- Widgets ---------- */
+.home-card.widgets-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; background: none; border: 0; box-shadow: none; padding: 0; cursor: default; margin-bottom: 10px; }
+.home-card.widgets-grid:empty { display: none; }
+.widget { font: inherit; color: var(--text); text-align: left; cursor: pointer; display: grid; gap: 2px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); min-width: 0; }
+.widget:active { transform: scale(.97); }
+.w-top { display: flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 600; color: var(--muted); }
+.w-top .ic { color: var(--primary); width: 16px; height: 16px; }
+.w-val { font-size: 1.35rem; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-sub { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.widget.warn .w-val { color: var(--today); }
+.widget.done .w-val { color: var(--ok); }
+#widgetToggles .chip .ic { width: 15px; height: 15px; vertical-align: -.15em; }
+.glance:empty { display: none; }

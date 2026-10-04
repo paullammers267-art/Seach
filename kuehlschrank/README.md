@@ -34,6 +34,15 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Hell, Dunkel oder automatisch, 7 Akzentfarben, drei Schriftgrößen, kompakte Ansicht, Begrüßung mit deinem Namen (Mehr → Design anpassen)
 - Ruhige Linien-Icons statt bunter Emojis; Startseite in Bereiche gegliedert (Heute, Küche & Essen, Fitness & Finanzen), Karten einzeln ausblendbar
 
+## Widgets, App-Symbol & Verknüpfungen
+- **Widgets** oben auf der Startseite (bis zu 6, unter Einstellungen → Startseite wählbar): Wasser +1, nächster Termin, Einkauf, Müll, Budget, Kalorien, Medikament, Parken (ein Tipp = „hier geparkt“), Countdown, Fokus, Notiz
+- **Zahl am App-Symbol**: heute fällige und überfällige Aufgaben, offene Medikamente, abgelaufene Produkte (installierte App; abschaltbar)
+- **Verknüpfungen** (lange auf das App-Symbol drücken): Neue Aufgabe, Einkaufsliste, Wasser +1, Hier geparkt, Produkt hinzufügen, Ausgabe erfassen
+- Echte Widgets auf dem Home-Bildschirm von iPhone/Android gibt es nur für Apps aus App Store/Play Store – für Web-Apps erlauben Apple und Google das nicht.
+
+## Einstellungen
+- Eigene Seite (Mehr → Einstellungen oder Profil-Knopf oben rechts): Konto, Darstellung, Startseite, Schnellmenü, Erinnerungen, Wetter-Ort, Immer im Haus, Statistik, Ratgeber, Daten & Sicherung – als aufklappbare Liste
+
 ## Schnellmenü „Neu“
 - Zeigt nur, was man jeden Tag braucht: Aufgabe, Einkauf, Termin, Ausgabe, Produkt, Mahlzeit, Notiz, Timer
 - Unter Mehr → „Schnellmenü ＋ anpassen“ lässt sich alles andere dazuschalten (z. B. Parken, Paket, Getankt)
