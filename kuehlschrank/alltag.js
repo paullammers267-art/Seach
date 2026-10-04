@@ -31,7 +31,7 @@
   function renderHome() {
     if (A.view !== 'home') return;
     const h = new Date().getHours();
-    $('#homeHello').textContent = h < 11 ? 'Guten Morgen! ☀️' : h < 18 ? 'Hallo! 👋' : 'Guten Abend! 🌙';
+    $('#homeHello').textContent = h < 11 ? 'Guten Morgen!' : h < 18 ? 'Hallo!' : 'Guten Abend!';
     $('#homeDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
     const today = nowIso(), tomorrow = P.addDays(today, 1);
     const cards = [];
@@ -39,7 +39,7 @@
     // Termine
     const occ = P.occurrences(st().events, today, tomorrow);
     cards.push(`<button class="card home-card" data-goto="calendar">
-      <div class="home-title">📅 Termine</div>
+      <div class="home-title">Termine</div>
       ${occ.length ? occ.slice(0, 4).map((o) => `<div class="home-line"><b>${o.date === today ? 'Heute' : 'Morgen'}${o.event.time ? ' ' + o.event.time : ''}</b> ${eventEmoji(o.event)} ${esc(eventTitle(o.event, o.date))}</div>`).join('')
         : '<div class="muted">Heute und morgen keine Termine.</div>'}
     </button>`);
@@ -49,10 +49,10 @@
     const urgent = A.sortedItems().filter((i) => i.location !== 'haushalt' && i.expiry && L.daysUntil(i.expiry) <= 2);
     const meal = A.findRecipe(st().plan[today]);
     cards.push(`<button class="card home-card" data-goto="stock">
-      <div class="home-title">🧊 Küche</div>
+      <div class="home-title">Küche</div>
       ${urgent.length ? `<div class="home-line warn-text"><b>${urgent.length} Produkt${urgent.length > 1 ? 'e' : ''} bald verbrauchen:</b> ${esc(urgent.slice(0, 3).map((i) => i.name).join(', '))}${urgent.length > 3 ? ' …' : ''}</div>`
-        : `<div class="home-line">${items.length ? `✅ ${items.length} Produkte, nichts läuft in den nächsten 2 Tagen ab.` : 'Noch keine Produkte erfasst.'}</div>`}
-      ${meal ? `<div class="home-line">🍽️ Heute geplant: <b>${esc(meal.name)}</b></div>` : ''}
+        : `<div class="home-line">${items.length ? `${items.length} Produkte, nichts läuft in den nächsten 2 Tagen ab.` : 'Noch keine Produkte erfasst.'}</div>`}
+      ${meal ? `<div class="home-line">Heute geplant: <b>${esc(meal.name)}</b></div>` : ''}
     </button>`);
 
     // Training
@@ -61,7 +61,7 @@
     const streak = S.streak(st().workouts);
     const trainedToday = st().workouts.some((w) => w.date === today);
     cards.push(`<div class="card home-card">
-      <button class="plain" data-goto="sport"><div class="home-title">🏋️ Sport</div>
+      <button class="plain" data-goto="sport"><div class="home-title">Sport</div>
         <div class="home-line">Diese Woche <b>${wk.count} von ${goal}</b> Trainings${streak > 1 ? ` · 🔥 ${streak} Tage in Folge` : ''}${trainedToday ? ' · heute schon erledigt 💪' : ''}</div>
         <div class="meter"><i style="width:${Math.min(100, Math.round((wk.count / goal) * 100))}%"></i></div></button>
       <button class="btn small primary" id="homeQuickWorkout">▶ ${st().settings.woMinutes}-Min-Training starten</button>
@@ -72,7 +72,7 @@
     const sum = P.summarize(P.monthEntries(st().expenses, month).filter((e) => !P.isIncome(e)));
     const b = P.budgetStatus(sum.total, st().settings.budget, month);
     cards.push(`<button class="card home-card" data-goto="expenses">
-      <div class="home-title">💶 Ausgaben ${P.monthLabel(month).split(' ')[0]}</div>
+      <div class="home-title">Ausgaben ${P.monthLabel(month).split(' ')[0]}</div>
       <div class="home-line"><b>${euro(sum.total)}</b>${b ? ` von ${euro(b.budget)} · ${b.over ? `<span class="warn-text">${euro(-b.left)} drüber</span>` : `noch ${euro(b.left)}${b.perDay != null ? ` (${euro(b.perDay)}/Tag)` : ''}`}` : ''}</div>
       ${b ? `<div class="meter ${b.over ? 'over' : ''}"><i style="width:${b.pct}%"></i></div>` : ''}
     </button>`);
@@ -81,7 +81,7 @@
     const open = st().shopping.filter((i) => !i.done);
     if (open.length) {
       cards.push(`<button class="card home-card" data-goto="shopping">
-        <div class="home-title">🛒 Einkaufsliste</div>
+        <div class="home-title">Einkaufsliste</div>
         <div class="home-line">${open.length} offen: ${esc(open.slice(0, 5).map((i) => i.name).join(', '))}${open.length > 5 ? ' …' : ''}</div>
       </button>`);
     }
@@ -142,13 +142,13 @@
     const lvl = S.LEVELS[preview.level] || S.LEVELS[2];
     $('#woPreview').innerHTML = `<div class="card wo-card">
       <h2>${esc(preview.name)}</h2>
-      <div class="muted small">⏱ ${Math.round(preview.totalSeconds / 60)} Min · ${preview.exercises} Übungsintervalle${preview.rounds ? ` · ${preview.rounds} Runden` : ''} · ${lvl.label}${preview.quiet ? ' · 🤫 leise' : ''}</div>
+      <div class="muted small">${Math.round(preview.totalSeconds / 60)} Min · ${preview.exercises} Übungsintervalle${preview.rounds ? ` · ${preview.rounds} Runden` : ''} · ${lvl.label}${preview.quiet ? ' · 🤫 leise' : ''}</div>
       ${warm.length ? `<h3 class="section">Aufwärmen</h3><ul>${warm.map(line).join('')}</ul>` : ''}
       ${main.length ? `<h3 class="section">${preview.rounds > 1 ? `Zirkel (${preview.rounds}×)` : 'Übungen'}</h3><ul>${main.map(line).join('')}</ul>` : ''}
       ${cool.length ? `<h3 class="section">${main.length ? 'Abkühlen & Dehnen' : 'Dehnen'}</h3><ul>${cool.map(line).join('')}</ul>` : ''}
       <div class="row tight">
         <button class="btn primary" id="woStart">▶ Starten</button>
-        ${preview.name !== '7-Minuten-Workout' ? '<button class="btn" id="woReroll">🎲 Andere Übungen</button>' : ''}
+        ${preview.name !== '7-Minuten-Workout' ? '<button class="btn" id="woReroll">Andere Übungen</button>' : ''}
       </div>
     </div>`;
     $('#woStart').onclick = () => startWorkout(preview);
@@ -160,7 +160,7 @@
     const s = st().settings;
     const wk = S.thisWeek(st().workouts);
     $('#sportStats').innerHTML = `
-      <div><b>🔥 ${S.streak(st().workouts)}</b><span>Tage in Folge</span></div>
+      <div><b>${S.streak(st().workouts)}</b><span>Tage in Folge</span></div>
       <div><b>${wk.count}/${s.weeklyGoal}</b><span>diese Woche</span></div>
       <div><b>${wk.minutes}</b><span>Minuten (Woche)</span></div>
       <div><b>${st().workouts.length}</b><span>Trainings gesamt</span></div>`;
@@ -178,7 +178,7 @@
 
   function renderExercises() {
     const q = L.norm($('#exSearch').value.trim());
-    const groups = [['Aufwärmen', (e) => e.kind === 'warmup'], ...Object.entries(S.GROUPS).map(([k, label]) => [label, (e) => e.group === k]), ['🧘 Dehnen', (e) => e.kind === 'stretch']];
+    const groups = [['Aufwärmen', (e) => e.kind === 'warmup'], ...Object.entries(S.GROUPS).map(([k, label]) => [label, (e) => e.group === k]), ['Dehnen', (e) => e.kind === 'stretch']];
     $('#exList').innerHTML = groups.map(([label, fn]) => {
       const list = S.EXERCISES.filter(fn).filter((e) => !q || L.norm(e.name + ' ' + e.cues).includes(q));
       if (!list.length) return '';
@@ -256,13 +256,13 @@
     $('#woTitle').textContent = run.w.name;
     $('#woCount').textContent = `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, '0')} von ${Math.round(total / 60)} Min`;
     $('#woBar').style.width = Math.min(100, (elapsed / total) * 100) + '%';
-    $('#woPhase').textContent = { warmup: '🔆 Aufwärmen', work: `💪 Übung ${workIdx} von ${run.w.exercises}${step.round ? ' · Runde ' + step.round : ''}`, rest: '😮‍💨 Pause', cooldown: '🧘 Dehnen' }[step.phase];
+    $('#woPhase').textContent = { warmup: 'Aufwärmen', work: `Übung ${workIdx} von ${run.w.exercises}${step.round ? ' · Runde ' + step.round : ''}`, rest: 'Pause', cooldown: 'Dehnen' }[step.phase];
     $('#woEmoji').textContent = e ? e.emoji : '⏸️';
     $('#woName').textContent = e ? e.name : 'Durchatmen';
     $('#woTime').textContent = Math.ceil(run.remaining);
     $('#woCues').textContent = e ? e.cues : (run.w.steps[run.idx + 1] ? 'Gleich: ' + (S.byId(run.w.steps[run.idx + 1].id) || {}).cues : '');
     $('#woNext').textContent = next ? `Danach: ${stepName(next)}` : 'Gleich geschafft!';
-    $('#woPause').textContent = run.paused ? '▶ Weiter' : '⏸ Pause';
+    $('#woPause').textContent = run.paused ? '▶ Weiter' : 'Pause';
     woDlg.classList.toggle('resting', step.phase === 'rest');
   }
 
@@ -298,7 +298,7 @@
     stopRun();
     if (!partial) { A.beep(3, 990, 0.2); speak('Geschafft! Super gemacht.'); }
     const streak = S.streak(st().workouts);
-    A.toast(partial ? `Gespeichert: ${Math.round(seconds / 60)} Min Training` : `🎉 Geschafft! ${Math.round(seconds / 60)} Min${streak > 1 ? ` · 🔥 ${streak} Tage in Folge` : ''}`);
+    A.toast(partial ? `Gespeichert: ${Math.round(seconds / 60)} Min Training` : `Geschafft! ${Math.round(seconds / 60)} Min${streak > 1 ? ` · 🔥 ${streak} Tage in Folge` : ''}`);
     A.render();
   }
 
@@ -453,7 +453,7 @@
     A.save(); evDlg.close();
     calDay = ev.date; calMonth = ym(ev.date);
     if (A.view !== 'calendar') A.showView('calendar'); else A.render();
-    A.toast(`📅 ${ev.title} gespeichert${ev.remind !== '' ? ' 🔔' : ''}`);
+    A.toast(`${ev.title} gespeichert${ev.remind !== '' ? ' 🔔' : ''}`);
     if (ev.remind !== '' && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   });
   $('#evCancel').onclick = () => evDlg.close();
@@ -476,7 +476,7 @@
       const d = L.daysUntil(o.date);
       const when = d === 0 ? (ev.time ? 'heute um ' + ev.time : 'heute') : d === 1 ? 'morgen' + (ev.time ? ' um ' + ev.time : '') : L.formatDate(o.date);
       const text = `${eventEmoji(ev)} ${eventTitle(ev, o.date)} – ${when}`;
-      const shown = await A.notify('🔔 Erinnerung', text, o.key);
+      const shown = await A.notify('Erinnerung', text, o.key);
       if (!shown || !document.hidden) A.toast(text);
       st().notified.push(o.key);
     }
@@ -505,7 +505,7 @@
     const max = Math.max(1, ...sum.byCategory.map((c) => c.amount));
     $('#expSummary').innerHTML = `
       <div class="exp-total">${euro(sum.total)}</div>
-      ${income ? `<div class="saldo"><span>💰 Einnahmen <b>${euro(income)}</b></span><span>Saldo <b class="${income - sum.total < 0 ? 'warn-text' : 'ok-text'}">${income - sum.total >= 0 ? '+' : '−'}${euro(Math.abs(income - sum.total))}</b></span></div>` : ''}
+      ${income ? `<div class="saldo"><span>Einnahmen <b>${euro(income)}</b></span><span>Saldo <b class="${income - sum.total < 0 ? 'warn-text' : 'ok-text'}">${income - sum.total >= 0 ? '+' : '−'}${euro(Math.abs(income - sum.total))}</b></span></div>` : ''}
       ${prev ? `<div class="muted small center">Vormonat: ${euro(prev)} (${sum.total >= prev ? '+' : '−'}${euro(Math.abs(sum.total - prev))})</div>` : ''}
       ${b ? `<div class="meter ${b.over ? 'over' : ''}"><i style="width:${b.pct}%"></i></div>
         <div class="small center">${b.over ? `<b class="warn-text">${euro(-b.left)} über dem Budget</b>` : `Budget ${euro(b.budget)}: noch <b>${euro(b.left)}</b>${b.perDay != null ? ` · ${euro(b.perDay)} pro Tag` : ''}`}</div>` : '<div class="muted small center">Tipp: Lege mit 🎯 ein Monatsbudget fest.</div>'}

@@ -14,7 +14,11 @@
   <link rel="stylesheet" href="style.css">
   <script>
     // Hell/Dunkel sofort setzen (kein Aufblitzen)
-    try { var t = (JSON.parse(localStorage.getItem('frischecheck.v1') || '{}').settings || {}).theme; if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch (e) {}
+    try { var t = (JSON.parse(localStorage.getItem('frischecheck.v1') || '{}').settings || {}).theme; var st = JSON.parse(localStorage.getItem('frischecheck.v1') || '{}').settings || {}, de = document.documentElement;
+      if (t && t !== 'auto') de.dataset.theme = t;
+      if (st.accent && st.accent !== 'teal') de.dataset.accent = st.accent;
+      if (st.textSize && st.textSize !== 'normal') de.dataset.size = st.textSize;
+      if (st.compact) de.dataset.density = 'compact'; } catch (e) {}
   </script>
 </head>
 <body>
@@ -29,7 +33,7 @@
     <section id="view-home" class="view active">
       <div class="hello"><h2 id="homeHello">Hallo!</h2><div class="muted" id="homeDate"></div>
         <div class="glance" id="homeGlance"></div></div>
-      <input id="globalSearch" type="search" placeholder="🔍 Alles durchsuchen …" autocomplete="off">
+      <input id="globalSearch" type="search" placeholder="Alles durchsuchen …" autocomplete="off">
       <div id="searchResults"></div>
       <div class="home-flow" id="homeFlow">
         <h3 class="sec-title" data-sec="today">Heute</h3>
@@ -40,6 +44,7 @@
         <div id="homeFood"></div>
         <div id="homeExtras"></div>
         <div id="homeCards"></div>
+        <div id="homePlus"></div>
       </div>
     </section>
 
@@ -48,10 +53,10 @@
         <input id="search" type="search" placeholder="Vorrat durchsuchen …" autocomplete="off">
         <div class="chips" id="locFilter">
           <button class="chip active" data-loc="">Alle</button>
-          <button class="chip" data-loc="kuehlschrank">🧊 Kühlschrank</button>
-          <button class="chip" data-loc="gefrierfach">❄️ Gefrierfach</button>
-          <button class="chip" data-loc="vorrat">🗄️ Vorrat</button>
-          <button class="chip" data-loc="haushalt">🧴 Bad &amp; Haushalt</button>
+          <button class="chip" data-loc="kuehlschrank">Kühlschrank</button>
+          <button class="chip" data-loc="gefrierfach">Gefrierfach</button>
+          <button class="chip" data-loc="vorrat">Vorrat</button>
+          <button class="chip" data-loc="haushalt">Bad &amp; Haushalt</button>
         </div>
         <div class="row tight">
           <select id="sortBy" aria-label="Sortierung">
@@ -73,43 +78,43 @@
         <button class="btn mic" type="button" id="micShop" aria-label="Spracheingabe" hidden>🎤</button>
         <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
       </form>
-      <label class="btn small receipt-btn" for="receiptInput">🧾 Kassenbon scannen</label>
+      <label class="btn small receipt-btn" for="receiptInput">Kassenbon scannen</label>
       <div id="shopSuggestions"></div>
       <div id="shopList"></div>
       <div class="row" id="shopActions">
-        <button class="btn" id="btnShopToStock">📥 Gekauftes in den Vorrat</button>
-        <button class="btn" id="btnShopShare">📤 Teilen</button>
+        <button class="btn" id="btnShopToStock">Gekauftes in den Vorrat</button>
+        <button class="btn" id="btnShopShare">Teilen</button>
         <button class="btn" id="btnShopClear">Erledigte löschen</button>
       </div>
     </section>
 
     <!-- Rezepte -->
     <section id="view-recipes" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🍳 Rezepte</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Rezepte</h2></div>
       <div class="segmented" id="recipeTabs">
-        <button class="active" data-sub="suggest">💡 Vorschläge</button>
-        <button data-sub="plan">📅 Woche</button>
-        <button data-sub="all">📚 Alle</button>
+        <button class="active" data-sub="suggest">Vorschläge</button>
+        <button data-sub="plan">Woche</button>
+        <button data-sub="all">Alle</button>
       </div>
       <div id="recipeFilters" class="toolbar">
         <input id="recipeSearch" type="search" placeholder="Rezept suchen …" autocomplete="off">
         <div class="chips">
-          <button class="chip" data-filter="fav">⭐ Favoriten</button>
-          <button class="chip" data-filter="veg">🥕 Vegetarisch</button>
-          <button class="chip" data-filter="quick">⚡ bis 20 Min</button>
-          <button class="chip" data-filter="own">✍️ Eigene</button>
+          <button class="chip" data-filter="fav">Favoriten</button>
+          <button class="chip" data-filter="veg">Vegetarisch</button>
+          <button class="chip" data-filter="quick">bis 20 Min</button>
+          <button class="chip" data-filter="own">Eigene</button>
         </div>
         <div class="chips" id="recipeCats">
-          <button class="chip" data-cat="fruehstueck">🌅 Frühstück</button>
-          <button class="chip" data-cat="haupt">🍝 Hauptgericht</button>
-          <button class="chip" data-cat="suppe">🍲 Suppe</button>
-          <button class="chip" data-cat="salat">🥗 Salat</button>
-          <button class="chip" data-cat="snack">🥨 Snack</button>
-          <button class="chip" data-cat="suess">🍰 Süßes</button>
+          <button class="chip" data-cat="fruehstueck">Frühstück</button>
+          <button class="chip" data-cat="haupt">Hauptgericht</button>
+          <button class="chip" data-cat="suppe">Suppe</button>
+          <button class="chip" data-cat="salat">Salat</button>
+          <button class="chip" data-cat="snack">Snack</button>
+          <button class="chip" data-cat="suess">Süßes</button>
         </div>
       </div>
       <div id="sub-suggest" class="sub active">
-        <button class="btn" id="btnSurprise">🎲 Was koche ich heute?</button>
+        <button class="btn" id="btnSurprise">Was koche ich heute?</button>
         <div id="surpriseBox"></div>
         <div id="urgentBox"></div>
         <label class="toggle"><input type="checkbox" id="showAll"> auch Rezepte zeigen, bei denen mehr fehlt</label>
@@ -118,17 +123,17 @@
       <div id="sub-plan" class="sub">
         <p class="muted small">Plane die nächsten Tage – fehlende Zutaten kommen mit einem Tipp auf die Einkaufsliste.</p>
         <div id="planList"></div>
-        <button class="btn" id="btnPlanShop">🛒 Fehlendes einkaufen</button>
+        <button class="btn" id="btnPlanShop">Fehlendes einkaufen</button>
       </div>
       <div id="sub-all" class="sub">
-        <button class="btn" id="btnNewRecipe">✍️ Eigenes Rezept anlegen</button>
+        <button class="btn" id="btnNewRecipe">Eigenes Rezept anlegen</button>
         <div id="allRecipeList"></div>
       </div>
     </section>
 
     <!-- Sport -->
     <section id="view-sport" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🏋️ Sport</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Sport</h2></div>
       <div id="sportStats" class="statgrid card"></div>
       <div class="card">
         <h2>Training zusammenstellen</h2>
@@ -140,11 +145,11 @@
         <div class="chips" id="woFocus"></div>
         <label class="field">Level</label>
         <div class="chips" id="woLevel"></div>
-        <label class="toggle"><input type="checkbox" id="woQuiet"> 🤫 leise – keine Sprünge (Wohnung, Nachbarn)</label>
-        <label class="toggle"><input type="checkbox" id="woVoice" checked> 🔊 Übungen ansagen</label>
+        <label class="toggle"><input type="checkbox" id="woQuiet"> leise – keine Sprünge (Wohnung, Nachbarn)</label>
+        <label class="toggle"><input type="checkbox" id="woVoice" checked> Übungen ansagen</label>
         <div class="row tight">
-          <button class="btn primary" id="btnWoGenerate">✨ Training erstellen</button>
-          <button class="btn" id="btnWoSeven">⏱️ 7-Minuten-Workout</button>
+          <button class="btn primary" id="btnWoGenerate">Training erstellen</button>
+          <button class="btn" id="btnWoSeven">7-Minuten-Workout</button>
         </div>
       </div>
       <div id="woPreview"></div>
@@ -153,7 +158,7 @@
         <div class="chips" id="woGoal"></div>
       </div>
       <details class="card ex-card">
-        <summary><b>📖 Alle Übungen mit Anleitung</b></summary>
+        <summary><b>Alle Übungen mit Anleitung</b></summary>
         <input id="exSearch" type="search" placeholder="Übung suchen …" autocomplete="off">
         <div id="exList"></div>
       </details>
@@ -165,7 +170,7 @@
 
     <!-- Kalender -->
     <section id="view-calendar" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📅 Kalender</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Kalender</h2></div>
       <div class="cal-head">
         <button class="btn small" id="calPrev" aria-label="Vormonat">‹</button>
         <h2 id="calTitle"></h2>
@@ -176,9 +181,9 @@
       <div class="cal-legend muted small"><i class="lg dot-ev"></i>Termin <i class="lg dot-exp"></i>läuft ab <i class="lg dot-meal"></i>Essen <i class="lg dot-sport"></i>Training <i class="lg dot-task"></i>Aufgabe</div>
       <div class="row tight cal-actions">
         <button class="btn primary" id="btnNewEvent">＋ Termin</button>
-        <button class="btn" id="btnIcsAll">📲 In Handy-Kalender</button>
+        <button class="btn" id="btnIcsAll">In Handy-Kalender</button>
       </div>
-      <p class="muted small">🔔 Erinnerungen kommen, solange die App geöffnet ist. Für Erinnerungen auch bei geschlossener App: <b>📲 In Handy-Kalender</b>.</p>
+      <p class="muted small">Erinnerungen kommen, solange die App geöffnet ist. Für Erinnerungen auch bei geschlossener App: <b>In Handy-Kalender</b>.</p>
       <h3 id="calDayTitle" class="section"></h3>
       <div id="calDay"></div>
       <h3 class="section">Demnächst</h3>
@@ -187,7 +192,7 @@
 
     <!-- Ausgaben -->
     <section id="view-expenses" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💶 Ausgaben</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Ausgaben</h2></div>
       <form id="expQuick" class="addrow" autocomplete="off">
         <input id="expQuickInput" placeholder="z. B. 12,50 Tanken · +1800 Gehalt" inputmode="text">
         <button class="btn mic" type="button" id="micExp" aria-label="Spracheingabe" hidden>🎤</button>
@@ -201,21 +206,21 @@
       <div class="card" id="expSummary"></div>
       <div id="expList"></div>
       <div class="card" id="savingsCard">
-        <h2>🐷 Sparziele</h2>
+        <h2>Sparziele</h2>
         <div id="savingsList"></div>
         <button class="btn small" id="btnSavingNew">＋ Sparziel</button>
       </div>
       <div class="row tight">
         <button class="btn" id="btnExpNew">＋ Ausgabe mit Details</button>
         <button class="btn" id="btnIncomeNew">＋ Einnahme</button>
-        <button class="btn" id="btnExpBudget">🎯 Budget</button>
-        <button class="btn" id="btnExpCsv">⬇️ CSV (Excel)</button>
+        <button class="btn" id="btnExpBudget">Budget</button>
+        <button class="btn" id="btnExpCsv">CSV (Excel)</button>
       </div>
     </section>
 
     <!-- Aufgaben -->
     <section id="view-tasks" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>✅ Aufgaben</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Aufgaben</h2></div>
       <form id="taskForm" class="addrow" autocomplete="off">
         <input id="taskInput" placeholder="z. B. Müll rausbringen jeden Dienstag">
         <button class="btn mic" type="button" id="micTask" aria-label="Spracheingabe" hidden>🎤</button>
@@ -225,27 +230,27 @@
       <div class="chips" id="taskFilter"></div>
       <div id="taskList"></div>
       <div class="row tight">
-        <button class="btn" id="btnCleaning">🧹 Putzplan-Vorlage</button>
+        <button class="btn" id="btnCleaning">Putzplan-Vorlage</button>
         <button class="btn" id="btnTaskNew">＋ Aufgabe mit Details</button>
       </div>
     </section>
 
     <!-- Gewohnheiten -->
     <section id="view-habits" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💧 Gewohnheiten</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Gewohnheiten</h2></div>
       <div id="habitList"></div>
       <div class="card">
         <h2>Neue Gewohnheit</h2>
         <div class="chips" id="habitPresets"></div>
-        <button class="btn small" id="btnHabitCustom">✍️ Eigene Gewohnheit</button>
+        <button class="btn small" id="btnHabitCustom">Eigene Gewohnheit</button>
       </div>
     </section>
 
     <!-- Gesundheit -->
     <section id="view-health" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>❤️ Gesundheit</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Gesundheit</h2></div>
       <div class="card">
-        <h2>⚖️ Gewicht</h2>
+        <h2>Gewicht</h2>
         <form id="weightForm" class="addrow" autocomplete="off">
           <input id="weightInput" inputmode="decimal" placeholder="Gewicht heute in kg, z. B. 72,4">
           <button class="btn primary" type="submit">Speichern</button>
@@ -257,13 +262,13 @@
         </div>
       </div>
       <div class="card">
-        <h2>🧘 Atemübung</h2>
+        <h2>Atemübung</h2>
         <p class="muted small">Ein paar ruhige Minuten gegen Stress oder zum Einschlafen.</p>
         <div class="chips" id="brPattern"></div>
         <div class="row tight"><button class="btn primary" data-br="1">1 Min</button><button class="btn" data-br="3">3 Min</button><button class="btn" data-br="5">5 Min</button></div>
       </div>
       <div class="card">
-        <h2>🙂 Wie geht's dir heute?</h2>
+        <h2>Wie geht's dir heute?</h2>
         <div class="moods" id="moodPick"></div>
         <div class="row tight">
           <label>Schlaf (Stunden)<input id="sleepInput" inputmode="decimal" placeholder="z. B. 7,5"></label>
@@ -276,7 +281,7 @@
 
     <!-- Notizen -->
     <section id="view-notes" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📝 Notizen</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Notizen</h2></div>
       <div class="addrow">
         <input id="noteSearch" type="search" placeholder="Notizen durchsuchen …" autocomplete="off">
         <button class="btn" id="btnNoteTpl" aria-label="Vorlage">📋</button>
@@ -287,7 +292,7 @@
 
     <!-- Kalorien -->
     <section id="view-food" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🍽️ Kalorien</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Kalorien</h2></div>
       <div class="cal-head">
         <button class="btn small" id="foodPrev" aria-label="Vortag">‹</button>
         <h2 id="foodDay"></h2>
@@ -295,9 +300,9 @@
       </div>
       <div class="card" id="foodSummary"></div>
       <div class="food-add">
-        <button class="btn" id="btnFoodBarcode"><span>📦</span>Barcode</button>
-        <label class="btn" for="labelPhotoInput"><span>🏷️</span>Nährwert-Tabelle</label>
-        <button class="btn" id="btnFoodSearch"><span>🔎</span>Suchen</button>
+        <button class="btn" id="btnFoodBarcode"><span><i class="ic ic-box"></i></span>Barcode</button>
+        <label class="btn" for="labelPhotoInput"><span><i class="ic ic-camera"></i></span>Nährwert-Tabelle</label>
+        <button class="btn" id="btnFoodSearch"><span><i class="ic ic-search"></i></span>Suchen</button>
       </div>
       <form id="foodQuick" class="addrow" autocomplete="off">
         <input id="foodQuickInput" placeholder="z. B. 1 Apfel und 2 Scheiben Toast">
@@ -308,7 +313,7 @@
       <div id="foodMeals"></div>
       <div class="card" id="foodWeek"></div>
       <details class="card" id="foodGoalCard">
-        <summary><b>🎯 Tagesziel einstellen</b> <span class="muted small" id="foodGoalShort"></span></summary>
+        <summary><b>Tagesziel einstellen</b> <span class="muted small" id="foodGoalShort"></span></summary>
         <div class="row">
           <label>Geschlecht<select id="fgSex"><option value="w">weiblich</option><option value="m">männlich</option></select></label>
           <label>Alter<input id="fgAge" inputmode="numeric" placeholder="z. B. 35"></label>
@@ -326,7 +331,7 @@
 
     <!-- Medikamente -->
     <section id="view-meds" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>💊 Medikamente</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Medikamente</h2></div>
       <div class="card" id="medToday"></div>
       <div id="medList"></div>
       <button class="btn" id="btnMedNew">＋ Medikament hinzufügen</button>
@@ -335,23 +340,23 @@
 
     <!-- Fristen & Dokumente -->
     <section id="view-deadlines" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>📄 Fristen & Dokumente</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Fristen & Dokumente</h2></div>
       <div id="dlList"></div>
       <div class="chips" id="dlQuick"></div>
     </section>
 
     <!-- Zählerstände -->
     <section id="view-meters" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🔢 Zählerstände</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Zählerstände</h2></div>
       <div id="meterList"></div>
       <div class="chips" id="meterAdd"></div>
     </section>
 
     <!-- Werkzeuge -->
     <section id="view-tools" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🧰 Werkzeuge</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Werkzeuge</h2></div>
       <div class="card">
-        <h2>⏲️ Küchen-Timer</h2>
+        <h2>Küchen-Timer</h2>
         <div class="chips" id="tmQuick">
           <button class="chip" data-min="1">1 Min</button><button class="chip" data-min="3">3</button><button class="chip" data-min="5">5</button>
           <button class="chip" data-min="8">8 (Eier)</button><button class="chip" data-min="10">10</button><button class="chip" data-min="15">15</button>
@@ -365,13 +370,13 @@
         <div id="tmList"></div>
       </div>
       <div class="card">
-        <h2>⏱️ Stoppuhr</h2>
+        <h2>Stoppuhr</h2>
         <div class="stopwatch" id="swTime">0:00,0</div>
         <div class="row tight"><button class="btn primary" id="swStart">Start</button><button class="btn" id="swLap">Runde</button><button class="btn" id="swReset">Zurücksetzen</button></div>
         <div id="swLaps" class="small muted"></div>
       </div>
       <div class="card">
-        <h2>⚖️ Küchen-Umrechner</h2>
+        <h2>Küchen-Umrechner</h2>
         <div class="row">
           <label>Menge<input id="cvVal" inputmode="decimal" value="1"></label>
           <label>von<select id="cvFrom"></select></label>
@@ -379,7 +384,7 @@
         </div>
         <label>Zutat<select id="cvIng"></select></label>
         <div class="cv-result" id="cvResult"></div>
-        <h3 class="section">🌡️ Backofen</h3>
+        <h3 class="section">Backofen</h3>
         <div class="row">
           <label>°C (Ober-/Unterhitze)<input id="ovC" inputmode="numeric" placeholder="180"></label>
           <label>°F<input id="ovF" inputmode="numeric" placeholder="356"></label>
@@ -387,7 +392,7 @@
         <div class="small" id="ovResult"></div>
       </div>
       <div class="card">
-        <h2>🧾 Rechnung teilen</h2>
+        <h2>Rechnung teilen</h2>
         <div class="row">
           <label>Betrag (€)<input id="spTotal" inputmode="decimal" placeholder="z. B. 86,40"></label>
           <label>Personen<input id="spPeople" inputmode="numeric" value="2"></label>
@@ -396,17 +401,71 @@
         <div class="cv-result" id="spResult"></div>
       </div>
       <div class="card">
-        <h2>🎲 Entscheidungshilfe</h2>
-        <div class="row tight"><button class="btn" id="rdCoin">🪙 Münze</button><button class="btn" id="rdDice">🎲 Würfel</button><button class="btn" id="rdCook">🍳 Was koche ich?</button></div>
+        <h2>Entscheidungshilfe</h2>
+        <div class="row tight"><button class="btn" id="rdCoin">Münze</button><button class="btn" id="rdDice">Würfel</button><button class="btn" id="rdCook">Was koche ich?</button></div>
         <label>Oder aus eigener Liste (mit Komma getrennt)<input id="rdList" placeholder="z. B. Anna, Ben, Clara"></label>
         <button class="btn small" id="rdPick">Auslosen</button>
         <div class="cv-result" id="rdResult"></div>
       </div>
     </section>
 
+    <!-- Pflanzen -->
+    <section id="view-plants" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Pflanzen</h2></div>
+      <div id="plantList"></div>
+      <p class="muted small">Pflanze hinzufügen:</p>
+      <div class="chips" id="plantQuick"></div>
+    </section>
+
+    <!-- Verliehen & Geliehen -->
+    <section id="view-loans" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Verliehen &amp; Geliehen</h2></div>
+      <div class="segmented" id="loanTabs"><button data-ld="out" class="active">Verliehen</button><button data-ld="in">Geliehen</button></div>
+      <div id="loanList"></div>
+      <button class="btn primary wide" id="loanAdd">＋ Eintrag</button>
+    </section>
+
+    <!-- Countdowns -->
+    <section id="view-countdowns" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Countdowns</h2></div>
+      <div id="cdList"></div>
+      <button class="btn primary wide" id="cdAdd">＋ Countdown</button>
+    </section>
+
+    <!-- Fokus -->
+    <section id="view-focus" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Fokus-Timer</h2></div>
+      <div class="card focus-card">
+        <div class="segmented" id="focusPreset"></div>
+        <input id="focusTask" placeholder="Woran arbeitest du? (optional)" autocomplete="off">
+        <div class="focus-ring" id="focusRing"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" class="fr-bg"/><circle cx="60" cy="60" r="54" class="fr-fg" id="focusArc"/></svg>
+          <div class="focus-center"><div class="focus-phase" id="focusPhase">Fokus</div><div class="focus-time" id="focusTime">25:00</div><div class="muted small" id="focusCount"></div></div></div>
+        <div class="row focus-btns"><button class="btn" id="focusReset">Neu</button><button class="btn primary" id="focusStart">▶ Start</button><button class="btn" id="focusSkip">Weiter</button></div>
+      </div>
+      <div class="card"><h2>Heute fokussiert</h2><div id="focusStats"></div></div>
+    </section>
+
+    <!-- Notfallpass -->
+    <section id="view-emergency" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Notfallpass</h2></div>
+      <div id="emView"></div>
+      <form id="emForm" class="card em-form" hidden autocomplete="off">
+        <label>Name<input id="emName"></label>
+        <div class="row"><label>Geburtsdatum<input id="emBirth" type="date"></label><label>Blutgruppe<select id="emBlood"></select></label></div>
+        <label>Allergien / Unverträglichkeiten<input id="emAllergies" placeholder="z. B. Penicillin, Nüsse"></label>
+        <label>Vorerkrankungen<input id="emConditions" placeholder="z. B. Diabetes Typ 2"></label>
+        <label>Krankenkasse<input id="emInsurance"></label>
+        <label>Notfallkontakt 1<input id="emC1" placeholder="Name – Telefon"></label>
+        <label>Notfallkontakt 2<input id="emC2" placeholder="Name – Telefon"></label>
+        <label class="toggle"><input type="checkbox" id="emDonor"> Organspendeausweis vorhanden</label>
+        <label>Sonstiges<textarea id="emNote" rows="2" placeholder="z. B. Hausarzt, Schlüssel bei Nachbarin"></textarea></label>
+        <div class="dialog-actions"><span class="spacer"></span><button type="button" class="btn" id="emCancel">Abbrechen</button><button class="btn primary">Speichern</button></div>
+      </form>
+    </section>
+
     <!-- Erfolge -->
     <section id="view-achievements" class="view">
-      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>🏆 Erfolge & Rückblick</h2></div>
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Erfolge & Rückblick</h2></div>
       <div class="card" id="weekReview"></div>
       <div id="achList" class="ach-grid"></div>
     </section>
@@ -415,47 +474,58 @@
     <section id="view-settings" class="view">
       <h3 class="sec-title">Küche &amp; Essen</h3>
       <div class="hub" data-group="kitchen">
-        <button class="hub-tile" data-goto="recipes"><span class="hub-ic">🍳</span><b>Rezepte</b><small id="hubRecipes"></small></button>
-        <button class="hub-tile" data-goto="food"><span class="hub-ic">🍽️</span><b>Kalorien</b><small id="hubFood"></small></button>
+        <button class="hub-tile" data-goto="recipes"><span class="hub-ic"><i class="ic ic-utensils"></i></span><b>Rezepte</b><small id="hubRecipes"></small></button>
+        <button class="hub-tile" data-goto="food"><span class="hub-ic"><i class="ic ic-flame"></i></span><b>Kalorien</b><small id="hubFood"></small></button>
       </div>
       <h3 class="sec-title">Planen &amp; Organisieren</h3>
       <div class="hub" data-group="plan">
-        <button class="hub-tile" data-goto="calendar"><span class="hub-ic">📅</span><b>Kalender</b><small id="hubCal"></small></button>
-        <button class="hub-tile" data-goto="tasks"><span class="hub-ic">✅</span><b>Aufgaben</b><small id="hubTasks"></small></button>
-        <button class="hub-tile" data-goto="notes"><span class="hub-ic">📝</span><b>Notizen</b><small id="hubNotes"></small></button>
-        <button class="hub-tile" data-goto="deadlines"><span class="hub-ic">📄</span><b>Fristen</b><small id="hubDeadlines"></small></button>
+        <button class="hub-tile" data-goto="calendar"><span class="hub-ic"><i class="ic ic-calendar"></i></span><b>Kalender</b><small id="hubCal"></small></button>
+        <button class="hub-tile" data-goto="tasks"><span class="hub-ic"><i class="ic ic-check"></i></span><b>Aufgaben</b><small id="hubTasks"></small></button>
+        <button class="hub-tile" data-goto="notes"><span class="hub-ic"><i class="ic ic-note"></i></span><b>Notizen</b><small id="hubNotes"></small></button>
+        <button class="hub-tile" data-goto="deadlines"><span class="hub-ic"><i class="ic ic-idcard"></i></span><b>Fristen</b><small id="hubDeadlines"></small></button>
+        <button class="hub-tile" data-goto="countdowns"><span class="hub-ic"><i class="ic ic-hourglass"></i></span><b>Countdowns</b><small id="hubCountdowns"></small></button>
+        <button class="hub-tile" data-goto="focus"><span class="hub-ic"><i class="ic ic-target"></i></span><b>Fokus-Timer</b><small id="hubFocus"></small></button>
       </div>
       <h3 class="sec-title">Gesundheit &amp; Fitness</h3>
       <div class="hub" data-group="health">
-        <button class="hub-tile" data-goto="sport"><span class="hub-ic">🏋️</span><b>Sport</b><small id="hubSport"></small></button>
-        <button class="hub-tile" data-goto="habits"><span class="hub-ic">💧</span><b>Gewohnheiten</b><small id="hubHabits"></small></button>
-        <button class="hub-tile" data-goto="health"><span class="hub-ic">❤️</span><b>Gesundheit</b><small id="hubHealth"></small></button>
-        <button class="hub-tile" data-goto="meds"><span class="hub-ic">💊</span><b>Medikamente</b><small id="hubMeds"></small></button>
+        <button class="hub-tile" data-goto="sport"><span class="hub-ic"><i class="ic ic-dumbbell"></i></span><b>Sport</b><small id="hubSport"></small></button>
+        <button class="hub-tile" data-goto="habits"><span class="hub-ic"><i class="ic ic-droplet"></i></span><b>Gewohnheiten</b><small id="hubHabits"></small></button>
+        <button class="hub-tile" data-goto="health"><span class="hub-ic"><i class="ic ic-heart"></i></span><b>Gesundheit</b><small id="hubHealth"></small></button>
+        <button class="hub-tile" data-goto="meds"><span class="hub-ic"><i class="ic ic-pill"></i></span><b>Medikamente</b><small id="hubMeds"></small></button>
+        <button class="hub-tile" data-goto="emergency"><span class="hub-ic"><i class="ic ic-lifebuoy"></i></span><b>Notfallpass</b><small id="hubEmergency"></small></button>
       </div>
-      <h3 class="sec-title">Haushalt &amp; Finanzen</h3>
+      <h3 class="sec-title">Zuhause &amp; Finanzen</h3>
       <div class="hub" data-group="money">
-        <button class="hub-tile" data-goto="expenses"><span class="hub-ic">💶</span><b>Ausgaben</b><small id="hubExp"></small></button>
-        <button class="hub-tile" data-goto="meters"><span class="hub-ic">🔢</span><b>Zählerstände</b><small id="hubMeters"></small></button>
+        <button class="hub-tile" data-goto="expenses"><span class="hub-ic"><i class="ic ic-wallet"></i></span><b>Ausgaben</b><small id="hubExp"></small></button>
+        <button class="hub-tile" data-goto="meters"><span class="hub-ic"><i class="ic ic-gauge"></i></span><b>Zählerstände</b><small id="hubMeters"></small></button>
+        <button class="hub-tile" data-goto="plants"><span class="hub-ic"><i class="ic ic-leaf"></i></span><b>Pflanzen</b><small id="hubPlants"></small></button>
+        <button class="hub-tile" data-goto="loans"><span class="hub-ic"><i class="ic ic-swap"></i></span><b>Verliehen</b><small id="hubLoans"></small></button>
       </div>
       <h3 class="sec-title">Extras</h3>
       <div class="hub" data-group="extra">
-        <button class="hub-tile" data-goto="tools"><span class="hub-ic">🧰</span><b>Werkzeuge</b><small>Timer, Umrechner …</small></button>
-        <button class="hub-tile" data-goto="achievements"><span class="hub-ic">🏆</span><b>Erfolge</b><small id="hubAch"></small></button>
+        <button class="hub-tile" data-goto="tools"><span class="hub-ic"><i class="ic ic-wrench"></i></span><b>Werkzeuge</b><small>Timer, Umrechner …</small></button>
+        <button class="hub-tile" data-goto="achievements"><span class="hub-ic"><i class="ic ic-trophy"></i></span><b>Erfolge</b><small id="hubAch"></small></button>
       </div>
       <h3 class="sec-title">Einstellungen</h3>
       <div class="card">
-        <h2>🎨 Darstellung</h2>
+        <h2>Design anpassen</h2>
         <div class="segmented" id="themeSwitch">
-          <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button>
+          <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">Hell</button><button data-theme-set="dark">Dunkel</button>
         </div>
+        <p class="set-label">Akzentfarbe</p>
+        <div class="swatches" id="accentPick"></div>
+        <p class="set-label">Schriftgröße</p>
+        <div class="segmented" id="sizePick"></div>
+        <label class="toggle"><input type="checkbox" id="compactPick"> Kompakte Ansicht (mehr auf einen Blick)</label>
+        <label class="set-label">Dein Name für die Begrüßung<input id="namePick" placeholder="z. B. Paul" autocomplete="off" maxlength="30"></label>
       </div>
       <div class="card">
-        <h2>🏠 Startseite anpassen</h2>
+        <h2>Startseite anpassen</h2>
         <p class="muted small">Welche Karten sollen auf „Heute“ erscheinen?</p>
         <div class="chips" id="homeCardToggles"></div>
       </div>
       <div class="card">
-        <h2>🌤️ Wetter-Ort</h2>
+        <h2>Wetter-Ort</h2>
         <p class="muted small" id="placeInfo">Für das Wetter auf der Startseite.</p>
         <form id="placeForm" class="addrow" autocomplete="off">
           <input id="placeInput" placeholder="Ort, z. B. Ahaus">
@@ -464,23 +534,23 @@
         </form>
       </div>
       <div class="card">
-        <h2>🔔 Erinnerungen</h2>
+        <h2>Erinnerungen</h2>
         <p class="muted">Beim Öffnen der App wirst du benachrichtigt, wenn etwas heute oder morgen abläuft.</p>
-        <button id="btnNotify" class="btn">🔔 Benachrichtigungen erlauben</button>
+        <button id="btnNotify" class="btn">Benachrichtigungen erlauben</button>
         <p id="notifyState" class="muted small"></p>
       </div>
       <h3 class="sec-title">Küche &amp; Vorrat</h3>
       <div class="card">
-        <h2>📌 Immer im Haus</h2>
+        <h2>Immer im Haus</h2>
         <p class="muted small">Wähle, was du immer da haben willst. Ist es aufgebraucht, landet es automatisch auf der Einkaufsliste.</p>
         <div class="chips" id="staples"></div>
       </div>
       <div class="card">
-        <h2>📈 Statistik</h2>
+        <h2>Statistik</h2>
         <div id="stats"></div>
       </div>
       <div class="card">
-        <h2>📖 Ratgeber</h2>
+        <h2>Ratgeber</h2>
         <details class="guide">
           <summary>MHD oder Verbrauchsdatum – was ist der Unterschied?</summary>
           <p><b>Mindestens haltbar bis (MHD):</b> Bis dahin garantiert der Hersteller Geschmack und Qualität. Danach ist das Lebensmittel meist noch gut – <b>schauen, riechen, probieren</b>. Gilt z. B. für Joghurt, Käse, Nudeln, Konserven.</p>
@@ -511,11 +581,11 @@
       </div>
       <h3 class="sec-title">Daten &amp; Sicherung</h3>
       <div class="card">
-        <h2>💾 Daten</h2>
+        <h2>Daten</h2>
         <p class="muted">Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherung kannst du den Vorrat auf ein anderes Gerät übertragen.</p>
         <div class="row">
-          <button id="btnExport" class="btn">⬇️ Sicherung speichern</button>
-          <label class="btn">⬆️ Sicherung laden<input id="importFile" type="file" accept="application/json" hidden></label>
+          <button id="btnExport" class="btn">Sicherung speichern</button>
+          <label class="btn">Sicherung laden<input id="importFile" type="file" accept="application/json" hidden></label>
         </div>
         <p class="small" id="backupInfo"></p>
         <button id="btnClear" class="btn danger">Alles löschen</button>
@@ -526,11 +596,11 @@
   </main>
 
   <nav class="tabbar">
-    <button class="tab active" data-view="home"><span>🏠</span>Heute</button>
-    <button class="tab" data-view="stock"><span>🧊</span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
+    <button class="tab active" data-view="home"><span><i class="ic ic-home"></i></span>Heute</button>
+    <button class="tab" data-view="stock"><span><i class="ic ic-box"></i></span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
-    <button class="tab" data-view="shopping"><span>🛒</span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements"><span>☰</span>Mehr</button>
+    <button class="tab" data-view="shopping"><span><i class="ic ic-cart"></i></span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency"><span><i class="ic ic-menu"></i></span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -539,25 +609,25 @@
       <h2 id="itemTitle">Produkt hinzufügen</h2>
 
       <div class="scanrow">
-        <button type="button" class="btn big" id="btnScanBarcode">📷 Barcode scannen</button>
-        <button type="button" class="btn big" id="btnScanDate">📅 Datum scannen</button>
+        <button type="button" class="btn big" id="btnScanBarcode">Barcode scannen</button>
+        <button type="button" class="btn big" id="btnScanDate">Datum scannen</button>
       </div>
 
       <div class="row tight" id="addExtras">
-        <label class="btn small" for="receiptInput">🧾 Kassenbon</label>
-        <button type="button" class="btn small" id="micItem" hidden>🎤 Sprechen</button>
+        <label class="btn small" for="receiptInput">Kassenbon</label>
+        <button type="button" class="btn small" id="micItem" hidden>Sprechen</button>
       </div>
       <div id="productPreview" class="preview" hidden></div>
 
       <details id="quickAddBox" class="quickadd">
-        <summary>⚡ Ohne Scannen: häufige Lebensmittel</summary>
+        <summary>Ohne Scannen: häufige Lebensmittel</summary>
         <div class="chips" id="quickAdd"></div>
       </details>
 
       <div id="itemTools" class="chips" hidden>
-        <button type="button" class="chip" id="btnOpened">🥛 Heute geöffnet</button>
-        <button type="button" class="chip" id="btnFreeze">❄️ Einfrieren</button>
-        <button type="button" class="chip" id="btnToShop">🛒 Auf Einkaufsliste</button>
+        <button type="button" class="chip" id="btnOpened">Heute geöffnet</button>
+        <button type="button" class="chip" id="btnFreeze">Einfrieren</button>
+        <button type="button" class="chip" id="btnToShop">Auf Einkaufsliste</button>
       </div>
 
       <label>Produkt
@@ -603,10 +673,10 @@
         </label>
         <label>Ort
           <select id="fLocation">
-            <option value="kuehlschrank">🧊 Kühlschrank</option>
-            <option value="gefrierfach">❄️ Gefrierfach</option>
-            <option value="vorrat">🗄️ Vorrat</option>
-            <option value="haushalt">🧴 Bad &amp; Haushalt</option>
+            <option value="kuehlschrank">Kühlschrank</option>
+            <option value="gefrierfach">Gefrierfach</option>
+            <option value="vorrat">Vorrat</option>
+            <option value="haushalt">Bad &amp; Haushalt</option>
           </select>
         </label>
       </div>
@@ -632,7 +702,7 @@
     <div class="frame" id="scanFrame"></div>
     <div class="scan-hint" id="scanHint"></div>
     <div class="scan-actions">
-      <label class="btn">🖼️ Foto<input id="photoInput" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="btn">Foto<input id="photoInput" type="file" accept="image/*" capture="environment" hidden></label>
       <button class="btn primary" id="btnCapture" hidden>Aufnehmen</button>
       <button class="btn" id="btnTorch" hidden>🔦</button>
       <button class="btn" id="btnCloseScan">Schließen</button>
@@ -665,8 +735,8 @@
         </label>
         <label>Kategorie
           <select id="rCat">
-            <option value="haupt">🍝 Hauptgericht</option><option value="fruehstueck">🌅 Frühstück</option><option value="suppe">🍲 Suppe</option>
-            <option value="salat">🥗 Salat</option><option value="snack">🥨 Snack</option><option value="suess">🍰 Süßes</option>
+            <option value="haupt">Hauptgericht</option><option value="fruehstueck">Frühstück</option><option value="suppe">Suppe</option>
+            <option value="salat">Salat</option><option value="snack">Snack</option><option value="suess">Süßes</option>
           </select>
         </label>
       </div>
@@ -687,21 +757,25 @@
  <!-- Schnellmenü ＋ -->
   <dialog id="actionSheet" class="sheet">
     <div class="sheet-grid">
-      <button data-action="product"><span>📦</span>Produkt</button>
-      <button data-action="receipt"><span>🧾</span>Kassenbon</button>
-      <button data-action="shopping"><span>🛒</span>Einkauf</button>
-      <button data-action="event"><span>📅</span>Termin</button>
-      <button data-action="expense"><span>💶</span>Ausgabe</button>
-      <button data-action="workout"><span>🏋️</span>Training</button>
-      <button data-action="task"><span>✅</span>Aufgabe</button>
-      <button data-action="note"><span>📝</span>Notiz</button>
-      <button data-action="weight"><span>⚖️</span>Gewicht</button>
-      <button data-action="meal"><span>🍽️</span>Mahlzeit</button>
-      <button data-action="habit"><span>💧</span>Gewohnheit</button>
-      <button data-action="search"><span>🔍</span>Suchen</button>
-      <button data-action="timer"><span>⏲️</span>Timer</button>
-      <button data-action="medtaken"><span>💊</span>Tabletten</button>
-      <button data-action="deadline"><span>📄</span>Frist</button>
+      <button data-action="product"><span><i class="ic ic-box"></i></span>Produkt</button>
+      <button data-action="receipt"><span><i class="ic ic-receipt"></i></span>Kassenbon</button>
+      <button data-action="shopping"><span><i class="ic ic-cart"></i></span>Einkauf</button>
+      <button data-action="event"><span><i class="ic ic-calendar"></i></span>Termin</button>
+      <button data-action="expense"><span><i class="ic ic-wallet"></i></span>Ausgabe</button>
+      <button data-action="workout"><span><i class="ic ic-dumbbell"></i></span>Training</button>
+      <button data-action="task"><span><i class="ic ic-check"></i></span>Aufgabe</button>
+      <button data-action="note"><span><i class="ic ic-note"></i></span>Notiz</button>
+      <button data-action="weight"><span><i class="ic ic-scale"></i></span>Gewicht</button>
+      <button data-action="meal"><span><i class="ic ic-flame"></i></span>Mahlzeit</button>
+      <button data-action="habit"><span><i class="ic ic-droplet"></i></span>Gewohnheit</button>
+      <button data-action="search"><span><i class="ic ic-search"></i></span>Suchen</button>
+      <button data-action="timer"><span><i class="ic ic-clock"></i></span>Timer</button>
+      <button data-action="medtaken"><span><i class="ic ic-pill"></i></span>Tabletten</button>
+      <button data-action="deadline"><span><i class="ic ic-idcard"></i></span>Frist</button>
+      <button data-action="plant"><span><i class="ic ic-leaf"></i></span>Pflanze</button>
+      <button data-action="loan"><span><i class="ic ic-swap"></i></span>Verliehen</button>
+      <button data-action="countdown"><span><i class="ic ic-hourglass"></i></span>Countdown</button>
+      <button data-action="focus"><span><i class="ic ic-target"></i></span>Fokus</button>
     </div>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
@@ -771,7 +845,7 @@
       <label>Notiz
         <input id="exNote" placeholder="z. B. Wocheneinkauf" autocomplete="off">
       </label>
-      <label class="toggle"><input type="checkbox" id="exRepeat"> 🔁 jeden Monat (Fixkosten wie Miete, Handy, Abos)</label>
+      <label class="toggle"><input type="checkbox" id="exRepeat"> jeden Monat (Fixkosten wie Miete, Handy, Abos)</label>
       <div class="dialog-actions">
         <button type="button" class="btn danger" id="exDelete" hidden>Löschen</button>
         <span class="spacer"></span>
@@ -798,7 +872,7 @@
     </div>
     <div class="cook-nav">
       <button class="btn big" id="woBack">⏮</button>
-      <button class="btn big primary" id="woPause">⏸ Pause</button>
+      <button class="btn big primary" id="woPause">Pause</button>
       <button class="btn big" id="woSkip">⏭</button>
     </div>
   </dialog>
@@ -815,7 +889,7 @@
       <div class="row">
         <label>Wiederholen<select id="tkRepeat"></select></label>
         <label>Wichtigkeit
-          <select id="tkPriority"><option value="0">normal</option><option value="1">❗ wichtig</option><option value="2">‼️ dringend</option></select>
+          <select id="tkPriority"><option value="0">normal</option><option value="1">wichtig</option><option value="2">dringend</option></select>
         </label>
       </div>
       <div class="chips" id="tkCategory"></div>
@@ -835,7 +909,7 @@
       <input id="ntTitle" class="note-title" placeholder="Titel" autocomplete="off">
       <textarea id="ntText" rows="10" placeholder="Notiz … Tipp: Zeilen mit „[ ]“ werden zur Checkliste."></textarea>
       <div class="chips" id="ntColors"></div>
-      <label class="toggle"><input type="checkbox" id="ntPinned"> 📌 oben anheften</label>
+      <label class="toggle"><input type="checkbox" id="ntPinned"> oben anheften</label>
       <div class="dialog-actions">
         <button type="button" class="btn danger" id="ntDelete" hidden>Löschen</button>
         <button type="button" class="btn" id="ntShare" hidden>📤</button>
@@ -898,11 +972,11 @@
 
   <!-- Lebensmittel suchen -->
   <dialog id="foodSearchDialog">
-    <h2>🔎 Lebensmittel</h2>
+    <h2>Lebensmittel</h2>
     <input id="fsInput" type="search" placeholder="z. B. Banane, Pizza, Cappuccino" autocomplete="off">
     <div id="fsList" class="picklist"></div>
     <div class="dialog-actions">
-      <button class="btn" id="fsManual">✍️ Selbst eingeben</button>
+      <button class="btn" id="fsManual">Selbst eingeben</button>
       <span class="spacer"></span>
       <button class="btn" id="fsCancel">Schließen</button>
     </div>
@@ -973,6 +1047,43 @@
     </form>
   </dialog>
 
+  <!-- Pflanze -->
+  <dialog id="plantDialog">
+    <form id="plantForm" method="dialog">
+      <h2 id="plantDlgTitle">Pflanze</h2>
+      <div class="row"><label style="flex:0 0 76px">Symbol<input id="plantEmoji" maxlength="4"></label><label>Name<input id="plantName" required autocomplete="off" placeholder="z. B. Monstera Wohnzimmer"></label></div>
+      <div class="row"><label>Gießen alle … Tage<input id="plantEvery" inputmode="numeric" required></label><label>Standort<input id="plantSpot" autocomplete="off" placeholder="z. B. Küche"></label></div>
+      <label>Zuletzt gegossen<input id="plantWatered" type="date"></label>
+      <label>Notiz<input id="plantNote" autocomplete="off" placeholder="z. B. nur von unten gießen"></label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="plantDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="plantCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Verliehen -->
+  <dialog id="loanDialog">
+    <form id="loanForm" method="dialog">
+      <h2 id="loanDlgTitle">Verliehen</h2>
+      <div class="segmented" id="loanDir"><button type="button" data-v="out">Ich habe verliehen</button><button type="button" data-v="in">Ich habe geliehen</button></div>
+      <label>Was?<input id="loanWhat" required autocomplete="off" placeholder="z. B. Bohrmaschine, 20 €, Buch"></label>
+      <label id="loanWhoLabel">An wen?<input id="loanWho" required autocomplete="off" placeholder="Name"></label>
+      <div class="row"><label>Seit<input id="loanDate" type="date" required></label><label>Zurück bis (optional)<input id="loanDue" type="date"></label></div>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="loanDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="loanCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Countdown -->
+  <dialog id="cdDialog">
+    <form id="cdForm" method="dialog">
+      <h2 id="cdDlgTitle">Countdown</h2>
+      <div class="chips" id="cdEmojis"></div>
+      <label>Worauf freust du dich?<input id="cdTitle" required autocomplete="off" placeholder="z. B. Urlaub Italien"></label>
+      <label>Datum<input id="cdDate" type="date" required></label>
+      <label class="toggle"><input type="checkbox" id="cdYearly"> Jedes Jahr wiederholen (z. B. Jahrestag)</label>
+      <label class="toggle"><input type="checkbox" id="cdHome" checked> Auf der Startseite zeigen</label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="cdDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="cdCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
   <!-- Atemübung -->
   <dialog id="breathDialog" class="cookmode breath">
     <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
@@ -983,10 +1094,10 @@
 
   <!-- Kassenbon -->
   <dialog id="receiptDialog">
-    <h2>🧾 Kassenbon</h2>
+    <h2>Kassenbon</h2>
     <div id="receiptStatus" class="muted small"></div>
     <div id="receiptList"></div>
-    <label class="toggle" id="receiptExpWrap"><input type="checkbox" id="receiptAsExpense" checked> 💶 <span id="receiptExpText">Als Ausgabe (Lebensmittel) buchen</span></label>
+    <label class="toggle" id="receiptExpWrap"><input type="checkbox" id="receiptAsExpense" checked> <span id="receiptExpText">Als Ausgabe (Lebensmittel) buchen</span></label>
     <div class="dialog-actions">
       <span class="spacer"></span>
       <button class="btn" id="receiptCancel">Abbrechen</button>
@@ -1004,7 +1115,7 @@
     <div class="cook-step" id="cookStep"></div>
     <div class="chips cook-timer-chips" id="cookStepTimers"></div>
     <div class="cook-nav">
-      <button class="btn big" id="cookPrev">← Zurück</button>
+      <button class="btn big" id="cookPrev">Zurück</button>
       <button class="btn big primary" id="cookNext">Weiter →</button>
     </div>
   </dialog>
@@ -1024,5 +1135,7 @@
   <script src="nutrition-ui.js"></script>
   <script src="extras.js"></script>
   <script src="extras-ui.js"></script>
+  <script src="plus.js"></script>
+  <script src="plus-ui.js"></script>
 </body>
 </html>

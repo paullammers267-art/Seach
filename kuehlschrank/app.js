@@ -6,7 +6,7 @@
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const STORE = 'frischecheck.v1';
-  const LOCATIONS = { kuehlschrank: '🧊 Kühlschrank', gefrierfach: '❄️ Gefrierfach', vorrat: '🗄️ Vorrat', haushalt: '🧴 Bad & Haushalt' };
+  const LOCATIONS = { kuehlschrank: 'Kühlschrank', gefrierfach: 'Gefrierfach', vorrat: 'Vorrat', haushalt: 'Bad & Haushalt' };
   const ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
   const TESSERACT_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
   /** Lebensmittel, die normalerweise nicht in den Kühlschrank gehören. */
@@ -363,24 +363,24 @@
         <span class="recipe-emoji">${esc(rec.emoji || '🍽️')}</span>
         <div class="grow">
           <h3>${esc(rec.name)}${rec.custom ? ' <span class="tag">eigenes</span>' : ''}</h3>
-          <div class="muted small">⏱ ${rec.minutes} Min · ${pct === 100 ? 'alles da ✅' : pct + ' % vorhanden'}${L.isVegetarian(rec) ? ' · 🥕' : ''}${r.urgent.length ? ' · <b class="urgent-text">rettet ' + r.urgent.length + ' bald ablaufende Zutat' + (r.urgent.length > 1 ? 'en' : '') + '</b>' : ''}${planned.length ? ' · 📅 ' + planned.map((p) => p.label).join(', ') : ''}</div>
+          <div class="muted small">${rec.minutes} Min · ${pct === 100 ? 'alles da ✅' : pct + ' % vorhanden'}${L.isVegetarian(rec) ? ' · 🥕' : ''}${r.urgent.length ? ' · <b class="urgent-text">rettet ' + r.urgent.length + ' bald ablaufende Zutat' + (r.urgent.length > 1 ? 'en' : '') + '</b>' : ''}${planned.length ? ' · 📅 ' + planned.map((p) => p.label).join(', ') : ''}</div>
         </div>
         <button class="star ${fav ? 'on' : ''}" data-fav="${esc(rec.id)}" aria-label="Favorit">${fav ? '★' : '☆'}</button>
       </div>
       ${r.used.length || r.extras.length ? `<div class="ings"><span class="label">Hast du:</span> ${[...r.used, ...r.extras].map(ing).join(' ')}</div>` : ''}
       ${r.missing.length ? `<div class="ings missing"><span class="label">Fehlt:</span> ${r.missing.map((k) => `<span class="ing">${ingEmoji(k)} ${esc(ingLabel(k))}</span>`).join(' ')}</div>` : ''}
       <div class="row tight">
-        <button class="btn small" data-plan="${esc(rec.id)}">📅 Einplanen</button>
-        ${r.missing.length ? `<button class="btn small" data-shop="${esc(rec.id)}">🛒 Fehlendes (${r.missing.length})</button>` : ''}
+        <button class="btn small" data-plan="${esc(rec.id)}">Einplanen</button>
+        ${r.missing.length ? `<button class="btn small" data-shop="${esc(rec.id)}">Fehlendes (${r.missing.length})</button>` : ''}
       </div>
       <details${open ? ' open' : ''}>
         <summary>Zubereitung</summary>
         <ol>${rec.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
         <p class="muted small">Salz, Pfeffer, Öl und Gewürze setze ich als vorhanden voraus.</p>
         <div class="row tight">
-          <button class="btn small primary" data-cookmode="${esc(rec.id)}">👨‍🍳 Kochmodus</button>
-          <button class="btn small" data-cook="${esc(rec.id)}">🍽️ Gekocht – Zutaten austragen</button>
-          ${rec.custom ? `<button class="btn small" data-edit="${esc(rec.id)}">✏️ Bearbeiten</button>` : `<a class="btn small" target="_blank" rel="noopener" href="${chefkochUrl([rec.name])}">Varianten auf Chefkoch ↗</a>`}
+          <button class="btn small primary" data-cookmode="${esc(rec.id)}">Kochmodus</button>
+          <button class="btn small" data-cook="${esc(rec.id)}">Gekocht – Zutaten austragen</button>
+          ${rec.custom ? `<button class="btn small" data-edit="${esc(rec.id)}">Bearbeiten</button>` : `<a class="btn small" target="_blank" rel="noopener" href="${chefkochUrl([rec.name])}">Varianten auf Chefkoch ↗</a>`}
         </div>
       </details>
     </article>`;
@@ -400,7 +400,7 @@
   let surpriseId = null;
   function renderSuggestions() {
     const sr = surpriseId && findRecipe(surpriseId);
-    $('#surpriseBox').innerHTML = sr ? `<div class="surprise"><div class="muted small">🎲 Wie wäre es heute mit …</div>${recipeCard(matchInfo(sr), true)}</div>` : '';
+    $('#surpriseBox').innerHTML = sr ? `<div class="surprise"><div class="muted small">Wie wäre es heute mit …</div>${recipeCard(matchInfo(sr), true)}</div>` : '';
     const urgentItems = sortedItems().filter((i) => i.expiry && L.daysUntil(i.expiry) <= 3 && i.location !== 'haushalt');
     const urgentIngs = [...new Set(urgentItems.map((i) => i.ingredient).filter(Boolean))];
     const ub = $('#urgentBox');
@@ -502,7 +502,7 @@
       openPicker(`„${rec.name}“ einplanen für …`, L.nextDays(7).map((day) => {
         const other = findRecipe(state.plan[day.iso]);
         return { id: day.iso, label: day.label, sub: other ? 'ersetzt: ' + other.name : 'frei' };
-      }), (iso) => { state.plan[iso] = rec.id; save(); render(); toast(`📅 ${rec.name} eingeplant`, { label: 'Zum Wochenplan', fn: () => { recipeSub = 'plan'; renderRecipes(); } }); }, false);
+      }), (iso) => { state.plan[iso] = rec.id; save(); render(); toast(`${rec.name} eingeplant`, { label: 'Zum Wochenplan', fn: () => { recipeSub = 'plan'; renderRecipes(); } }); }, false);
     } else if (d.shop) {
       const n = shopMissing([findRecipe(d.shop)]);
       toast(n ? `${n} Zutat${n > 1 ? 'en' : ''} auf der Einkaufsliste 🛒` : 'Steht schon alles auf der Liste');
@@ -673,7 +673,7 @@
     rec.interimResults = false;
     rec.maxAlternatives = 1;
     btn.classList.add('listening');
-    toast('🎤 Ich höre zu …');
+    toast('Ich höre zu …');
     let got = false;
     rec.onresult = (e) => { got = true; onText(e.results[0][0].transcript); };
     rec.onerror = (e) => toast(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Mikrofon ist nicht erlaubt (Browser-Einstellungen)' : 'Nicht verstanden – bitte nochmal');
@@ -685,7 +685,7 @@
     const added = [];
     for (const it of L.parseSpokenList(text)) if (addToShopping(it.name, null, true, it.qty > 1 ? it.qty + '×' : '')) added.push(it.name);
     save(); render();
-    toast(added.length ? `🛒 ${added.join(', ')}` : `„${text}“ – steht schon auf der Liste`);
+    toast(added.length ? `${added.join(', ')}` : `„${text}“ – steht schon auf der Liste`);
   });
   $('#micItem').onclick = () => listen($('#micItem'), (text) => {
     const it = L.parseSpokenItem(text);
@@ -791,7 +791,7 @@
     $('#cookCount').textContent = `Schritt ${cookIdx + 1} von ${steps.length}`;
     $('#cookStep').textContent = steps[cookIdx];
     $('#cookStepTimers').innerHTML = L.findTimers(steps[cookIdx])
-      .map((m) => `<button class="chip" data-min="${m}">⏲️ Timer ${m >= 60 ? L.formatTimer(m * 60).replace(/:00$/, '') + ' Std' : m + ' Min'}</button>`).join('');
+      .map((m) => `<button class="chip" data-min="${m}">Timer ${m >= 60 ? L.formatTimer(m * 60).replace(/:00$/, '') + ' Std' : m + ' Min'}</button>`).join('');
     $('#cookPrev').disabled = cookIdx === 0;
     $('#cookNext').textContent = cookIdx === steps.length - 1 ? 'Fertig 🍽️' : 'Weiter →';
     renderTimers();
@@ -825,7 +825,7 @@
   function renderTimers() {
     $('#cookTimers').innerHTML = timers.map((t, i) => {
       const left = (t.end - Date.now()) / 1000;
-      return `<div class="timer ${left <= 0 ? 'done' : ''}">⏲️ <b>${left <= 0 ? 'Fertig!' : L.formatTimer(left)}</b> <span class="muted small">${esc(t.label)}</span>
+      return `<div class="timer ${left <= 0 ? 'done' : ''}"><b>${left <= 0 ? 'Fertig!' : L.formatTimer(left)}</b> <span class="muted small">${esc(t.label)}</span>
         <button class="icon-sm" data-stop="${i}" aria-label="Timer beenden">✕</button></div>`;
     }).join('');
   }
@@ -854,10 +854,10 @@
   function alarm(label) {
     if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 600]);
     beep();
-    toast(`⏲️ Timer abgelaufen: ${label}`);
+    toast(`Timer abgelaufen: ${label}`);
     if ('Notification' in window && Notification.permission === 'granted') {
       navigator.serviceWorker && navigator.serviceWorker.getRegistration()
-        .then((reg) => reg ? reg.showNotification('⏲️ Timer abgelaufen', { body: label, tag: 'timer' }) : new Notification('⏲️ Timer abgelaufen', { body: label }))
+        .then((reg) => reg ? reg.showNotification('Timer abgelaufen', { body: label, tag: 'timer' }) : new Notification('Timer abgelaufen', { body: label }))
         .catch(() => {});
     }
   }
@@ -890,7 +890,7 @@
     $('#itemTools').hidden = !item;
     $('#quickAddBox').hidden = !!item;
     $('#quickAddBox').open = false;
-    $('#btnOpened').textContent = item && item.opened ? `🥛 geöffnet am ${L.formatDate(item.opened)}` : '🥛 Heute geöffnet';
+    $('#btnOpened').textContent = item && item.opened ? `geöffnet am ${L.formatDate(item.opened)}` : 'Heute geöffnet';
     $('#dateCandidates').innerHTML = '';
     showPreview(item && item.image ? { image: item.image, name: item.name } : null);
     updateAdvice();
@@ -903,7 +903,7 @@
     const advice = L.expiredAdvice({ expiry: $('#fExpiry').value, dateType: $('#fDateType').value });
     const parts = [];
     if (advice) parts.push(`<b>${esc(advice)}</b>`);
-    if (care) parts.push(`💡 ${esc(care.tip)}`);
+    if (care) parts.push(`${esc(care.tip)}`);
     $('#itemAdvice').innerHTML = parts.join('<br>');
     $('#itemAdvice').hidden = !parts.length;
   }
@@ -957,7 +957,7 @@
     const k = ingSelect.value;
     $('#fOpened').value = today();
     setExpiry(L.afterOpening($('#fExpiry').value || null, k));
-    $('#btnOpened').textContent = `🥛 geöffnet am ${L.formatDate(today())}`;
+    $('#btnOpened').textContent = `geöffnet am ${L.formatDate(today())}`;
     const care = L.CARE[k];
     toast(`Geöffnet: hält ca. ${care ? care.opened : 3} Tage – Datum angepasst. Speichern nicht vergessen.`);
   };
@@ -967,7 +967,7 @@
     if (!iso) { toast(`${ingLabel(k) || 'Das'} eignet sich nicht gut zum Einfrieren`); return; }
     $('#fLocation').value = 'gefrierfach';
     setExpiry(iso);
-    toast(`❄️ Eingefroren hält es bis ca. ${L.formatDate(iso)}. Speichern nicht vergessen.`);
+    toast(`Eingefroren hält es bis ca. ${L.formatDate(iso)}. Speichern nicht vergessen.`);
   };
   $('#btnToShop').onclick = () => {
     const name = ingSelect.value ? ingLabel(ingSelect.value) : $('#fName').value;

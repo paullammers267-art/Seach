@@ -296,13 +296,13 @@
   /** Alltagstipps aus der Tagesvorhersage. */
   function weatherTips(day) {
     const tips = [];
-    if (day.rain >= 50 || [61, 63, 65, 80, 81, 82, 95, 96, 99].includes(Number(day.code))) tips.push('☂️ Regenschirm mitnehmen');
-    else if (day.rain >= 30) tips.push('🌂 Vielleicht Schirm einpacken');
-    if (day.min <= 0) tips.push('🧊 Frost – Scheiben kratzen, warm anziehen');
-    else if (day.min <= 5) tips.push('🧣 Kalt am Morgen – Jacke nicht vergessen');
-    if (day.max >= 28) tips.push('🥵 Heiß – viel trinken, Sonnencreme');
-    else if (day.max >= 24 && day.rain < 30) tips.push('😎 Schönes Wetter – Zeit für einen Spaziergang');
-    if (day.rain < 20 && day.max >= 12 && day.max < 28 && day.code <= 3) tips.push('👕 Gutes Wetter zum Wäschetrocknen draußen');
+    if (day.rain >= 50 || [61, 63, 65, 80, 81, 82, 95, 96, 99].includes(Number(day.code))) tips.push('Regenschirm mitnehmen');
+    else if (day.rain >= 30) tips.push('Vielleicht Schirm einpacken');
+    if (day.min <= 0) tips.push('Frost – Scheiben kratzen, warm anziehen');
+    else if (day.min <= 5) tips.push('Kalt am Morgen – Jacke nicht vergessen');
+    if (day.max >= 28) tips.push('Heiß – viel trinken, Sonnencreme');
+    else if (day.max >= 24 && day.rain < 30) tips.push('Schönes Wetter – Zeit für einen Spaziergang');
+    if (day.rain < 20 && day.max >= 12 && day.max < 28 && day.code <= 3) tips.push('Gutes Wetter zum Wäschetrocknen draußen');
     return tips;
   }
 

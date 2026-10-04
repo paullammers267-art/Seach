@@ -99,7 +99,7 @@
     A.save(); A.render();
     if (!was && m) {
       const d = X.stockDays(m);
-      if (d != null && d <= 7) A.toast(`💊 ${m.name}: Vorrat reicht nur noch ${d} Tag${d === 1 ? '' : 'e'}`, { label: 'Auf Einkaufsliste', fn: () => { A.addToShopping(m.name + ' (Apotheke)', null, 'Medikament'); A.toast('🛒 Notiert'); } });
+      if (d != null && d <= 7) A.toast(`${m.name}: Vorrat reicht nur noch ${d} Tag${d === 1 ? '' : 'e'}`, { label: 'Auf Einkaufsliste', fn: () => { A.addToShopping(m.name + ' (Apotheke)', null, 'Medikament'); A.toast('Notiert'); } });
     }
   }
   document.addEventListener('click', (e) => {
@@ -124,7 +124,7 @@
     $('#medList').innerHTML = st().meds.map((m) => {
       const days = X.stockDays(m);
       return `<button class="card med-card" data-med="${esc(m.id)}">
-        <b>💊 ${esc(m.name)}</b>
+        <b>${esc(m.name)}</b>
         <div class="muted small">${m.times.join(', ')} Uhr · ${m.days ? m.days.map((d) => WD[d]).join(', ') : 'täglich'}${m.amount !== 1 ? ` · je ${fmt(m.amount, 2)}` : ''}</div>
         ${m.stock != null ? `<div class="small ${days <= 7 ? 'warn-text' : ''}">Vorrat: ${fmt(m.stock, 1)} Stück · reicht ${days === 0 ? 'nicht mehr' : 'noch ca. ' + days + ' Tag' + (days === 1 ? '' : 'e')}${days <= 7 ? ' – bald nachkaufen!' : ''}</div>` : ''}
       </button>`;
@@ -144,8 +144,8 @@
       if (st().notified.includes(nk)) continue;
       st().notified.push(nk);
       changed = true;
-      const shown = await A.notify('💊 Medikament', `${d.med.name} (${d.time} Uhr)`, nk);
-      if (!shown || !document.hidden) A.toast(`💊 ${d.med.name} – ${d.time} Uhr`, { label: 'Genommen', fn: () => toggleDose(d.key) });
+      const shown = await A.notify('Medikament', `${d.med.name} (${d.time} Uhr)`, nk);
+      if (!shown || !document.hidden) A.toast(`${d.med.name} – ${d.time} Uhr`, { label: 'Genommen', fn: () => toggleDose(d.key) });
     }
     if (changed) A.save();
   }
@@ -197,7 +197,7 @@
     A.save(); dlDlg.close();
     if (A.view !== 'deadlines') A.showView('deadlines'); else A.render();
     const s = X.deadlineStatus(data);
-    A.toast(`📄 ${data.title}: ${leftText(s.left)} – Vorwarnung ab ${L.formatDate(s.remindDate)}`);
+    A.toast(`${data.title}: ${leftText(s.left)} – Vorwarnung ab ${L.formatDate(s.remindDate)}`);
   });
 
   function dlRow(d) {
@@ -224,7 +224,7 @@
       if (st().notified.includes(key)) continue;
       st().notified.push(key);
       changed = true;
-      await A.notify('📄 Frist', `${d.title}: ${leftText(s.left)}`, key);
+      await A.notify('Frist', `${d.title}: ${leftText(s.left)}`, key);
     }
     if (changed) A.save();
   }
@@ -310,7 +310,7 @@
     timers.push({ id: A.uid(), name: name || `${fmt(minutes, 1)} Min`, end: Date.now() + minutes * 60000, total: minutes * 60 });
     if (!tick) tick = setInterval(tickTimers, 500);
     renderTimers();
-    A.toast(`⏲️ Timer ${name ? '„' + name + '“ ' : ''}läuft (${fmt(minutes, 1)} Min)`);
+    A.toast(`Timer ${name ? '„' + name + '“ ' : ''}läuft (${fmt(minutes, 1)} Min)`);
   }
   function tickTimers() {
     for (const t of timers) {
@@ -318,8 +318,8 @@
         t.rang = true;
         if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 800]);
         A.beep(4, 880, 0.3);
-        A.notify('⏲️ Timer abgelaufen', t.name, 'timer-' + t.id);
-        A.toast(`⏲️ ${t.name} – fertig!`);
+        A.notify('Timer abgelaufen', t.name, 'timer-' + t.id);
+        A.toast(`${t.name} – fertig!`);
       }
     }
     if (!timers.length) { clearInterval(tick); tick = null; }
@@ -330,7 +330,7 @@
     if (!el) return;
     el.innerHTML = timers.map((t) => {
       const left = t.paused ? t.left : Math.max(0, (t.end - Date.now()) / 1000);
-      return `<div class="timer ${t.rang ? 'done' : ''}" data-tm="${t.id}">⏲️ <b>${t.rang ? 'Fertig!' : L.formatTimer(left)}</b>
+      return `<div class="timer ${t.rang ? 'done' : ''}" data-tm="${t.id}"><b>${t.rang ? 'Fertig!' : L.formatTimer(left)}</b>
         <span class="muted small">${esc(t.name)}</span>
         ${t.rang ? '' : `<button class="icon-sm" data-tmp>${t.paused ? '▶' : '⏸'}</button><button class="icon-sm" data-tmplus>+1</button>`}
         <button class="icon-sm" data-tmx aria-label="Timer löschen">✕</button></div>`;
@@ -405,8 +405,8 @@
 
   // Zufall
   const showRandom = (html) => { $('#rdResult').innerHTML = html; $('#rdResult').classList.remove('pop'); void $('#rdResult').offsetWidth; $('#rdResult').classList.add('pop'); };
-  $('#rdCoin').onclick = () => showRandom(Math.random() < 0.5 ? '🪙 <b>Kopf</b>' : '🪙 <b>Zahl</b>');
-  $('#rdDice').onclick = () => showRandom(`🎲 <b>${1 + Math.floor(Math.random() * 6)}</b>`);
+  $('#rdCoin').onclick = () => showRandom(Math.random() < 0.5 ? '<b>Kopf</b>' : '<b>Zahl</b>');
+  $('#rdDice').onclick = () => showRandom(`<b>${1 + Math.floor(Math.random() * 6)}</b>`);
   $('#rdCook').onclick = () => {
     const ranked = L.suggestRecipes(window.FridgeRecipes.concat(st().customRecipes), st().items, new Date(), { minCoverage: 0.5 }).slice(0, 10).map((r) => r.recipe);
     const pool = ranked.length ? ranked : window.FridgeRecipes;
@@ -415,7 +415,7 @@
   };
   $('#rdPick').onclick = () => {
     const p = X.pick($('#rdList').value.split(','));
-    showRandom(p ? `🎯 <b>${esc(p)}</b>` : 'Bitte Namen mit Komma getrennt eintragen');
+    showRandom(p ? `<b>${esc(p)}</b>` : 'Bitte Namen mit Komma getrennt eintragen');
   };
 
   // =====================================================================
@@ -466,7 +466,7 @@
         st().habitLog[d][med.id] = (st().habitLog[d][med.id] || 0) + 1;
         A.save(); A.render();
       }
-      A.toast(`🧘 Gut gemacht!${med ? ` „${med.name}“ abgehakt.` : ''}`);
+      A.toast(`Gut gemacht!${med ? ` „${med.name}“ abgehakt.` : ''}`);
     }
   }
   $('#brClose').onclick = () => stopBreathing(false);
@@ -517,7 +517,7 @@
   function renderAchievements() {
     if (A.view !== 'achievements') return;
     const w = weekStats(0), prev = weekStats(1);
-    $('#weekReview').innerHTML = `<h2>📊 Diese Woche <span class="muted small">${L.formatDate(w.from).slice(0, 6)} – ${L.formatDate(w.to).slice(0, 6)}</span></h2>${reviewHtml(w, prev)}<p class="muted small">▲▼ im Vergleich zur Vorwoche</p>`;
+    $('#weekReview').innerHTML = `<h2>Diese Woche <span class="muted small">${L.formatDate(w.from).slice(0, 6)} – ${L.formatDate(w.to).slice(0, 6)}</span></h2>${reviewHtml(w, prev)}<p class="muted small">▲▼ im Vergleich zur Vorwoche</p>`;
     const list = X.achievements(st(), today());
     $('#achList').innerHTML = list.map((a) => `<div class="ach ${a.done ? 'done' : ''}"><span class="ach-emoji">${a.done ? a.emoji : '🔒'}</span><b>${esc(a.title)}</b><span class="small muted">${esc(a.desc)}</span>
       ${!a.done && a.progress ? `<div class="meter"><i style="width:${Math.round(a.progress * 100)}%"></i></div>` : ''}</div>`).join('');
@@ -529,7 +529,7 @@
     fresh.forEach((a) => seen.push(a.id));
     A.save();
     // Beim allerersten Start nicht mit vielen Meldungen überfluten
-    if (fresh.length <= 2) A.toast(`🏆 Erfolg freigeschaltet: ${fresh.map((a) => a.emoji + ' ' + a.title).join(', ')}`, { label: 'Ansehen', fn: () => A.showView('achievements') });
+    if (fresh.length <= 2) A.toast(`Erfolg freigeschaltet: ${fresh.map((a) => a.emoji + ' ' + a.title).join(', ')}`, { label: 'Ansehen', fn: () => A.showView('achievements') });
   }
 
   // =====================================================================
@@ -542,7 +542,7 @@
       return `<div class="saving" data-sv="${esc(g.id)}">
         <div class="saving-head"><b>${esc(g.emoji || '🐷')} ${esc(g.name)}</b><span class="small">${euro(g.saved)} / ${euro(g.target)}</span></div>
         <div class="meter"><i style="width:${p.pct}%"></i></div>
-        <div class="small muted">${p.done ? '🎉 Ziel erreicht!' : `noch ${euro(p.left)}${p.perMonth ? ` · ${euro(p.perMonth)} pro Monat bis ${L.formatDate(g.until).slice(3)}` : ''}`}
+        <div class="small muted">${p.done ? 'Ziel erreicht!' : `noch ${euro(p.left)}${p.perMonth ? ` · ${euro(p.perMonth)} pro Monat bis ${L.formatDate(g.until).slice(3)}` : ''}`}
           <button class="link-btn" data-svadd>＋ Einzahlen</button> <button class="link-btn" data-svdel>Löschen</button></div>
       </div>`;
     }).join('') || '<p class="muted small">Spare gezielt – z. B. für Urlaub, ein neues Fahrrad oder einen Notgroschen.</p>';
@@ -568,7 +568,7 @@
       if (!v) return;
       g.saved = Math.max(0, Math.round((g.saved + v) * 100) / 100);
       A.save(); A.render();
-      if (g.saved >= g.target) A.toast(`🎉 Sparziel „${g.name}“ erreicht!`);
+      if (g.saved >= g.target) A.toast(`Sparziel „${g.name}“ erreicht!`);
     } else if (e.target.closest('[data-svdel]')) {
       if (confirm(`Sparziel „${g.name}“ löschen?`)) { st().savings = st().savings.filter((x) => x !== g); A.save(); A.render(); }
     }
@@ -582,15 +582,15 @@
     const t = X.NOTE_TEMPLATES[Number(i)];
     st().notes.push({ id: A.uid(), title: t.title, text: t.text, pinned: false, color: '', created: new Date().toISOString(), updated: new Date().toISOString() });
     A.save(); A.render();
-    A.toast(`📋 „${t.title}“ angelegt – einfach abhaken oder ergänzen`);
+    A.toast(`„${t.title}“ angelegt – einfach abhaken oder ergänzen`);
   }, false);
 
   // =====================================================================
   // 🏠 Startseite: zusätzliche Karten + anpassen
   // =====================================================================
   const HOME_CARDS = {
-    weather: '🌤️ Wetter', tasks: '✅ Aufgaben', habits: '💧 Gewohnheiten', food: '🍽️ Kalorien', meds: '💊 Medikamente', deadlines: '📄 Fristen',
-    events: '📅 Termine', kitchen: '🧊 Küche', sport: '🏋️ Sport', expenses: '💶 Ausgaben', shopping: '🛒 Einkauf', review: '📊 Wochenrückblick', backup: '💾 Sicherung',
+    weather: 'Wetter', tasks: 'Aufgaben', habits: 'Gewohnheiten', food: 'Kalorien', meds: 'Medikamente', deadlines: 'Fristen',
+    events: 'Termine', kitchen: 'Küche', sport: 'Sport', expenses: 'Ausgaben', shopping: 'Einkauf', review: 'Wochenrückblick', backup: 'Sicherung',
   };
   // Reihenfolge und Bereich der Karten auf der Startseite
   const HOME_ORDER = {
@@ -598,6 +598,11 @@
     kitchen: [21, 'kitchen'], food: [22, 'kitchen'], shopping: [23, 'kitchen'],
     sport: [31, 'fit'], expenses: [32, 'fit'], backup: [41, 'review'], review: [42, 'review'],
   };
+  const HOME_ICON = {
+    weather: 'sun', events: 'calendar', tasks: 'check', meds: 'pill', habits: 'droplet', deadlines: 'idcard', kitchen: 'fridge', food: 'flame', shopping: 'cart',
+    sport: 'dumbbell', expenses: 'wallet', backup: 'download', review: 'chart', plants: 'leaf', countdowns: 'hourglass', loans: 'swap',
+  };
+  A.homeIcons = HOME_ICON;
   const SEC_ORDER = { today: 10, kitchen: 20, fit: 30, review: 40 };
   const GOTO_KEY = { calendar: 'events', stock: 'kitchen', sport: 'sport', expenses: 'expenses', shopping: 'shopping', tasks: 'tasks', habits: 'habits', food: 'food', meds: 'meds', deadlines: 'deadlines', achievements: 'review' };
   function renderHomeExtras() {
@@ -607,28 +612,28 @@
     const doses = X.dosesOn(st().meds, today(), st().medLog);
     if (doses.length) {
       const open = doses.filter((d) => !d.taken);
-      parts.push(`<div class="card home-card" data-card="meds"><button class="plain" data-goto="meds"><div class="home-title">💊 Medikamente <span class="muted small">${doses.length - open.length}/${doses.length}</span></div></button>
+      parts.push(`<div class="card home-card" data-card="meds"><button class="plain" data-goto="meds"><div class="home-title">Medikamente <span class="muted small">${doses.length - open.length}/${doses.length}</span></div></button>
         ${open.length ? open.slice(0, 4).map(doseRow).join('') : '<div class="home-line">Alles für heute genommen ✅</div>'}</div>`);
     }
     // Fristen
     const due = st().deadlines.map((d) => ({ d, s: X.deadlineStatus(d) })).filter((x) => x.s.state !== 'ok').sort((a, b) => a.s.left - b.s.left);
     if (due.length) {
-      parts.push(`<button class="card home-card" data-card="deadlines" data-goto="deadlines"><div class="home-title">📄 Fristen</div>
+      parts.push(`<button class="card home-card" data-card="deadlines" data-goto="deadlines"><div class="home-title">Fristen</div>
         ${due.slice(0, 3).map(({ d, s }) => `<div class="home-line ${s.state === 'overdue' ? 'warn-text' : ''}">${(X.DEADLINE_TYPES[d.type] || {}).emoji || '📄'} <b>${esc(d.title)}</b> – ${leftText(s.left)}</div>`).join('')}</button>`);
     }
     // Wochenrückblick (So & Mo)
     const wd = new Date().getDay();
     if ((wd === 0 || wd === 1) && (st().workouts.length || st().tasks.length || st().history.length || st().expenses.length)) {
       const w = weekStats(wd === 1 ? 1 : 0), prev = weekStats(wd === 1 ? 2 : 1);
-      parts.push(`<div class="card home-card" data-card="review"><button class="plain" data-goto="achievements"><div class="home-title">📊 ${wd === 1 ? 'Deine letzte Woche' : 'Deine Woche'}</div></button>${reviewHtml(w, prev)}</div>`);
+      parts.push(`<div class="card home-card" data-card="review"><button class="plain" data-goto="achievements"><div class="home-title">${wd === 1 ? 'Deine letzte Woche' : 'Deine Woche'}</div></button>${reviewHtml(w, prev)}</div>`);
     }
     // Sicherung
     const amount = st().items.length + st().tasks.length + st().events.length + st().expenses.length + st().notes.length + (st().food || []).length;
     const last = st().settings.lastBackup;
     if (amount >= 15 && (!last || L.daysUntil(last) < -30)) {
-      parts.push(`<div class="card home-card backup" data-card="backup"><div class="home-title">💾 Sicherung empfohlen</div>
+      parts.push(`<div class="card home-card backup" data-card="backup"><div class="home-title">Sicherung empfohlen</div>
         <div class="home-line muted">${last ? `Letzte Sicherung vor ${-L.daysUntil(last)} Tagen.` : 'Du hast noch keine Sicherung gemacht.'} Deine Daten liegen nur auf diesem Handy.</div>
-        <button class="btn small primary" data-backup>⬇️ Jetzt sichern</button></div>`);
+        <button class="btn small primary" data-backup>Jetzt sichern</button></div>`);
     }
     $('#homeExtras').innerHTML = parts.join('');
   }
@@ -646,6 +651,8 @@
         if (key) c.dataset.card = key;
       }
       c.hidden = hidden.includes(key);
+      const t = c.querySelector('.home-title');
+      if (t && HOME_ICON[key] && !t.querySelector('.ic')) t.insertAdjacentHTML('afterbegin', `<i class="ic ic-${HOME_ICON[key]}"></i>`);
       const o = HOME_ORDER[key] || [90, 'review'];
       c.style.order = o[0];
       c.dataset.sec = o[1];
@@ -658,6 +665,8 @@
     renderGlance();
   }
   A.applyHomeHidden = applyHomeHidden;
+  A.homeCards = HOME_CARDS;
+  A.homeOrder = HOME_ORDER;
 
   /** Kurzüberblick unter der Begrüßung: was heute ansteht. */
   function renderGlance() {
@@ -665,18 +674,22 @@
     const chips = [];
     const b = F.taskBuckets(st().tasks);
     const tasks = b.overdue.length + b.today.length;
-    if (tasks) chips.push(['tasks', '✅', `${tasks} Aufgabe${tasks > 1 ? 'n' : ''}`, b.overdue.length ? 'warn' : '']);
+    if (tasks) chips.push(['tasks', 'check', `${tasks} Aufgabe${tasks > 1 ? 'n' : ''}`, b.overdue.length ? 'warn' : '']);
     const ev = P.occurrences(st().events, t, t).length;
-    if (ev) chips.push(['calendar', '📅', `${ev} Termin${ev > 1 ? 'e' : ''}`, '']);
+    if (ev) chips.push(['calendar', 'calendar', `${ev} Termin${ev > 1 ? 'e' : ''}`, '']);
     const meds = X.dosesOn(st().meds, t, st().medLog).filter((d) => !d.taken).length;
-    if (meds) chips.push(['meds', '💊', `${meds} Einnahme${meds > 1 ? 'n' : ''}`, '']);
+    if (meds) chips.push(['meds', 'pill', `${meds} Einnahme${meds > 1 ? 'n' : ''}`, '']);
     const exp = st().items.filter((i) => i.expiry && L.daysUntil(i.expiry) <= 1).length;
-    if (exp) chips.push(['stock', '⏰', `${exp} läuft ab`, 'warn']);
+    if (exp) chips.push(['stock', 'alert', `${exp} läuft ab`, 'warn']);
+    if (window.FridgePlus && st().plants) {
+      const pl = window.FridgePlus.plantsDue(st().plants, t).length;
+      if (pl) chips.push(['plants', 'leaf', `${pl} gießen`, '']);
+    }
     const shop = st().shopping.filter((i) => !i.done).length;
-    if (shop) chips.push(['shopping', '🛒', `${shop} einkaufen`, '']);
+    if (shop) chips.push(['shopping', 'cart', `${shop} einkaufen`, '']);
     $('#homeGlance').innerHTML = chips.length
-      ? chips.map(([g, e, txt, cls]) => `<button class="glance-chip ${cls}" data-goto="${g}">${e} ${txt}</button>`).join('')
-      : '<span class="glance-chip calm">✨ Heute steht nichts Dringendes an</span>';
+      ? chips.map(([g, e, txt, cls]) => `<button class="glance-chip ${cls}" data-goto="${g}"><i class="ic ic-${e}"></i>${txt}</button>`).join('')
+      : '<span class="glance-chip calm">Heute steht nichts Dringendes an</span>';
   }
   function renderHomeToggles() {
     const hidden = st().settings.homeHidden;

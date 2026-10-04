@@ -66,7 +66,7 @@ test('Gesundheit: BMI, Gewicht, Stimmung', () => {
 test('Wetter: Codes und Tipps', () => {
   assert.equal(F.weatherInfo(0).text, 'Sonnig');
   assert.equal(F.weatherInfo(63).emoji, '🌧️');
-  assert.ok(F.weatherTips({ code: 61, rain: 80, min: 8, max: 14 }).includes('☂️ Regenschirm mitnehmen'));
-  assert.ok(F.weatherTips({ code: 0, rain: 0, min: -3, max: 4 })[0].startsWith('🧊'));
-  assert.ok(F.weatherTips({ code: 0, rain: 0, min: 16, max: 30 }).includes('🥵 Heiß – viel trinken, Sonnencreme'));
+  assert.ok(F.weatherTips({ code: 61, rain: 80, min: 8, max: 14 }).includes('Regenschirm mitnehmen'));
+  assert.ok(F.weatherTips({ code: 0, rain: 0, min: -3, max: 4 })[0].startsWith('Frost'));
+  assert.ok(F.weatherTips({ code: 0, rain: 0, min: 16, max: 30 }).includes('Heiß – viel trinken, Sonnencreme'));
 });

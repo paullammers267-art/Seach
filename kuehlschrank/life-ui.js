@@ -12,6 +12,7 @@
   const esc = A.esc;
   const st = () => A.state;
   const today = () => A.today();
+  A.searchSources = A.searchSources || [];
 
   function dueLabel(iso) {
     if (!iso) return '';
@@ -76,13 +77,13 @@
     const p = st().settings.place;
     if (!p) {
       return `<div class="card home-card weather">
-        <div class="home-title">🌤️ Wetter</div>
+        <div class="home-title">Wetter</div>
         <div class="home-line muted">Zeige das Wetter für deinen Ort – mit Tipps wie „Regenschirm mitnehmen“.</div>
-        <div class="row tight"><button class="btn small" data-weather="gps">📍 Mein Standort</button><button class="btn small" data-goto="settings">Ort eingeben</button></div>
+        <div class="row tight"><button class="btn small" data-weather="gps">Mein Standort</button><button class="btn small" data-goto="settings">Ort eingeben</button></div>
       </div>`;
     }
     const w = st().weatherCache;
-    if (!w || w.lat !== p.lat) return `<div class="card home-card weather"><div class="home-title">🌤️ Wetter ${esc(p.name)}</div><div class="muted">Lade …</div></div>`;
+    if (!w || w.lat !== p.lat) return `<div class="card home-card weather"><div class="home-title">Wetter ${esc(p.name)}</div><div class="muted">Lade …</div></div>`;
     const now = F.weatherInfo(w.current.code);
     const age = Math.round((Date.now() - w.at) / 60000);
     const stand = weatherLoading ? 'aktualisiere …' : age < 1 ? 'gerade aktualisiert' : `Stand ${new Date(w.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
@@ -92,7 +93,7 @@
       <div class="weather-now">
         <span class="w-emoji">${now.emoji}</span>
         <div><div class="w-temp">${Math.round(w.current.temp)}°</div><div class="muted small">${esc(p.name)} · ${now.text} · gefühlt ${Math.round(w.current.feels)}°</div></div>
-        <div class="w-range small">↑ ${Math.round(d0.max)}°<br>↓ ${Math.round(d0.min)}°<br>☔ ${d0.rain}%</div>
+        <div class="w-range small">↑ ${Math.round(d0.max)}°<br>↓ ${Math.round(d0.min)}°<br>${d0.rain}%</div>
       </div>
       ${tips.length ? `<div class="w-tips">${tips.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
       <div class="w-days">${w.daily.slice(1).map((d) => { const i = F.weatherInfo(d.code); return `<span>${new Date(d.date + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short' })} ${i.emoji} ${Math.round(d.max)}°/${Math.round(d.min)}° ☔${d.rain}%</span>`; }).join('')}</div>
@@ -107,14 +108,14 @@
     const due = [...b.overdue, ...b.today];
     if (st().tasks.length) {
       parts.push(`<div class="card home-card">
-        <button class="plain" data-goto="tasks"><div class="home-title">✅ Aufgaben heute ${due.length ? `<span class="muted small">(${due.length})</span>` : ''}</div></button>
+        <button class="plain" data-goto="tasks"><div class="home-title">Aufgaben heute ${due.length ? `<span class="muted small">(${due.length})</span>` : ''}</div></button>
         ${due.length ? due.slice(0, 6).map(taskRow).join('') : '<div class="home-line">Für heute ist alles erledigt 🎉</div>'}
         ${due.length > 6 ? `<button class="link-btn" data-goto="tasks">+ ${due.length - 6} weitere</button>` : ''}
       </div>`);
     }
     if (st().habits.length) {
       parts.push(`<div class="card home-card">
-        <button class="plain" data-goto="habits"><div class="home-title">💧 Gewohnheiten</div></button>
+        <button class="plain" data-goto="habits"><div class="home-title">Gewohnheiten</div></button>
         <div class="habit-quick">${st().habits.map((h) => {
           const c = habitCount(h);
           return `<button class="hq ${c >= h.target ? 'met' : ''}" data-hplus="${esc(h.id)}">${esc(h.emoji)} <b>${c}/${h.target}</b><span>${esc(h.name)}</span></button>`;
@@ -149,6 +150,7 @@
     for (const r of window.FridgeRecipes.concat(st().customRecipes)) if (has(r.name)) out.push({ kind: 'recipe', id: r.name, icon: r.emoji || '🍳', text: r.name, sub: `Rezept · ${r.minutes} Min` });
     for (const x of st().expenses) if (has(x.note)) out.push({ kind: 'expense', icon: '💶', text: `${x.note} ${L.formatEuro(x.amount)}`, sub: L.formatDate(x.date) });
     for (const ex of S.EXERCISES) if (has(ex.name)) out.push({ kind: 'exercise', icon: ex.emoji, text: ex.name, sub: 'Übung' });
+    for (const fn of A.searchSources) out.push(...fn(has));
     return out.slice(0, 25);
   }
   $('#globalSearch').addEventListener('input', () => {
@@ -174,6 +176,7 @@
         $('#recipeSearch').value = r.id;
         $('#recipeSearch').dispatchEvent(new Event('input'));
       } else if (r.kind === 'expense') A.showView('expenses');
+      else if (r.kind === 'go') A.showView(r.view);
       else if (r.kind === 'exercise') { A.showView('sport'); $('.ex-card').open = true; $('#exSearch').value = r.text; $('#exSearch').dispatchEvent(new Event('input')); }
     };
   });
@@ -190,13 +193,13 @@
     const overdue = t.due && t.due < today();
     const meta = [
       t.due ? `<span class="${overdue ? 'warn-text' : ''}">${dueLabel(t.due)}${t.time ? ' ' + t.time : ''}</span>` : '',
-      t.repeat && t.repeat !== 'none' ? '🔁 ' + F.TASK_REPEATS[t.repeat] : '',
-      catOf(t.category).emoji,
+      t.repeat && t.repeat !== 'none' ? F.TASK_REPEATS[t.repeat] : '',
+      catOf(t.category).label,
       t.note ? esc(t.note) : '',
     ].filter(Boolean).join(' · ');
     return `<div class="task ${t.done ? 'done' : ''} prio${t.priority || 0}" data-task="${esc(t.id)}">
       <button class="tcheck" data-tdone aria-label="erledigt">${t.done ? '✔' : ''}</button>
-      <span class="grow" data-tedit>${t.priority ? (t.priority > 1 ? '‼️ ' : '❗ ') : ''}${esc(t.title)}<span class="muted small t-meta">${meta}</span></span>
+      <span class="grow" data-tedit>${t.priority ? `<b class="prio-tag p${t.priority}">${t.priority > 1 ? 'dringend' : 'wichtig'}</b>` : ''}${esc(t.title)}<span class="muted small t-meta">${meta}</span></span>
     </div>`;
   }
 
@@ -211,7 +214,7 @@
     const sec = (title, list, cls = '') => list.length ? `<h3 class="section ${cls}">${title} <span class="muted small">${list.length}</span></h3>${list.map(taskRow).join('')}` : '';
     const open = b.overdue.length + b.today.length + b.tomorrow.length + b.week.length + b.later.length + b.someday.length;
     $('#taskList').innerHTML = (open ? '' : `<div class="empty"><div class="big-emoji">✅</div><p><b>Keine offenen Aufgaben.</b></p><p class="muted">Tippe oben z. B. „Bad putzen jeden Samstag“ – oder nutze die Putzplan-Vorlage.</p></div>`) +
-      sec('⚠️ Überfällig', b.overdue, 'warn-text') + sec('Heute', b.today) + sec('Morgen', b.tomorrow) + sec('Diese Woche', b.week) + sec('Später', b.later) + sec('Irgendwann', b.someday) +
+      sec('Überfällig', b.overdue, 'warn-text') + sec('Heute', b.today) + sec('Morgen', b.tomorrow) + sec('Diese Woche', b.week) + sec('Später', b.later) + sec('Irgendwann', b.someday) +
       (b.done.length ? `<details class="done-box"><summary>Erledigt (${b.done.length})</summary>${b.done.slice(0, 30).map(taskRow).join('')}
         <button class="btn small" id="btnTaskClearDone">Erledigte löschen</button></details>` : '');
     if ($('#btnTaskClearDone')) $('#btnTaskClearDone').onclick = () => { st().tasks = st().tasks.filter((t) => !t.done); A.save(); A.render(); };
@@ -226,7 +229,7 @@
     A.save(); A.render();
     if (navigator.vibrate) navigator.vibrate(40);
     const undo = { label: 'Rückgängig', fn: () => { Object.keys(t).forEach((k) => delete t[k]); Object.assign(t, before); A.save(); A.render(); } };
-    A.toast(t.repeat && t.repeat !== 'none' ? `✔ ${t.title} – nächstes Mal ${dueLabel(t.due)}` : `✔ ${t.title} erledigt`, undo);
+    A.toast(t.repeat && t.repeat !== 'none' ? `${t.title} – nächstes Mal ${dueLabel(t.due)}` : `${t.title} erledigt`, undo);
   }
 
   document.addEventListener('click', (e) => {
@@ -250,12 +253,12 @@
     const t = addTaskFromText($('#taskInput').value);
     if (!t) return;
     $('#taskInput').value = '';
-    A.toast(`✅ ${t.title}${t.due ? ' · ' + dueLabel(t.due) : ''}${t.time ? ' ' + t.time : ''}${t.repeat !== 'none' ? ' · 🔁 ' + F.TASK_REPEATS[t.repeat] : ''}`, { label: 'Ändern', fn: () => openTaskDialog(t) });
+    A.toast(`${t.title}${t.due ? ' · ' + dueLabel(t.due) : ''}${t.time ? ' ' + t.time : ''}${t.repeat !== 'none' ? ' · 🔁 ' + F.TASK_REPEATS[t.repeat] : ''}`, { label: 'Ändern', fn: () => openTaskDialog(t) });
   });
   if (A.listen) $('#micTask').hidden = false;
   $('#micTask').onclick = () => A.listen($('#micTask'), (text) => {
     const t = addTaskFromText(text);
-    if (t) A.toast(`✅ ${t.title}${t.due ? ' · ' + dueLabel(t.due) : ''}`, { label: 'Ändern', fn: () => openTaskDialog(t) });
+    if (t) A.toast(`${t.title}${t.due ? ' · ' + dueLabel(t.due) : ''}`, { label: 'Ändern', fn: () => openTaskDialog(t) });
   });
   $('#btnCleaning').onclick = () => {
     const have = new Set(st().tasks.filter((t) => !t.done).map((t) => L.norm(t.title)));
@@ -264,7 +267,7 @@
     if (!confirm(`Putzplan mit ${add.length} wiederkehrenden Aufgaben anlegen?\n\n${add.map((t) => '• ' + t.title + ' (' + F.TASK_REPEATS[t.repeat] + ')').join('\n')}`)) return;
     add.forEach((t) => st().tasks.push({ id: A.uid(), created: today(), ...t }));
     A.save(); A.render();
-    A.toast(`🧹 ${add.length} Aufgaben angelegt – passe Tage oder Rhythmus einfach an`);
+    A.toast(`${add.length} Aufgaben angelegt – passe Tage oder Rhythmus einfach an`);
   };
 
   // ---------- Aufgaben-Dialog ----------
@@ -321,8 +324,8 @@
       if (at <= now && now - at < 3600000 && !st().notified.includes(key)) {
         st().notified.push(key);
         changed = true;
-        const shown = await A.notify('✅ Aufgabe', `${t.title} (${t.time})`, key);
-        if (!shown || !document.hidden) A.toast(`⏰ ${t.title}`, { label: 'Erledigt', fn: () => toggleTask(t.id) });
+        const shown = await A.notify('Aufgabe', `${t.title} (${t.time})`, key);
+        if (!shown || !document.hidden) A.toast(`${t.title}`, { label: 'Erledigt', fn: () => toggleTask(t.id) });
       }
     }
     if (changed) A.save();
@@ -372,7 +375,7 @@
         <div class="habit-head">
           <span class="h-emoji">${esc(h.emoji)}</span>
           <button class="plain grow" data-hedit="${esc(h.id)}"><b>${esc(h.name)}</b>
-            <div class="muted small">${streak ? `🔥 ${streak} Tag${streak > 1 ? 'e' : ''} in Folge · ` : ''}${F.habitRate(st().habitLog, h)}&nbsp;% in 30&nbsp;Tagen</div></button>
+            <div class="muted small">${streak ? `${streak} Tag${streak > 1 ? 'e' : ''} in Folge · ` : ''}${F.habitRate(st().habitLog, h)}&nbsp;% in 30&nbsp;Tagen</div></button>
           ${h.target > 1 ? `<button class="icon" data-hminus="${esc(h.id)}" aria-label="minus">−</button>` : ''}
           <button class="h-plus" data-hplus="${esc(h.id)}" aria-label="plus">${c >= h.target ? '✔' : '+1'}</button>
         </div>
@@ -478,7 +481,7 @@
     $('#weightInput').value = '';
     A.save(); A.render();
     const w = F.weightStats(st().weights);
-    A.toast(`⚖️ ${String(kg).replace('.', ',')} kg gespeichert${w.change7 ? ` (${w.change7 > 0 ? '+' : ''}${String(w.change7).replace('.', ',')} kg in 7 Tagen)` : ''}`);
+    A.toast(`${String(kg).replace('.', ',')} kg gespeichert${w.change7 ? ` (${w.change7 > 0 ? '+' : ''}${String(w.change7).replace('.', ',')} kg in 7 Tagen)` : ''}`);
   });
   $('#weightStats').addEventListener('click', (e) => {
     const b = e.target.closest('[data-wdel]');
@@ -597,7 +600,7 @@
     A.save();
     renderPlace();
     await loadWeather(true);
-    A.toast(`🌤️ Wetter für ${place.name}`);
+    A.toast(`Wetter für ${place.name}`);
   }
   function useGps() {
     if (!navigator.geolocation) { A.toast('Standort wird nicht unterstützt – bitte Ort eingeben'); A.showView('settings'); return; }

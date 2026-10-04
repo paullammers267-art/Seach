@@ -30,8 +30,27 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Tagesziel nach Mifflin-St-Jeor (Alter, Größe, Gewicht, Aktivität, Ziel), Eiweiß/Kohlenhydrate/Fett, Training wird gutgeschrieben, Wochenübersicht
 - Komplett kostenlos – keine Konten, keine kostenpflichtigen Dienste.
 
-## 🎨 Darstellung
-- Hell, Dunkel oder automatisch (Mehr → Darstellung)
+## Design anpassen
+- Hell, Dunkel oder automatisch, 7 Akzentfarben, drei Schriftgrößen, kompakte Ansicht, Begrüßung mit deinem Namen (Mehr → Design anpassen)
+- Ruhige Linien-Icons statt bunter Emojis; Startseite in Bereiche gegliedert (Heute, Küche & Essen, Fitness & Finanzen), Karten einzeln ausblendbar
+
+## Pflanzen
+- Gießplan je Pflanze (12 Vorlagen), „gegossen“ mit einem Tipp – auch direkt auf der Startseite, Erinnerung wenn fällig
+
+## Verliehen & Geliehen
+- Wer hat was von dir, was hast du dir geliehen – mit Rückgabedatum, Erinnerung und Eintrag im Kalender
+
+## Countdowns
+- Tage bis Urlaub, Geburtstag, Konzert – auch jährlich wiederkehrend, die nächsten zwei als „Vorfreude“ auf der Startseite
+
+## Fokus-Timer
+- Pomodoro (25/5, 15/3, 50/10), lange Pause nach jeder 4. Runde, Bildschirm bleibt an, Statistik der letzten 7 Tage
+
+## Notfallpass
+- Blutgruppe, Allergien, Vorerkrankungen, Medikamente (aus dem Medikamentenplan), Krankenkasse, Notfallkontakte zum direkten Anrufen, 112 und 116 117
+
+## Gedanke des Tages
+- Täglich ein Spruch oder kleiner Alltagstipp auf der Startseite (ausblendbar)
 
 ## 💊 Medikamente
 - Einnahmeplan mit Uhrzeiten und Wochentagen, abhaken (auch auf „Heute“), Erinnerung zur Uhrzeit

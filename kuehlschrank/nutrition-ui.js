@@ -84,12 +84,12 @@
           <text x="60" y="62">${left != null ? fmt(Math.abs(left)) : fmt(t.kcal)}</text>
           <text x="60" y="78" class="sub">${left == null ? 'kcal gegessen' : left >= 0 ? 'kcal übrig' : 'kcal zu viel'}</text></svg>
         <div class="facts">
-          <div>🍽️ Gegessen: <b>${fmt(t.kcal)} kcal</b></div>
-          ${g ? `<div>🎯 Ziel: <b>${fmt(g.kcal)} kcal</b></div>` : '<div class="muted small">Ziel unten einstellen 👇</div>'}
-          ${burned ? `<div>🏋️ Training: <b>+${fmt(burned)} kcal</b></div>` : ''}
+          <div>Gegessen: <b>${fmt(t.kcal)} kcal</b></div>
+          ${g ? `<div>Ziel: <b>${fmt(g.kcal)} kcal</b></div>` : '<div class="muted small">Ziel unten einstellen 👇</div>'}
+          ${burned ? `<div>Training: <b>+${fmt(burned)} kcal</b></div>` : ''}
         </div>
       </div>
-      ${macro('💪 Eiweiß', t.p, g && g.protein)}${macro('🍞 Kohlenhydrate', t.c, g && g.carbs)}${macro('🧈 Fett', t.f, g && g.fat)}`;
+      ${macro('Eiweiß', t.p, g && g.protein)}${macro('Kohlenhydrate', t.c, g && g.carbs)}${macro('Fett', t.f, g && g.fat)}`;
 
     $('#foodMeals').innerHTML = Object.entries(N.MEALS).map(([k, label]) => {
       const items = list.filter((e) => e.meal === k);
@@ -168,7 +168,7 @@
     }
     A.save(); A.render();
     const kcal = list.reduce((s, e) => s + (e.kcal || 0), 0);
-    A.toast(`🍽️ ${list.length === 1 ? list[0].name : list.length + ' Einträge'} · ${fmt(kcal)} kcal`, { label: 'Rückgängig', fn: () => { st().food = st().food.filter((x) => !ids.includes(x.id)); A.save(); A.render(); } });
+    A.toast(`${list.length === 1 ? list[0].name : list.length + ' Einträge'} · ${fmt(kcal)} kcal`, { label: 'Rückgängig', fn: () => { st().food = st().food.filter((x) => !ids.includes(x.id)); A.save(); A.render(); } });
   }
 
   // =====================================================================
@@ -291,7 +291,7 @@
   // Barcode (Open Food Facts)
   // =====================================================================
   async function foodFromBarcode(code) {
-    A.toast('📦 Suche Nährwerte …');
+    A.toast('Suche Nährwerte …');
     try {
       const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,product_name_de,brands,quantity,serving_size,nutriments,image_front_small_url`;
       const j = await (await fetch(url)).json();
@@ -331,7 +331,7 @@
     const file = e.target.files[0];
     e.target.value = '';
     if (!file) return;
-    A.toast('🏷️ Lese Nährwerttabelle … (beim ersten Mal lädt die Texterkennung)');
+    A.toast('Lese Nährwerttabelle … (beim ersten Mal lädt die Texterkennung)');
     try {
       const { dataUrl, bitmap } = await shrink(file, 200, 0.6);
       const texts = await A.ocrText(bitmap);
@@ -367,7 +367,7 @@
   }
   function renderReview() {
     $('#mrList').innerHTML = mrItems.map((it, i) => it.missing
-      ? `<div class="mr-item"><span class="mr-name muted">❓ „${esc(it.text)}“ nicht gefunden</span><button class="btn small" data-mrsearch="${i}">🔎 Suchen</button></div>`
+      ? `<div class="mr-item"><span class="mr-name muted">„${esc(it.text)}“ nicht gefunden</span><button class="btn small" data-mrsearch="${i}">Suchen</button></div>`
       : `<div class="mr-item" data-i="${i}"><input type="checkbox" ${it.use ? 'checked' : ''} aria-label="übernehmen">
           <span class="mr-name">${esc(it.name)}</span><input class="mr-g" inputmode="decimal" value="${fmt(it.grams)}" aria-label="Gramm"><span class="small">g</span>
           <span class="mr-k">${fmt(it.kcal)} kcal</span></div>`).join('');
@@ -416,7 +416,7 @@
       openFoodDialog({ name: f.name, grams, per100: { kcal: f.kcal, p: f.p, c: f.c, f: f.f }, portion: f.portion, portionLabel: f.portionLabel, source: 'db' });
       return;
     }
-    openReview('🍽️ Erkannt', null, `„${esc(text)}“`);
+    openReview('Erkannt', null, `„${esc(text)}“`);
     mrItems = parsed.map((x) => x.food
       ? { use: true, name: x.food.name, source: 'db', grams: x.grams, ...N.scale({ kcal: x.food.kcal, p: x.food.p, c: x.food.c, f: x.food.f }, x.grams) }
       : { missing: true, text: x.text });
@@ -443,16 +443,16 @@
     const g = goal();
     const t = N.totals(dayEntries(today()));
     if (!st().food.length && !g) {
-      $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">🍽️ Kalorien</div>
+      $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">Kalorien</div>
         <div class="home-line muted">Barcode scannen, Nährwerttabelle fotografieren oder „1 Apfel“ eintippen – ich zähle mit.</div></button>
         <button class="btn small primary" data-goto="food">＋ Mahlzeit eintragen</button></div>`;
       return;
     }
     const left = g ? g.kcal + burnedOn(today()) - t.kcal : null;
-    $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">🍽️ Kalorien heute</div>
+    $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">Kalorien heute</div>
       <div class="home-line"><b>${fmt(t.kcal)}</b>${g ? ` von ${fmt(g.kcal)} kcal · ${left >= 0 ? 'noch ' + fmt(left) : '<span class="warn-text">' + fmt(-left) + ' zu viel</span>'}` : ' kcal'}</div>
       ${g ? `<div class="meter ${left < 0 ? 'over' : ''}"><i style="width:${Math.min(100, (t.kcal / g.kcal) * 100)}%"></i></div>` : ''}</button>
-      <div class="row tight"><button class="btn small primary" data-goto="food">＋ Eintragen</button><button class="btn small" data-foodbarcode>📦 Barcode</button></div></div>`;
+      <div class="row tight"><button class="btn small primary" data-goto="food">＋ Eintragen</button><button class="btn small" data-foodbarcode>Barcode</button></div></div>`;
   }
   function renderHubFood() {
     const g = goal();
