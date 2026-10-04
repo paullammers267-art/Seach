@@ -39,7 +39,7 @@ export async function vapidAuthHeader(endpoint, vapid, nowSec = Math.floor(Date.
   const jwk = { kty: 'EC', crv: 'P-256', d: vapid.privateKey, x: b64uEncode(pub.slice(1, 33)), y: b64uEncode(pub.slice(33, 65)), ext: true };
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
   const header = b64uEncode(enc.encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
-  const claims = b64uEncode(enc.encode(JSON.stringify({ aud: new URL(endpoint).origin, exp: nowSec + 12 * 3600, sub: vapid.subject || 'mailto:alltagsheld@example.com' })));
+  const claims = b64uEncode(enc.encode(JSON.stringify({ aud: new URL(endpoint).origin, exp: nowSec + 12 * 3600, sub: vapid.subject || 'https://paullammers267-art.github.io/Seach/kuehlschrank/' })));
   const sig = new Uint8Array(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, enc.encode(`${header}.${claims}`)));
   return `vapid t=${header}.${claims}.${b64uEncode(sig)}, k=${vapid.publicKey}`;
 }
