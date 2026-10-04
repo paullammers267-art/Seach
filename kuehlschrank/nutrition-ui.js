@@ -12,9 +12,12 @@
   const today = () => A.today();
   const addDays = window.FridgeLife.addDays;
   const num = (v) => (v === '' || v == null ? null : L.parsePrice(String(v)));
+  // für Eingabefelder: ohne Tausenderpunkt („1250“ statt „1.250“), damit beim Speichern nichts verwechselt wird
+  const fmtIn = (v, d = 0) => (v == null || v === '' ? '' : Number(v).toLocaleString('de-DE', { maximumFractionDigits: d, useGrouping: false }));
   const fmt = (v, d = 0) => (v == null ? '–' : Number(v).toLocaleString('de-DE', { maximumFractionDigits: d }));
 
   if (!Array.isArray(st().food)) st().food = [];
+  if (!Array.isArray(st().myFoods)) st().myFoods = [];
   if (!st().settings.nutrition) st().settings.nutrition = { sex: 'w', age: null, activity: 1.375, goal: 'keep', manual: null, weight: null };
 
   let foodDate = today();
@@ -61,6 +64,22 @@
     return new Date(d + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
+  /** Wie viel Eiweiß fehlt noch (nur heute, abends hilfreich) */
+  function proteinHint(t, g) {
+    if (!g || !g.protein || foodDate !== today() || !t.kcal) return '';
+    const miss = Math.round(g.protein - t.p);
+    if (miss < 15) return '';
+    return `<p class="muted small food-hint">Noch ${fmt(miss)} g Eiweiß bis zum Ziel – z. B. Quark, Skyr, Eier, Linsen.</p>`;
+  }
+  function waterRow() {
+    const h = st().habits.find((x) => /wasser/i.test(x.name));
+    const n = h ? (st().habitLog[foodDate] && st().habitLog[foodDate][h.id]) || 0 : 0;
+    const target = h ? h.target : 8;
+    const cups = Array.from({ length: Math.max(target, n) }, (_, i) => `<i class="cup ${i < n ? 'on' : ''}"></i>`).join('');
+    return `<div class="water-row"><span><i class="ic ic-droplet"></i> Wasser <b>${n}/${target}</b></span><span class="cups">${cups}</span>
+      ${foodDate === today() ? '<button class="btn small" id="foodWater" aria-label="Ein Glas Wasser">＋ Glas</button>' : ''}</div>`;
+  }
+
   // =====================================================================
   // Ansicht
   // =====================================================================
@@ -89,11 +108,13 @@
           ${burned ? `<div>Training: <b>+${fmt(burned)} kcal</b></div>` : ''}
         </div>
       </div>
-      ${macro('Eiweiß', t.p, g && g.protein)}${macro('Kohlenhydrate', t.c, g && g.carbs)}${macro('Fett', t.f, g && g.fat)}`;
+      ${macro('Eiweiß', t.p, g && g.protein)}${macro('Kohlenhydrate', t.c, g && g.carbs)}${macro('Fett', t.f, g && g.fat)}
+      ${proteinHint(t, g)}${waterRow()}`;
 
     $('#foodMeals').innerHTML = Object.entries(N.MEALS).map(([k, label]) => {
       const items = list.filter((e) => e.meal === k);
-      return `<div class="meal-head"><h3>${label}</h3><span class="muted small">${items.length ? fmt(N.totals(items).kcal) + ' kcal' : ''} <button class="link-btn" data-addmeal="${k}">＋</button></span></div>` +
+      const prev = items.length ? [] : dayEntries(addDays(foodDate, -1)).filter((e) => e.meal === k);
+      return `<div class="meal-head"><h3>${label}</h3><span class="muted small">${items.length ? fmt(N.totals(items).kcal) + ' kcal' : ''}${prev.length ? `<button class="link-btn" data-copymeal="${k}" title="${esc(prev.map((e) => e.name).join(', '))}">wie gestern (${fmt(N.totals(prev).kcal)})</button>` : ''} <button class="link-btn" data-addmeal="${k}">＋</button></span></div>` +
         items.map((e) => `<button class="food-row" data-food="${esc(e.id)}">
           ${e.photo ? `<img src="${esc(e.photo)}" alt="" referrerpolicy="no-referrer">` : `<span class="fe">${e.source === 'ai' ? '🤖' : e.source === 'barcode' ? '📦' : e.source === 'label' ? '🏷️' : '🍴'}</span>`}
           <span class="grow">${esc(e.name)}<span class="muted small"> · ${e.grams ? fmt(e.grams) + ' g' : ''}</span></span>
@@ -152,6 +173,9 @@
     A.save(); A.render();
   });
 
+  $('#foodSummary').addEventListener('click', (e) => {
+    if (e.target.closest('#foodWater') && A.actions.water) A.actions.water();
+  });
   $('#foodPrev').onclick = () => { foodDate = addDays(foodDate, -1); renderFood(); };
   $('#foodNext').onclick = () => { if (foodDate < today()) { foodDate = addDays(foodDate, 1); renderFood(); } };
 
@@ -185,10 +209,10 @@
   $('#fdMeal').addEventListener('click', (e) => { const c = e.target.closest('[data-meal]'); if (c) setFdMeal(c.dataset.meal); });
 
   function fillValues(v) {
-    $('#fdKcal').value = v.kcal != null ? fmt(v.kcal) : '';
-    $('#fdP').value = v.p != null ? fmt(v.p, 1) : '';
-    $('#fdC').value = v.c != null ? fmt(v.c, 1) : '';
-    $('#fdF').value = v.f != null ? fmt(v.f, 1) : '';
+    $('#fdKcal').value = fmtIn(v.kcal);
+    $('#fdP').value = fmtIn(v.p, 1);
+    $('#fdC').value = fmtIn(v.c, 1);
+    $('#fdF').value = fmtIn(v.f, 1);
   }
   /**
    * t: { name, grams, kcal, p, c, f, per100, portion, portionLabel, photo, source }
@@ -200,7 +224,7 @@
     fdExtra = { photo: t.photo || null, source: t.source || 'manual', per100: t.per100 || null };
     $('#foodDlgTitle').textContent = editing ? 'Eintrag bearbeiten' : 'Eintragen';
     $('#fdName').value = t.name || '';
-    $('#fdGrams').value = t.grams ? fmt(t.grams) : '';
+    $('#fdGrams').value = t.grams ? fmtIn(t.grams) : '';
     if (fdPer100 && t.grams) fillValues(N.scale(fdPer100, t.grams)); else fillValues(t);
     $('#fdPer100').textContent = fdPer100 ? `pro 100 g: ${fmt(fdPer100.kcal)} kcal · E ${fmt(fdPer100.p, 1)} g · K ${fmt(fdPer100.c, 1)} g · F ${fmt(fdPer100.f, 1)} g` : '';
     $('#fdPhoto').hidden = !t.photo;
@@ -238,11 +262,29 @@
       p: num($('#fdP').value), c: num($('#fdC').value), f: num($('#fdF').value), meal: fdMeal, ...fdExtra,
     };
     fdDlg.close();
+    rememberFood(data);
     if (fdEditing) { Object.assign(st().food.find((x) => x.id === fdEditing.id), data); A.save(); A.render(); }
     else addEntries([data], { meal: fdMeal });
     if (A.view !== 'food') A.showView('food');
   });
+  /** Barcode-, Etikett- und selbst eingegebene Produkte merken – tauchen danach in der Suche auf */
+  function rememberFood(d) {
+    if (!['barcode', 'label', 'manual'].includes(d.source) || !d.name || d.name === 'Essen') return;
+    const per100 = d.per100 || null; // selbst eingegeben: Portion als Basis, umgerechnet wird über die Gramm
+    const key = d.name.toLowerCase();
+    let m = st().myFoods.find((x) => x.name.toLowerCase() === key);
+    if (!m) { m = { id: A.uid(), name: d.name, used: 0 }; st().myFoods.push(m); }
+    Object.assign(m, { per100, portion: d.grams || null, kcal: d.kcal, p: d.p, c: d.c, f: d.f, photo: d.photo || m.photo || null, source: d.source, used: m.used + 1, last: today() });
+    if (st().myFoods.length > 150) st().myFoods.sort((a, b) => b.used - a.used || (b.last || '').localeCompare(a.last || '')).length = 150;
+  }
   $('#foodMeals').addEventListener('click', (e) => {
+    const cm = e.target.closest('[data-copymeal]');
+    if (cm) {
+      const k = cm.dataset.copymeal;
+      const prev = dayEntries(addDays(foodDate, -1)).filter((x) => x.meal === k);
+      addEntries(prev.map(({ id, date, created, meal, ...rest }) => rest), { meal: k });
+      return;
+    }
     const r = e.target.closest('[data-food]');
     if (r) { const en = st().food.find((x) => x.id === r.dataset.food); openFoodDialog(en, en); return; }
     const m = e.target.closest('[data-addmeal]');
@@ -270,13 +312,25 @@
   }
   function renderSearch() {
     const q = $('#fsInput').value;
+    const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+    const mine = st().myFoods.filter((m) => words.every((w) => m.name.toLowerCase().includes(w)))
+      .sort((a, b) => b.used - a.used).slice(0, q.trim() ? 8 : 6);
+    const mineHtml = mine.map((m) => `<button class="pick" data-mid="${esc(m.id)}"><b>${esc(m.name)}</b>
+      <span class="muted small">Meine · ${m.per100 ? fmt(m.per100.kcal) + ' kcal/100 g' : ''}${m.portion ? ` · ${fmt(m.portion)} g = ${fmt(m.kcal)} kcal` : !m.per100 ? fmt(m.kcal) + ' kcal' : ''}</span></button>`).join('');
     const found = q.trim() ? N.searchFoods(q, 20) : N.FOODS.filter((f) => ['Apfel', 'Banane', 'Brötchen', 'Kaffee schwarz', 'Cappuccino', 'Joghurt natur (3,5 %)', 'Nudeln (gekocht)', 'Pizza Margherita'].includes(f.name));
-    $('#fsList').innerHTML = found.map((f) => `<button class="pick" data-fid="${f.id}"><b>${esc(f.name)}</b>
+    $('#fsList').innerHTML = mineHtml + found.map((f) => `<button class="pick" data-fid="${f.id}"><b>${esc(f.name)}</b>
       <span class="muted small">${fmt(f.kcal)} kcal/100 g · 1 ${esc(f.portionLabel)} (${f.portion} g) = ${fmt(Math.round((f.kcal * f.portion) / 100))} kcal</span></button>`).join('') ||
-      '<p class="muted small">Nichts gefunden – „Selbst eingeben“ oder per Barcode/Nährwerttabelle erfassen.</p>';
+      (mineHtml ? '' : '<p class="muted small">Nichts gefunden – „Selbst eingeben“ oder per Barcode/Nährwerttabelle erfassen.</p>');
   }
   $('#fsInput').addEventListener('input', renderSearch);
   $('#fsList').addEventListener('click', (e) => {
+    const my = e.target.closest('[data-mid]');
+    if (my) {
+      const m = st().myFoods.find((x) => x.id === my.dataset.mid);
+      fsDlg.close();
+      openFoodDialog({ name: m.name, grams: m.portion || (m.per100 ? 100 : null), kcal: m.kcal, p: m.p, c: m.c, f: m.f, per100: m.per100, portion: m.portion, portionLabel: 'Portion', photo: m.photo, source: m.source, meal: searchMeal });
+      return;
+    }
     const b = e.target.closest('[data-fid]');
     if (!b) return;
     const f = N.FOODS.find((x) => x.id === b.dataset.fid);
@@ -369,7 +423,7 @@
     $('#mrList').innerHTML = mrItems.map((it, i) => it.missing
       ? `<div class="mr-item"><span class="mr-name muted">„${esc(it.text)}“ nicht gefunden</span><button class="btn small" data-mrsearch="${i}">Suchen</button></div>`
       : `<div class="mr-item" data-i="${i}"><input type="checkbox" ${it.use ? 'checked' : ''} aria-label="übernehmen">
-          <span class="mr-name">${esc(it.name)}</span><input class="mr-g" inputmode="decimal" value="${fmt(it.grams)}" aria-label="Gramm"><span class="small">g</span>
+          <span class="mr-name">${esc(it.name)}</span><input class="mr-g" inputmode="decimal" value="${fmtIn(it.grams)}" aria-label="Gramm"><span class="small">g</span>
           <span class="mr-k">${fmt(it.kcal)} kcal</span></div>`).join('');
     const chosen = mrItems.filter((i) => i.use && !i.missing);
     const t = N.totals(chosen);

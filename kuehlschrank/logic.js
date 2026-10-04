@@ -539,9 +539,20 @@
   }
 
   /** Preis aus Eingabe wie "1,99" oder "2.49 €" -> Zahl oder null. */
+  /**
+   * Zahl aus deutscher oder englischer Schreibweise: „1.250“ → 1250, „1.250,50“ → 1250.5, „12,5“ → 12.5, „2.99“ → 2.99.
+   * (Früher wurde „1.250“ als 1,25 gelesen.)
+   */
   function parsePrice(str) {
-    const m = String(str || '').replace(',', '.').match(/\d+(\.\d+)?/);
-    return m ? Math.round(parseFloat(m[0]) * 100) / 100 : null;
+    const m = String(str || '').replace(/[\s\u00a0']/g, '').match(/\d[\d.,]*/);
+    if (!m) return null;
+    let t = m[0].replace(/[.,]+$/, '');
+    const c = t.lastIndexOf(','), d = t.lastIndexOf('.');
+    if (c > -1 && d > -1) t = c > d ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, ''); // beides: das letzte Zeichen trennt die Nachkommastellen
+    else if (c > -1) t = /^\d{1,3}(,\d{3}){2,}$/.test(t) ? t.replace(/,/g, '') : t.replace(/,/g, '.').replace(/\.(?=.*\.)/g, '');
+    else if (d > -1 && /^\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, ''); // Tausenderpunkt
+    const v = parseFloat(t);
+    return Number.isFinite(v) ? Math.round(v * 100) / 100 : null;
   }
 
   function formatEuro(v) {

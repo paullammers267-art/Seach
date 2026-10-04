@@ -28,6 +28,9 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - **📦 Barcode** (Open Food Facts) und **🏷️ Nährwerttabelle fotografieren** (Texterkennung direkt auf dem Gerät)
 - **🔎 Suche** in über 100 Lebensmitteln/Gerichten, **Text/Sprache**: „1 Apfel und 2 Scheiben Toast“
 - Tagesziel nach Mifflin-St-Jeor (Alter, Größe, Gewicht, Aktivität, Ziel), Eiweiß/Kohlenhydrate/Fett, Training wird gutgeschrieben, Wochenübersicht
+- **Meine Produkte**: gescannte, fotografierte und selbst eingegebene Produkte werden gemerkt und erscheinen oben in der Suche
+- **„wie gestern“** übernimmt eine Mahlzeit vom Vortag mit einem Tipp; **Wasser** direkt im Tracker; Hinweis, wie viel Eiweiß noch fehlt
+- Werte ab 1.000 kcal und Barcode-Portionen wie „1 Riegel (45 g)“ werden korrekt übernommen
 - Komplett kostenlos – keine Konten, keine kostenpflichtigen Dienste.
 
 ## Design anpassen

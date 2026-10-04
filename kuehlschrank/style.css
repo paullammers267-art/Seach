@@ -594,6 +594,11 @@ details.ex p { margin: 6px 0 0; }
 .food-ring .facts { display: grid; gap: 4px; font-size: .9rem; }
 .macro { display: grid; grid-template-columns: 1fr auto; font-size: .82rem; gap: 2px 8px; margin-top: 8px; }
 .macro .meter { grid-column: 1 / -1; margin: 0; height: 6px; }
+.food-hint { margin: 10px 0 0; }
+.water-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-size: .85rem; }
+.water-row .cups { flex: 1; display: flex; gap: 3px; flex-wrap: wrap; }
+.water-row .cup { width: 9px; height: 14px; border-radius: 2px 2px 4px 4px; border: 1.5px solid #0891b2; opacity: .45; }
+.water-row .cup.on { background: #0891b2; opacity: 1; }
 .meal-head { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 6px; }
 .meal-head h3 { margin: 0; font-size: 1rem; }
 .food-row { font: inherit; color: var(--text); text-align: left; width: 100%; cursor: pointer; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; margin-bottom: 6px; }

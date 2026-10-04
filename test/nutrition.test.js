@@ -54,3 +54,11 @@ test('Nährwerttabelle: typische Lesefehler der Texterkennung', () => {
   assert.deepEqual(N.parseNutritionLabel(ocr1), { kcal: 250, p: 8.2, c: 30, f: 9.5 });
   assert.deepEqual(N.parseNutritionLabel(ocr2), { kcal: 250, p: 8.2, c: 30, f: 9.5 });
 });
+
+test('Barcode-Portion: Gramm aus „1 Riegel (45 g)“, kcal pro 100 g notfalls aus der Portion', () => {
+  assert.equal(N.servingGrams({ serving_size: '1 Riegel (45 g)' }), 45);
+  assert.equal(N.servingGrams({ serving_quantity: '30' }), 30);
+  const p = N.fromOpenFoodFacts({ product_name: 'Riegel', serving_size: '1 Riegel (45 g)', nutriments: { 'energy-kcal_serving': '216' } });
+  assert.equal(p.serving, 45);
+  assert.equal(p.per100.kcal, 480);
+});

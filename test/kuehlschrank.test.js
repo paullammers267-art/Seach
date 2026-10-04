@@ -205,3 +205,13 @@ test('Drogerie-Artikel sind keine Zutaten', () => {
   assert.equal(L.detectIngredient('Vollkornnudeln'), 'nudeln');
   assert.equal(L.detectIngredient('Vollmilch'), 'milch');
 });
+
+test('parsePrice: Tausenderpunkte und Dezimalkomma werden richtig gelesen', () => {
+  assert.equal(L.parsePrice('1.250'), 1250);
+  assert.equal(L.parsePrice('1.250,50'), 1250.5);
+  assert.equal(L.parsePrice('1,250.50'), 1250.5);
+  assert.equal(L.parsePrice('2.99'), 2.99);
+  assert.equal(L.parsePrice('12,5'), 12.5);
+  assert.equal(L.parsePrice('1.000 g'), 1000);
+  assert.equal(L.parsePrice('1250'), 1250);
+});

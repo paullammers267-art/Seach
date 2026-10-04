@@ -228,14 +228,31 @@
   }
 
   /** Nährwerte aus einem Open-Food-Facts-Produkt. */
+  /** Portionsgröße in Gramm/ml aus Open Food Facts: „1 Riegel (45 g)“ → 45, „30 g“ → 30, „250ml“ → 250 */
+  function servingGrams(p) {
+    const q = Number(p.serving_quantity);
+    if (q > 0 && q < 2000 && (!p.serving_quantity_unit || /^(g|ml)$/i.test(p.serving_quantity_unit))) return q;
+    const s = String(p.serving_size || '');
+    const m = s.match(/(\d+(?:[.,]\d+)?)\s*(g|gr|gramm|ml)\b/i); // Zahl mit Einheit – egal ob vorne oder in Klammern
+    const v = m ? parseFloat(m[1].replace(',', '.')) : null;
+    return v && v < 2000 ? v : null;
+  }
   function fromOpenFoodFacts(p) {
     const n = p.nutriments || {};
-    const kcal = n['energy-kcal_100g'] ?? (n.energy_100g != null ? n.energy_100g / 4.184 : null);
-    if (kcal == null) return null;
-    const serving = parseFloat(String(p.serving_size || '').replace(',', '.')) || null;
+    const numv = (k) => (n[k] === undefined || n[k] === null || n[k] === '' ? null : Number(n[k]));
+    const serving = servingGrams(p);
+    let kcal = numv('energy-kcal_100g') ?? (numv('energy_100g') != null ? numv('energy_100g') / 4.184 : null);
+    let per = (k) => numv(k + '_100g');
+    // nur Angaben pro Portion hinterlegt → auf 100 g umrechnen
+    if (kcal == null && serving && numv('energy-kcal_serving') != null) {
+      const f = 100 / serving;
+      kcal = numv('energy-kcal_serving') * f;
+      per = (k) => (numv(k + '_serving') != null ? numv(k + '_serving') * f : null);
+    }
+    if (kcal == null || !Number.isFinite(kcal)) return null;
     return {
-      per100: { kcal: Math.round(kcal), p: r1(n.proteins_100g || 0), c: r1(n.carbohydrates_100g || 0), f: r1(n.fat_100g || 0) },
-      serving: serving && serving < 2000 ? serving : null,
+      per100: { kcal: Math.round(kcal), p: r1(per('proteins') || 0), c: r1(per('carbohydrates') || 0), f: r1(per('fat') || 0) },
+      serving,
     };
   }
 
@@ -261,5 +278,5 @@
     return out;
   }
 
-  return { FOODS, searchFoods, scale, ACTIVITY, GOALS, dailyGoal, totals, MEALS, mealForHour, burned, parseNutritionLabel, fromOpenFoodFacts, parseFoodText };
+  return { FOODS, searchFoods, scale, ACTIVITY, GOALS, dailyGoal, totals, MEALS, mealForHour, burned, parseNutritionLabel, fromOpenFoodFacts, servingGrams, parseFoodText };
 });
