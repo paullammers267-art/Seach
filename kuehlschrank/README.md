@@ -34,6 +34,29 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Hell, Dunkel oder automatisch, 7 Akzentfarben, drei Schriftgrößen, kompakte Ansicht, Begrüßung mit deinem Namen (Mehr → Design anpassen)
 - Ruhige Linien-Icons statt bunter Emojis; Startseite in Bereiche gegliedert (Heute, Küche & Essen, Fitness & Finanzen), Karten einzeln ausblendbar
 
+## Schnellmenü „Neu“
+- Zeigt nur, was man jeden Tag braucht: Aufgabe, Einkauf, Termin, Ausgabe, Produkt, Mahlzeit, Notiz, Timer
+- Unter Mehr → „Schnellmenü ＋ anpassen“ lässt sich alles andere dazuschalten (z. B. Parken, Paket, Getankt)
+
+## Müllabfuhr
+- Restmüll, Bio, Papier, Gelber Sack, Glas, Sperrmüll mit Rhythmus (wöchentlich, 2- oder 4-wöchentlich, einmalig)
+- „Heute Abend rausstellen“ auf der Startseite und als Erinnerung ab 17 Uhr, Export in den Handy-Kalender mit Erinnerung am Vorabend
+
+## Parken
+- „Hier geparkt“ speichert den Standort (GPS) und eine Notiz (z. B. Ebene 2), Karte und Fußweg-Route zum Auto
+- Parkuhr mit Erinnerung 10 Minuten vor Ablauf, verlängern mit einem Tipp
+
+## Pakete & Retouren
+- Bestellungen mit Liefertag und Sendungsverfolgung (DHL, Hermes, DPD, GLS, UPS)
+- Nach „Angekommen“ läuft die Rückgabefrist (Standard 14 Tage) – Erinnerung, bevor sie abläuft
+
+## Auto & Tanken
+- Tankbuch: Kilometerstand, Liter, Betrag → Verbrauch (l/100 km), Preis pro Liter, Spritkosten im Jahr, Kosten pro km
+- Tanken wird auf Wunsch automatisch als Ausgabe (Mobilität) eingetragen
+
+## Wichtige Nummern
+- Hausarzt, Vermieter, Kita, Handwerker … mit Anruf-Knopf; dazu 110, 112, 116 117, Sperr-Notruf 116 116, Telefonseelsorge
+
 ## Pflanzen
 - Gießplan je Pflanze (12 Vorlagen), „gegossen“ mit einem Tipp – auch direkt auf der Startseite, Erinnerung wenn fällig
 

@@ -463,6 +463,46 @@
       </form>
     </section>
 
+    <!-- Müllabfuhr -->
+    <section id="view-waste" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Müllabfuhr</h2></div>
+      <div id="wasteNext"></div>
+      <div id="wasteList"></div>
+      <p class="muted small">Tonne hinzufügen:</p>
+      <div class="chips" id="wasteAdd"></div>
+      <p class="muted small">Die Termine stehen im Abfallkalender deiner Stadt. Am Abend vorher erinnert dich die App (solange sie geöffnet ist) – für Erinnerungen auch bei geschlossener App: Termine in den Handy-Kalender übernehmen.</p>
+    </section>
+
+    <!-- Parken -->
+    <section id="view-parking" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Parken</h2></div>
+      <div id="parkView"></div>
+    </section>
+
+    <!-- Pakete -->
+    <section id="view-parcels" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Pakete &amp; Retouren</h2></div>
+      <div id="parcelList"></div>
+      <button class="btn primary wide" id="parcelAdd">＋ Bestellung</button>
+    </section>
+
+    <!-- Auto -->
+    <section id="view-car" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Auto &amp; Tanken</h2></div>
+      <div class="card" id="carStats"></div>
+      <button class="btn primary wide" id="fuelAdd">＋ Getankt</button>
+      <div id="fuelList"></div>
+    </section>
+
+    <!-- Wichtige Nummern -->
+    <section id="view-contacts" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Wichtige Nummern</h2></div>
+      <div id="contactList"></div>
+      <button class="btn primary wide" id="contactAdd">＋ Nummer</button>
+      <h3 class="sec-title">Notruf &amp; Hotlines</h3>
+      <div id="hotlineList"></div>
+    </section>
+
     <!-- Erfolge -->
     <section id="view-achievements" class="view">
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Erfolge & Rückblick</h2></div>
@@ -500,6 +540,14 @@
         <button class="hub-tile" data-goto="meters"><span class="hub-ic"><i class="ic ic-gauge"></i></span><b>Zählerstände</b><small id="hubMeters"></small></button>
         <button class="hub-tile" data-goto="plants"><span class="hub-ic"><i class="ic ic-leaf"></i></span><b>Pflanzen</b><small id="hubPlants"></small></button>
         <button class="hub-tile" data-goto="loans"><span class="hub-ic"><i class="ic ic-swap"></i></span><b>Verliehen</b><small id="hubLoans"></small></button>
+        <button class="hub-tile" data-goto="waste"><span class="hub-ic"><i class="ic ic-trash"></i></span><b>Müllabfuhr</b><small id="hubWaste"></small></button>
+      </div>
+      <h3 class="sec-title">Unterwegs &amp; Erledigungen</h3>
+      <div class="hub" data-group="go">
+        <button class="hub-tile" data-goto="parking"><span class="hub-ic"><i class="ic ic-parking"></i></span><b>Parken</b><small id="hubParking"></small></button>
+        <button class="hub-tile" data-goto="parcels"><span class="hub-ic"><i class="ic ic-package"></i></span><b>Pakete</b><small id="hubParcels"></small></button>
+        <button class="hub-tile" data-goto="car"><span class="hub-ic"><i class="ic ic-car"></i></span><b>Auto &amp; Tanken</b><small id="hubCar"></small></button>
+        <button class="hub-tile" data-goto="contacts"><span class="hub-ic"><i class="ic ic-phone"></i></span><b>Wichtige Nummern</b><small id="hubContacts"></small></button>
       </div>
       <h3 class="sec-title">Extras</h3>
       <div class="hub" data-group="extra">
@@ -518,6 +566,11 @@
         <div class="segmented" id="sizePick"></div>
         <label class="toggle"><input type="checkbox" id="compactPick"> Kompakte Ansicht (mehr auf einen Blick)</label>
         <label class="set-label">Dein Name für die Begrüßung<input id="namePick" placeholder="z. B. Paul" autocomplete="off" maxlength="30"></label>
+      </div>
+      <div class="card" id="quickCard">
+        <h2>Schnellmenü ＋ anpassen</h2>
+        <p class="muted small">Was soll unter „Neu“ stehen? Am besten nur, was du wirklich jeden Tag brauchst.</p>
+        <div class="chips" id="quickToggles"></div>
       </div>
       <div class="card">
         <h2>Startseite anpassen</h2>
@@ -600,7 +653,7 @@
     <button class="tab" data-view="stock"><span><i class="ic ic-box"></i></span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span><i class="ic ic-cart"></i></span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency"><span><i class="ic ic-menu"></i></span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts"><span><i class="ic ic-menu"></i></span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -776,7 +829,11 @@
       <button data-action="loan"><span><i class="ic ic-swap"></i></span>Verliehen</button>
       <button data-action="countdown"><span><i class="ic ic-hourglass"></i></span>Countdown</button>
       <button data-action="focus"><span><i class="ic ic-target"></i></span>Fokus</button>
+      <button data-action="park"><span><i class="ic ic-parking"></i></span>Parken</button>
+      <button data-action="parcel"><span><i class="ic ic-package"></i></span>Paket</button>
+      <button data-action="fuel"><span><i class="ic ic-car"></i></span>Getankt</button>
     </div>
+    <button class="link-btn sheet-more" data-goto="settings" id="sheetCustomize">Menü anpassen</button>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
 
@@ -1084,6 +1141,54 @@
     </form>
   </dialog>
 
+  <!-- Tonne -->
+  <dialog id="wasteDialog">
+    <form id="wasteForm" method="dialog">
+      <h2 id="wasteDlgTitle">Tonne</h2>
+      <div class="chips" id="wasteType"></div>
+      <label>Nächster Abholtag<input id="wasteStart" type="date" required></label>
+      <div class="segmented" id="wasteEvery"></div>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="wasteDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="wasteCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Paket -->
+  <dialog id="parcelDialog">
+    <form id="parcelForm" method="dialog">
+      <h2 id="parcelDlgTitle">Bestellung</h2>
+      <label>Was?<input id="pcWhat" required autocomplete="off" placeholder="z. B. Winterjacke"></label>
+      <div class="row"><label>Shop<input id="pcShop" autocomplete="off" placeholder="z. B. Zalando"></label><label>Kommt am<input id="pcExpected" type="date"></label></div>
+      <label>Sendungsnummer (optional)<input id="pcTracking" autocomplete="off" inputmode="text"></label>
+      <div class="row"><label>Erhalten am<input id="pcReceived" type="date"></label><label>Rückgabe (Tage)<input id="pcReturnDays" inputmode="numeric" placeholder="14"></label></div>
+      <label>Preis (optional)<input id="pcPrice" inputmode="decimal" placeholder="0,00"></label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="pcDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="pcCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Tanken -->
+  <dialog id="fuelDialog">
+    <form id="fuelForm" method="dialog">
+      <h2 id="fuelDlgTitle">Getankt</h2>
+      <div class="row"><label>Datum<input id="fuDate" type="date" required></label><label>Kilometerstand<input id="fuKm" inputmode="numeric" required></label></div>
+      <div class="row"><label>Liter<input id="fuLiters" inputmode="decimal" required></label><label>Betrag €<input id="fuPrice" inputmode="decimal"></label></div>
+      <label class="toggle"><input type="checkbox" id="fuFull" checked> vollgetankt (nötig für den Verbrauch)</label>
+      <label class="toggle"><input type="checkbox" id="fuExpense" checked> auch als Ausgabe (Auto) eintragen</label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="fuDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="fuCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Kontakt -->
+  <dialog id="contactDialog">
+    <form id="contactForm" method="dialog">
+      <h2 id="contactDlgTitle">Nummer</h2>
+      <div class="chips" id="ctRoles"></div>
+      <div class="row"><label>Wer?<input id="ctRole" autocomplete="off" placeholder="z. B. Hausarzt"></label><label>Name<input id="ctName" autocomplete="off" placeholder="z. B. Dr. Meyer"></label></div>
+      <label>Telefon<input id="ctPhone" type="tel" required autocomplete="off"></label>
+      <label>Notiz<input id="ctNote" autocomplete="off" placeholder="z. B. Sprechzeiten Mo–Fr 8–12"></label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="ctDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="ctCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
   <!-- Atemübung -->
   <dialog id="breathDialog" class="cookmode breath">
     <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
@@ -1137,5 +1242,7 @@
   <script src="extras-ui.js"></script>
   <script src="plus.js"></script>
   <script src="plus-ui.js"></script>
+  <script src="daily.js"></script>
+  <script src="daily-ui.js"></script>
 </body>
 </html>

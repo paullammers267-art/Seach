@@ -685,6 +685,7 @@
       const pl = window.FridgePlus.plantsDue(st().plants, t).length;
       if (pl) chips.push(['plants', 'leaf', `${pl} gießen`, '']);
     }
+    for (const fn of A.glanceSources || []) { try { chips.push(...fn()); } catch (e) { /* egal */ } }
     const shop = st().shopping.filter((i) => !i.done).length;
     if (shop) chips.push(['shopping', 'cart', `${shop} einkaufen`, '']);
     $('#homeGlance').innerHTML = chips.length
