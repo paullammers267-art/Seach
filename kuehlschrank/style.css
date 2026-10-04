@@ -1155,3 +1155,7 @@ dialog h2 { font-size: 1.2rem; }
 .bd > summary .grow > b, .jr-entry > summary .grow > b { font-weight: 700; }
 .jr-today textarea { font-weight: 400; color: var(--text); }
 .jr-mood { color: var(--muted); }
+/* Kopfzeile: Vorrats-Hinweis steht im Tagesüberblick, nicht mehr hier – Name nie abschneiden */
+.topbar .summary { display: none; }
+.topbar h1 { white-space: nowrap; }
+.brand-text { flex: 1; }

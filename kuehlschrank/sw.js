@@ -1,5 +1,5 @@
 /* Offline-Unterstützung: App-Dateien zwischenspeichern, Netzwerk bevorzugen. */
-const CACHE = 'alltagsheld-v19';
+const CACHE = 'alltagsheld-v20';
 const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'sport.js', 'planner.js', 'app.js', 'alltag.js', 'life.js', 'life-ui.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'nutrition.js', 'nutrition-ui.js', 'extras.js', 'extras-ui.js', 'plus.js', 'plus-ui.js', 'daily.js', 'daily-ui.js', 'organize.js', 'organize-ui.js', 'deep.js', 'deep-ui.js', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
