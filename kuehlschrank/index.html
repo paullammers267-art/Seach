@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Alltagsheld</title>
   <meta name="description" content="Alltagshelfer: Vorrat & Ablaufdaten, Einkauf, Rezepte, Sport für zuhause, Kalender und Ausgaben.">
-  <meta name="theme-color" content="#0f766e">
+  <meta name="theme-color" content="#f2f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1312" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-title" content="Alltagsheld">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -23,8 +24,15 @@
 </head>
 <body>
   <header class="topbar">
-    <h1><img src="icon.svg" alt="" class="logo">Alltagsheld</h1>
+    <button class="brand" data-goto="home" aria-label="Zur Startseite">
+      <img src="icon.svg" alt="" class="logo">
+      <span class="brand-text"><h1>Alltagsheld</h1><span class="brand-sub" id="brandSub">dein Alltagshelfer</span></span>
+    </button>
     <div id="summary" class="summary"></div>
+    <div class="top-actions">
+      <button class="top-btn" id="topSearch" aria-label="Suchen"><i class="ic ic-search"></i></button>
+      <button class="top-btn avatar" id="topAvatar" data-goto="settings" aria-label="Einstellungen"><i class="ic ic-user"></i></button>
+    </div>
   </header>
 
   <main>
@@ -407,6 +415,43 @@
         <button class="btn small" id="rdPick">Auslosen</button>
         <div class="cv-result" id="rdResult"></div>
       </div>
+      <div class="card">
+        <h2>Prozente &amp; Mehrwertsteuer</h2>
+        <div class="segmented" id="pcMode"><button data-m="rabatt" class="active">Rabatt</button><button data-m="mwst">MwSt.</button><button data-m="diff">Veränderung</button></div>
+        <div class="row tight"><label class="grow-label"><span id="pcLabelA">Preis €</span><input id="pcA" inputmode="decimal" placeholder="79,99"></label><label class="grow-label"><span id="pcLabelB">Rabatt %</span><input id="pcB" inputmode="decimal" placeholder="25"></label></div>
+        <div class="cv-result" id="pcResult"></div>
+      </div>
+      <div class="card">
+        <h2>Schlafrechner</h2>
+        <div class="segmented" id="slMode"><button data-m="wake" class="active">Aufwachen um …</button><button data-m="now">Jetzt schlafen</button></div>
+        <label class="grow-label" id="slWakeWrap"><span>Wecker</span><input id="slWake" type="time" value="06:30"></label>
+        <div id="slResult"></div>
+        <p class="muted small">Ein Schlafzyklus dauert etwa 90 Minuten. Wer am Ende eines Zyklus aufwacht, ist fitter. Eingerechnet: 15 Minuten zum Einschlafen.</p>
+      </div>
+    </section>
+
+    <!-- Verträge -->
+    <section id="view-contracts" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Verträge &amp; Abos</h2></div>
+      <div class="card" id="ctrTotals"></div>
+      <div id="ctrList"></div>
+      <p class="muted small">Vertrag hinzufügen:</p>
+      <div class="chips" id="ctrAdd"></div>
+    </section>
+
+    <!-- Checklisten -->
+    <section id="view-checklists" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Checklisten &amp; Routinen</h2></div>
+      <div id="clList"></div>
+      <p class="muted small">Vorlage oder eigene Liste:</p>
+      <div class="chips" id="clAdd"></div>
+    </section>
+
+    <!-- Stundenplan -->
+    <section id="view-timetable" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Stundenplan</h2></div>
+      <div class="chips" id="ttPlans"></div>
+      <div id="ttWeek"></div>
     </section>
 
     <!-- Pflanzen -->
@@ -523,6 +568,8 @@
         <button class="hub-tile" data-goto="tasks"><span class="hub-ic"><i class="ic ic-check"></i></span><b>Aufgaben</b><small id="hubTasks"></small></button>
         <button class="hub-tile" data-goto="notes"><span class="hub-ic"><i class="ic ic-note"></i></span><b>Notizen</b><small id="hubNotes"></small></button>
         <button class="hub-tile" data-goto="deadlines"><span class="hub-ic"><i class="ic ic-idcard"></i></span><b>Fristen</b><small id="hubDeadlines"></small></button>
+        <button class="hub-tile" data-goto="checklists"><span class="hub-ic"><i class="ic ic-list"></i></span><b>Checklisten</b><small id="hubChecklists"></small></button>
+        <button class="hub-tile" data-goto="timetable"><span class="hub-ic"><i class="ic ic-school"></i></span><b>Stundenplan</b><small id="hubTimetable"></small></button>
         <button class="hub-tile" data-goto="countdowns"><span class="hub-ic"><i class="ic ic-hourglass"></i></span><b>Countdowns</b><small id="hubCountdowns"></small></button>
         <button class="hub-tile" data-goto="focus"><span class="hub-ic"><i class="ic ic-target"></i></span><b>Fokus-Timer</b><small id="hubFocus"></small></button>
       </div>
@@ -537,6 +584,7 @@
       <h3 class="sec-title">Zuhause &amp; Finanzen</h3>
       <div class="hub" data-group="money">
         <button class="hub-tile" data-goto="expenses"><span class="hub-ic"><i class="ic ic-wallet"></i></span><b>Ausgaben</b><small id="hubExp"></small></button>
+        <button class="hub-tile" data-goto="contracts"><span class="hub-ic"><i class="ic ic-contract"></i></span><b>Verträge &amp; Abos</b><small id="hubContracts"></small></button>
         <button class="hub-tile" data-goto="meters"><span class="hub-ic"><i class="ic ic-gauge"></i></span><b>Zählerstände</b><small id="hubMeters"></small></button>
         <button class="hub-tile" data-goto="plants"><span class="hub-ic"><i class="ic ic-leaf"></i></span><b>Pflanzen</b><small id="hubPlants"></small></button>
         <button class="hub-tile" data-goto="loans"><span class="hub-ic"><i class="ic ic-swap"></i></span><b>Verliehen</b><small id="hubLoans"></small></button>
@@ -653,7 +701,7 @@
     <button class="tab" data-view="stock"><span><i class="ic ic-box"></i></span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span><i class="ic ic-cart"></i></span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts"><span><i class="ic ic-menu"></i></span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts contracts checklists timetable"><span><i class="ic ic-menu"></i></span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -829,6 +877,8 @@
       <button data-action="loan"><span><i class="ic ic-swap"></i></span>Verliehen</button>
       <button data-action="countdown"><span><i class="ic ic-hourglass"></i></span>Countdown</button>
       <button data-action="focus"><span><i class="ic ic-target"></i></span>Fokus</button>
+      <button data-action="checklist"><span><i class="ic ic-list"></i></span>Checkliste</button>
+      <button data-action="contract"><span><i class="ic ic-contract"></i></span>Vertrag</button>
       <button data-action="park"><span><i class="ic ic-parking"></i></span>Parken</button>
       <button data-action="parcel"><span><i class="ic ic-package"></i></span>Paket</button>
       <button data-action="fuel"><span><i class="ic ic-car"></i></span>Getankt</button>
@@ -1189,6 +1239,46 @@
     </form>
   </dialog>
 
+  <!-- Vertrag -->
+  <dialog id="contractDialog">
+    <form id="contractForm" method="dialog">
+      <h2 id="ctrDlgTitle">Vertrag</h2>
+      <div class="chips" id="ctrType"></div>
+      <div class="row"><label>Anbieter / Name<input id="ctrName" required autocomplete="off" placeholder="z. B. Telekom Handy"></label></div>
+      <div class="row"><label>Kosten €<input id="ctrCost" inputmode="decimal" placeholder="29,99"></label><label>Zahlweise<select id="ctrInterval"><option value="monat">pro Monat</option><option value="quartal">pro Quartal</option><option value="jahr">pro Jahr</option></select></label></div>
+      <div class="row"><label>Vertragsbeginn<input id="ctrStart" type="date" required></label><label>Mindestlaufzeit (Monate)<input id="ctrMin" inputmode="numeric"></label></div>
+      <div class="row"><label>Verlängert sich um (Monate)<input id="ctrRenew" inputmode="numeric"></label><label>Kündigungsfrist<span class="inline-pair"><input id="ctrNotice" inputmode="numeric"><select id="ctrUnit"><option value="m">Monate</option><option value="w">Wochen</option></select></span></label></div>
+      <p class="muted small">Seit 2022 gilt für viele Verträge (Handy, Internet, Strom, Fitness): nach der Mindestlaufzeit monatlich kündbar mit 1 Monat Frist.</p>
+      <label>Kundennummer / Notiz<input id="ctrNote" autocomplete="off"></label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="ctrDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="ctrCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Checkliste -->
+  <dialog id="checklistDialog">
+    <form id="checklistForm" method="dialog">
+      <h2 id="clDlgTitle">Checkliste</h2>
+      <label>Titel<input id="clTitle" required autocomplete="off" placeholder="z. B. Haus verlassen"></label>
+      <label>Punkte (einer pro Zeile)<textarea id="clItems" rows="7" placeholder="Herd aus&#10;Fenster zu&#10;Schlüssel"></textarea></label>
+      <label class="toggle"><input type="checkbox" id="clDaily"> Jeden Tag neu (Routine – Haken werden morgens zurückgesetzt)</label>
+      <label class="toggle"><input type="checkbox" id="clPinned"> Auf der Startseite zeigen</label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="clDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="clCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
+  <!-- Stunde -->
+  <dialog id="ttDialog">
+    <form id="ttForm" method="dialog">
+      <h2 id="ttDlgTitle">Stunde</h2>
+      <div class="segmented" id="ttDay"></div>
+      <label>Fach / Kurs<input id="ttTitle" required autocomplete="off" list="ttSubjects" placeholder="z. B. Mathe"></label>
+      <datalist id="ttSubjects"></datalist>
+      <div class="row"><label>Beginn<input id="ttStart" type="time" required></label><label>Ende<input id="ttEnd" type="time"></label></div>
+      <label>Raum / Lehrer (optional)<input id="ttRoom" autocomplete="off"></label>
+      <div class="dialog-actions"><button type="button" class="btn danger" id="ttDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="ttCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
+    </form>
+  </dialog>
+
   <!-- Atemübung -->
   <dialog id="breathDialog" class="cookmode breath">
     <div class="cook-head"><div><b id="brTitle"></b><div class="muted small" id="brLeft"></div></div><button class="icon-sm big-x" id="brClose" aria-label="Beenden">✕</button></div>
@@ -1244,5 +1334,7 @@
   <script src="plus-ui.js"></script>
   <script src="daily.js"></script>
   <script src="daily-ui.js"></script>
+  <script src="organize.js"></script>
+  <script src="organize-ui.js"></script>
 </body>
 </html>

@@ -38,6 +38,25 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Zeigt nur, was man jeden Tag braucht: Aufgabe, Einkauf, Termin, Ausgabe, Produkt, Mahlzeit, Notiz, Timer
 - Unter Mehr → „Schnellmenü ＋ anpassen“ lässt sich alles andere dazuschalten (z. B. Parken, Paket, Getankt)
 
+## Verträge & Abos
+- Handy, Internet, Strom, Versicherung, Streaming … mit Mindestlaufzeit, Verlängerung und Kündigungsfrist
+- Zeigt, bis wann du kündigen musst (Erinnerung + Startseite + Kalender) und was alles zusammen pro Monat/Jahr kostet
+- „Kündigung schreiben“ erstellt ein fertiges Kündigungsschreiben als Notiz (und kopiert es)
+
+## Checklisten & Routinen
+- Vorlagen: Haus verlassen, Morgen- und Abendroutine, Urlaub – Wohnung, Arzttermin, Wocheneinkauf – oder eigene Listen
+- Routinen setzen sich jeden Morgen zurück; angeheftete Listen lassen sich direkt auf der Startseite abhaken
+
+## Stundenplan
+- Für Schule, Uni oder Kurse – auch mehrere Pläne (z. B. pro Kind); jedes Fach hat immer dieselbe Farbe
+- Startseite: was jetzt läuft und was als Nächstes kommt, ab 15 Uhr schon der Plan für morgen
+
+## Werkzeuge (neu)
+- Prozente & Mehrwertsteuer (Rabatt, brutto/netto, Veränderung in %), Schlafrechner (90-Minuten-Zyklen)
+
+## Kopfzeile & Logo
+- Neues Logo; Kopfzeile zeigt Datum bzw. den aktuellen Bereich, Suche und Profil-Knopf mit deiner Initiale
+
 ## Müllabfuhr
 - Restmüll, Bio, Papier, Gelber Sack, Glas, Sperrmüll mit Rhythmus (wöchentlich, 2- oder 4-wöchentlich, einmalig)
 - „Heute Abend rausstellen“ auf der Startseite und als Erinnerung ab 17 Uhr, Export in den Handy-Kalender mit Erinnerung am Vorabend

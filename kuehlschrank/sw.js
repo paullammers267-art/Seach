@@ -1,6 +1,6 @@
 /* Offline-Unterstützung: App-Dateien zwischenspeichern, Netzwerk bevorzugen. */
-const CACHE = 'alltagsheld-v17';
-const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'sport.js', 'planner.js', 'app.js', 'alltag.js', 'life.js', 'life-ui.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'nutrition.js', 'nutrition-ui.js', 'extras.js', 'extras-ui.js', 'plus.js', 'plus-ui.js', 'daily.js', 'daily-ui.js', 'manifest.webmanifest'];
+const CACHE = 'alltagsheld-v18';
+const FILES = ['./', 'index.html', 'style.css', 'logic.js', 'imageprep.js', 'recipes.js', 'sport.js', 'planner.js', 'app.js', 'alltag.js', 'life.js', 'life-ui.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'nutrition.js', 'nutrition-ui.js', 'extras.js', 'extras-ui.js', 'plus.js', 'plus-ui.js', 'daily.js', 'daily-ui.js', 'organize.js', 'organize-ui.js', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));

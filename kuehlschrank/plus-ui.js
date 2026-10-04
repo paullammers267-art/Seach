@@ -22,9 +22,6 @@
     if (s.accent && s.accent !== 'teal') de.dataset.accent = s.accent; else delete de.dataset.accent;
     if (s.textSize && s.textSize !== 'normal') de.dataset.size = s.textSize; else delete de.dataset.size;
     if (s.compact) de.dataset.density = 'compact'; else delete de.dataset.density;
-    const acc = PL.ACCENTS[s.accent] || PL.ACCENTS.teal;
-    const meta = $('meta[name="theme-color"]');
-    if (meta) meta.content = acc.light;
     $$('#accentPick [data-accent]').forEach((b) => b.classList.toggle('active', b.dataset.accent === (s.accent || 'teal')));
     $$('#sizePick [data-size]').forEach((b) => b.classList.toggle('active', b.dataset.size === (s.textSize || 'normal')));
     $('#compactPick').checked = !!s.compact;
