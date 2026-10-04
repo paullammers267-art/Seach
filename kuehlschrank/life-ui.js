@@ -78,8 +78,8 @@
     if (!p) {
       return `<div class="card home-card weather">
         <div class="home-title">Wetter</div>
-        <div class="home-line muted">Zeige das Wetter für deinen Ort – mit Tipps wie „Regenschirm mitnehmen“.</div>
-        <div class="row tight"><button class="btn small" data-weather="gps">Mein Standort</button><button class="btn small" data-goto="settings">Ort eingeben</button></div>
+        <div class="home-line muted">Wetter für deinen Ort anzeigen.</div>
+        <div class="row tight"><button class="btn small" data-weather="gps">Mein Standort</button><button class="btn small" data-pref="prefWeather">Ort eingeben</button></div>
       </div>`;
     }
     const w = st().weatherCache;
@@ -603,10 +603,10 @@
     A.toast(`Wetter für ${place.name}`);
   }
   function useGps() {
-    if (!navigator.geolocation) { A.toast('Standort wird nicht unterstützt – bitte Ort eingeben'); A.showView('settings'); return; }
+    if (!navigator.geolocation) { A.toast('Standort wird nicht unterstützt – bitte Ort eingeben'); A.openPref('prefWeather'); return; }
     navigator.geolocation.getCurrentPosition(
       (pos) => setPlace({ name: 'Mein Standort', gps: true, lat: Math.round(pos.coords.latitude * 100) / 100, lon: Math.round(pos.coords.longitude * 100) / 100 }),
-      () => { A.toast('Standort nicht freigegeben – bitte Ort eingeben'); A.showView('settings'); setTimeout(() => $('#placeInput').focus(), 50); },
+      () => { A.toast('Standort nicht freigegeben – bitte Ort eingeben'); A.openPref('prefWeather'); setTimeout(() => $('#placeInput').focus(), 50); },
       { timeout: 10000, maximumAge: 10 * 60000 });
   }
   $('#btnPlaceGps').onclick = useGps;

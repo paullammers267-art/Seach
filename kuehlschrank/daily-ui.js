@@ -46,7 +46,7 @@
   });
   $('#sheetCustomize').addEventListener('click', () => {
     $('#actionSheet').close();
-    setTimeout(() => $('#quickCard').scrollIntoView({ block: 'start' }), 60);
+    A.openPref('prefQuick');
   });
 
   // =====================================================================

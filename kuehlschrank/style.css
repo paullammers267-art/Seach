@@ -1221,3 +1221,36 @@ dialog.auth-dialog { width: 100%; max-width: 440px; max-height: 100dvh; height: 
 .push-types { margin: 2px 0; }
 .push-times { margin: 0; }
 .push-box .row { margin: 0; }
+.ic-gear { --i: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%221.9%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3Cpath d=%22M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z%22/%3E%3C/svg%3E"); }
+.ic-palette { --i: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%221.9%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4-4-7.2-9-7.2z%22/%3E%3Ccircle cx=%227.5%22 cy=%2211%22 r=%221.2%22/%3E%3Ccircle cx=%2210.5%22 cy=%227%22 r=%221.2%22/%3E%3Ccircle cx=%2215.5%22 cy=%227.5%22 r=%221.2%22/%3E%3C/svg%3E"); }
+.ic-bell { --i: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%221.9%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0%22/%3E%3C/svg%3E"); }
+.ic-plus { --i: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%221.9%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 5v14M5 12h14%22/%3E%3C/svg%3E"); }
+
+/* ---------- Aufgeräumt: Einstellungen als Liste, „Mehr“ ohne Untertitel ---------- */
+.menu-row { font: inherit; color: var(--text); text-align: left; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.menu-row .grow { flex: 1; min-width: 0; display: grid; }
+.menu-row .muted { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pref-ic { width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface)); }
+.pref-ic .ic { width: 20px; height: 20px; }
+.pref-list { padding: 0 14px; }
+.pref + .pref { border-top: 1px solid var(--border); }
+.pref > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 11px 0; cursor: pointer; color: var(--text); font-weight: 600; }
+.pref > summary::-webkit-details-marker { display: none; }
+.pref > summary .pref-t { flex: 1; }
+.pref > summary::after { content: "›"; color: var(--muted); font-size: 1.3rem; font-weight: 400; transition: transform .15s; }
+.pref[open] > summary::after { transform: rotate(90deg); }
+.pref-body { padding: 2px 0 16px; display: grid; gap: 10px; }
+.pref-body > .segmented, .pref-body > .chips { margin: 0; }
+.pref-body .set-label:first-child, .pref-body > p:first-child { margin-top: 0; }
+#view-prefs .account-card { margin-bottom: 12px; }
+#view-prefs .export-box, #view-prefs .push-box { margin-top: 0; }
+#view-prefs .export-box p:empty { display: none; }
+/* „Mehr“: nur Symbol + Name, drei pro Zeile */
+#view-settings .hub { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#view-settings .hub-tile { justify-items: center; text-align: center; padding: 12px 6px; }
+#view-settings .hub-tile .hub-ic { margin-bottom: 6px; }
+#view-settings .hub-tile b { font-size: .8rem; font-weight: 600; white-space: normal; line-height: 1.2; overflow: visible; }
+#view-settings .hub-tile small { display: none; }
+@media (max-width: 340px) { #view-settings .hub { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.glance-chip.calm { display: none; }
+

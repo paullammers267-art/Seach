@@ -31,7 +31,7 @@
     <div id="summary" class="summary"></div>
     <div class="top-actions">
       <button class="top-btn" id="topSearch" aria-label="Suchen"><i class="ic ic-search"></i></button>
-      <button class="top-btn avatar" id="topAvatar" data-goto="settings" aria-label="Einstellungen"><i class="ic ic-user"></i></button>
+      <button class="top-btn avatar" id="topAvatar" data-goto="prefs" aria-label="Einstellungen"><i class="ic ic-user"></i></button>
     </div>
   </header>
 
@@ -129,7 +129,6 @@
         <div id="recipeList"></div>
       </div>
       <div id="sub-plan" class="sub">
-        <p class="muted small">Plane die nächsten Tage – fehlende Zutaten kommen mit einem Tipp auf die Einkaufsliste.</p>
         <div id="planList"></div>
         <button class="btn" id="btnPlanShop">Fehlendes einkaufen</button>
       </div>
@@ -191,7 +190,6 @@
         <button class="btn primary" id="btnNewEvent">＋ Termin</button>
         <button class="btn" id="btnIcsAll">In Handy-Kalender</button>
       </div>
-      <p class="muted small">Erinnerungen kommen, solange die App geöffnet ist. Für Erinnerungen auch bei geschlossener App: <b>In Handy-Kalender</b>.</p>
       <h3 id="calDayTitle" class="section"></h3>
       <div id="calDay"></div>
       <h3 class="section">Demnächst</h3>
@@ -234,7 +232,6 @@
         <button class="btn mic" type="button" id="micTask" aria-label="Spracheingabe" hidden>🎤</button>
         <button class="btn primary" type="submit" aria-label="Hinzufügen">＋</button>
       </form>
-      <p class="muted small hint">Versteht z. B. „morgen um 18 Uhr“, „am Freitag“, „bis 31.10.“, „jeden Montag“, „täglich“, „wichtig“.</p>
       <div class="chips" id="taskFilter"></div>
       <div id="taskList"></div>
       <div class="row tight">
@@ -271,7 +268,6 @@
       </div>
       <div class="card">
         <h2>Atemübung</h2>
-        <p class="muted small">Ein paar ruhige Minuten gegen Stress oder zum Einschlafen.</p>
         <div class="chips" id="brPattern"></div>
         <div class="row tight"><button class="btn primary" data-br="1">1 Min</button><button class="btn" data-br="3">3 Min</button><button class="btn" data-br="5">5 Min</button></div>
       </div>
@@ -343,7 +339,7 @@
       <div class="card" id="medToday"></div>
       <div id="medList"></div>
       <button class="btn" id="btnMedNew">＋ Medikament hinzufügen</button>
-      <p class="muted small">Erinnerungen kommen, solange die App geöffnet ist. Diese Liste ersetzt keinen ärztlichen Medikationsplan.</p>
+      <p class="muted small">Ersetzt keinen ärztlichen Medikationsplan.</p>
     </section>
 
     <!-- Fristen & Dokumente -->
@@ -426,7 +422,6 @@
         <div class="segmented" id="slMode"><button data-m="wake" class="active">Aufwachen um …</button><button data-m="now">Jetzt schlafen</button></div>
         <label class="grow-label" id="slWakeWrap"><span>Wecker</span><input id="slWake" type="time" value="06:30"></label>
         <div id="slResult"></div>
-        <p class="muted small">Ein Schlafzyklus dauert etwa 90 Minuten. Wer am Ende eines Zyklus aufwacht, ist fitter. Eingerechnet: 15 Minuten zum Einschlafen.</p>
       </div>
     </section>
 
@@ -435,7 +430,6 @@
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Verträge &amp; Abos</h2></div>
       <div class="card" id="ctrTotals"></div>
       <div id="ctrList"></div>
-      <p class="muted small">Vertrag hinzufügen:</p>
       <div class="chips" id="ctrAdd"></div>
     </section>
 
@@ -443,7 +437,6 @@
     <section id="view-checklists" class="view">
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Checklisten &amp; Routinen</h2></div>
       <div id="clList"></div>
-      <p class="muted small">Vorlage oder eigene Liste:</p>
       <div class="chips" id="clAdd"></div>
     </section>
 
@@ -481,7 +474,6 @@
     <section id="view-plants" class="view">
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Pflanzen</h2></div>
       <div id="plantList"></div>
-      <p class="muted small">Pflanze hinzufügen:</p>
       <div class="chips" id="plantQuick"></div>
     </section>
 
@@ -536,9 +528,7 @@
       <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Müllabfuhr</h2></div>
       <div id="wasteNext"></div>
       <div id="wasteList"></div>
-      <p class="muted small">Tonne hinzufügen:</p>
       <div class="chips" id="wasteAdd"></div>
-      <p class="muted small">Die Termine stehen im Abfallkalender deiner Stadt. Am Abend vorher erinnert dich die App (solange sie geöffnet ist) – für Erinnerungen auch bei geschlossener App: Termine in den Handy-Kalender übernehmen.</p>
     </section>
 
     <!-- Parken -->
@@ -580,6 +570,7 @@
 
     <!-- Mehr -->
     <section id="view-settings" class="view">
+      <button class="card menu-row" data-goto="prefs" id="menuPrefs"><span class="pref-ic"><i class="ic ic-gear"></i></span><span class="grow"><b>Einstellungen</b><span class="muted small" id="menuPrefsSub">Konto, Darstellung, Erinnerungen</span></span><span class="chev">›</span></button>
       <h3 class="sec-title">Küche &amp; Essen</h3>
       <div class="hub" data-group="kitchen">
         <button class="hub-tile" data-goto="recipes"><span class="hub-ic"><i class="ic ic-utensils"></i></span><b>Rezepte</b><small id="hubRecipes"></small></button>
@@ -627,11 +618,17 @@
         <button class="hub-tile" data-goto="tools"><span class="hub-ic"><i class="ic ic-wrench"></i></span><b>Werkzeuge</b><small>Timer, Umrechner …</small></button>
         <button class="hub-tile" data-goto="achievements"><span class="hub-ic"><i class="ic ic-trophy"></i></span><b>Erfolge</b><small id="hubAch"></small></button>
       </div>
-      <h3 class="sec-title">Konto</h3>
+    </section>
+
+    <!-- Einstellungen -->
+    <section id="view-prefs" class="view">
+      <div class="viewhead"><button class="back" data-back aria-label="Zurück">←</button><h2>Einstellungen</h2></div>
       <div class="card account-card" id="accountCard"></div>
-      <h3 class="sec-title">Einstellungen</h3>
-      <div class="card">
-        <h2>Design anpassen</h2>
+      <div class="card pref-list">
+        <details class="pref" id="prefDesign">
+          <summary><span class="pref-ic"><i class="ic ic-palette"></i></span><span class="pref-t">Darstellung</span></summary>
+          <div class="pref-body">
+
         <div class="segmented" id="themeSwitch">
           <button data-theme-set="auto">Automatisch</button><button data-theme-set="light">Hell</button><button data-theme-set="dark">Dunkel</button>
         </div>
@@ -641,51 +638,68 @@
         <div class="segmented" id="sizePick"></div>
         <label class="toggle"><input type="checkbox" id="compactPick"> Kompakte Ansicht (mehr auf einen Blick)</label>
         <label class="set-label">Dein Name für die Begrüßung<input id="namePick" placeholder="z. B. Paul" autocomplete="off" maxlength="30"></label>
-      </div>
-      <div class="card" id="quickCard">
-        <h2>Schnellmenü ＋ anpassen</h2>
-        <p class="muted small">Was soll unter „Neu“ stehen? Am besten nur, was du wirklich jeden Tag brauchst.</p>
-        <div class="chips" id="quickToggles"></div>
-      </div>
-      <div class="card">
-        <h2>Startseite anpassen</h2>
-        <p class="muted small">Welche Karten sollen auf „Heute“ erscheinen?</p>
+          </div>
+        </details>
+        <details class="pref" id="prefHome">
+          <summary><span class="pref-ic"><i class="ic ic-home"></i></span><span class="pref-t">Startseite</span></summary>
+          <div class="pref-body">
+
         <div class="chips" id="homeCardToggles"></div>
-      </div>
-      <div class="card">
-        <h2>Wetter-Ort</h2>
-        <p class="muted small" id="placeInfo">Für das Wetter auf der Startseite.</p>
+          </div>
+        </details>
+        <details class="pref" id="prefQuick">
+          <summary><span class="pref-ic"><i class="ic ic-plus"></i></span><span class="pref-t">Schnellmenü „Neu“</span></summary>
+          <div class="pref-body">
+
+        <div class="chips" id="quickToggles"></div>
+          </div>
+        </details>
+        <details class="pref" id="prefRemind">
+          <summary><span class="pref-ic"><i class="ic ic-bell"></i></span><span class="pref-t">Erinnerungen</span></summary>
+          <div class="pref-body">
+
+        <button id="btnNotify" class="btn">Benachrichtigungen erlauben</button>
+        <p id="notifyState" class="muted small"></p>
+        <div class="push-box" id="pushBox"></div>
+        <div class="export-box">
+          <b>Handy-Kalender</b>
+          <button class="btn primary" id="btnExportReminders">Alle Erinnerungen übertragen</button>
+          <p class="muted small" id="exportInfo"></p>
+        </div>
+          </div>
+        </details>
+        <details class="pref" id="prefWeather">
+          <summary><span class="pref-ic"><i class="ic ic-sun"></i></span><span class="pref-t">Wetter-Ort</span></summary>
+          <div class="pref-body">
+
+        <p class="muted small" id="placeInfo">Noch kein Ort gewählt.</p>
         <form id="placeForm" class="addrow" autocomplete="off">
           <input id="placeInput" placeholder="Ort, z. B. Ahaus">
           <button class="btn" type="submit">Suchen</button>
           <button class="btn" type="button" id="btnPlaceGps" aria-label="Mein Standort">📍</button>
         </form>
+          </div>
+        </details>
       </div>
-      <div class="card">
-        <h2>Erinnerungen</h2>
-        <p class="muted small">Benachrichtigungen der App kommen, solange sie geöffnet ist oder im Hintergrund läuft.</p>
-        <button id="btnNotify" class="btn">Benachrichtigungen erlauben</button>
-        <p id="notifyState" class="muted small"></p>
-        <div class="push-box" id="pushBox"></div>
-        <div class="export-box">
-          <b>Auch bei geschlossener App erinnert werden</b>
-          <p class="muted small">Überträgt Medikamente, Termine &amp; Geburtstage, Aufgaben, Fristen, Kündigungsfristen, Müllabfuhr, Rückgaben und Countdowns – jeweils mit Erinnerung – in deinen Handy-Kalender. Kostenlos, ohne Konto.</p>
-          <button class="btn primary" id="btnExportReminders"><i class="ic ic-calendar"></i> Alle Erinnerungen in den Handy-Kalender</button>
-          <p class="muted small" id="exportInfo"></p>
-        </div>
-      </div>
-      <h3 class="sec-title">Küche &amp; Vorrat</h3>
-      <div class="card">
-        <h2>Immer im Haus</h2>
-        <p class="muted small">Wähle, was du immer da haben willst. Ist es aufgebraucht, landet es automatisch auf der Einkaufsliste.</p>
+      <div class="card pref-list">
+        <details class="pref" id="prefStaples">
+          <summary><span class="pref-ic"><i class="ic ic-box"></i></span><span class="pref-t">Immer im Haus</span></summary>
+          <div class="pref-body">
+
         <div class="chips" id="staples"></div>
-      </div>
-      <div class="card">
-        <h2>Statistik</h2>
+          </div>
+        </details>
+        <details class="pref" id="prefStats">
+          <summary><span class="pref-ic"><i class="ic ic-chart"></i></span><span class="pref-t">Statistik</span></summary>
+          <div class="pref-body">
+
         <div id="stats"></div>
-      </div>
-      <div class="card">
-        <h2>Ratgeber</h2>
+          </div>
+        </details>
+        <details class="pref" id="prefGuide">
+          <summary><span class="pref-ic"><i class="ic ic-book"></i></span><span class="pref-t">Ratgeber</span></summary>
+          <div class="pref-body">
+
         <details class="guide">
           <summary>MHD oder Verbrauchsdatum – was ist der Unterschied?</summary>
           <p><b>Mindestens haltbar bis (MHD):</b> Bis dahin garantiert der Hersteller Geschmack und Qualität. Danach ist das Lebensmittel meist noch gut – <b>schauen, riechen, probieren</b>. Gilt z. B. für Joghurt, Käse, Nudeln, Konserven.</p>
@@ -713,17 +727,20 @@
         </details>
         <input id="guideSearch" type="search" placeholder="Lagertipp suchen, z. B. Tomaten" autocomplete="off">
         <div id="guideList"></div>
-      </div>
-      <h3 class="sec-title">Daten &amp; Sicherung</h3>
-      <div class="card">
-        <h2>Daten</h2>
-        <p class="muted">Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherung kannst du den Vorrat auf ein anderes Gerät übertragen.</p>
+          </div>
+        </details>
+        <details class="pref" id="prefData">
+          <summary><span class="pref-ic"><i class="ic ic-download"></i></span><span class="pref-t">Daten &amp; Sicherung</span></summary>
+          <div class="pref-body">
+
         <div class="row">
           <button id="btnExport" class="btn">Sicherung speichern</button>
           <label class="btn">Sicherung laden<input id="importFile" type="file" accept="application/json" hidden></label>
         </div>
         <p class="small" id="backupInfo"></p>
         <button id="btnClear" class="btn danger">Alles löschen</button>
+          </div>
+        </details>
       </div>
       <p class="muted small center">Produktdaten: <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (ODbL) ·
         Texterkennung: Tesseract.js · Barcodes: ZXing</p>
@@ -735,7 +752,7 @@
     <button class="tab" data-view="stock"><span><i class="ic ic-box"></i></span>Vorrat<i class="tab-badge" id="badgeStock" hidden></i></button>
     <button class="tab add" id="btnAdd" aria-label="Neu hinzufügen"><span>＋</span>Neu</button>
     <button class="tab" data-view="shopping"><span><i class="ic ic-cart"></i></span>Einkauf<i class="tab-badge" id="badgeShop" hidden></i></button>
-    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts contracts checklists timetable birthdays journal"><span><i class="ic ic-menu"></i></span>Mehr</button>
+    <button class="tab" data-view="settings" data-hub="recipes sport calendar expenses tasks habits health notes food meds deadlines meters tools achievements plants loans countdowns focus emergency waste parking parcels car contacts contracts checklists timetable birthdays journal prefs"><span><i class="ic ic-menu"></i></span>Mehr</button>
   </nav>
 
   <!-- Produkt hinzufügen / bearbeiten -->
@@ -919,7 +936,7 @@
       <button data-action="parcel"><span><i class="ic ic-package"></i></span>Paket</button>
       <button data-action="fuel"><span><i class="ic ic-car"></i></span>Getankt</button>
     </div>
-    <button class="link-btn sheet-more" data-goto="settings" id="sheetCustomize">Menü anpassen</button>
+    <button class="link-btn sheet-more" id="sheetCustomize">Menü anpassen</button>
     <button class="btn sheet-cancel" id="sheetCancel">Abbrechen</button>
   </dialog>
 
@@ -1284,7 +1301,6 @@
       <div class="row"><label>Kosten €<input id="ctrCost" inputmode="decimal" placeholder="29,99"></label><label>Zahlweise<select id="ctrInterval"><option value="monat">pro Monat</option><option value="quartal">pro Quartal</option><option value="jahr">pro Jahr</option></select></label></div>
       <div class="row"><label>Vertragsbeginn<input id="ctrStart" type="date" required></label><label>Mindestlaufzeit (Monate)<input id="ctrMin" inputmode="numeric"></label></div>
       <div class="row"><label>Verlängert sich um (Monate)<input id="ctrRenew" inputmode="numeric"></label><label>Kündigungsfrist<span class="inline-pair"><input id="ctrNotice" inputmode="numeric"><select id="ctrUnit"><option value="m">Monate</option><option value="w">Wochen</option></select></span></label></div>
-      <p class="muted small">Seit 2022 gilt für viele Verträge (Handy, Internet, Strom, Fitness): nach der Mindestlaufzeit monatlich kündbar mit 1 Monat Frist.</p>
       <label>Kundennummer / Notiz<input id="ctrNote" autocomplete="off"></label>
       <div class="dialog-actions"><button type="button" class="btn danger" id="ctrDelete" hidden>Löschen</button><span class="spacer"></span><button type="button" class="btn" id="ctrCancel">Abbrechen</button><button type="submit" class="btn primary">Speichern</button></div>
     </form>
@@ -1320,7 +1336,7 @@
     <div class="auth-wrap">
       <img src="icon.svg" alt="" class="auth-logo">
       <h2 class="auth-title">Willkommen bei Alltagsheld</h2>
-      <p class="muted auth-sub" id="authSub">Melde dich an, damit deine Daten auf all deinen Geräten gleich sind und sicher in der Cloud liegen.</p>
+      <p class="muted auth-sub" id="authSub">Deine Daten sicher und auf allen Geräten.</p>
       <div class="segmented" id="authTabs"><button type="button" data-mode="signin" class="active">Anmelden</button><button type="button" data-mode="signup">Konto erstellen</button></div>
       <form id="authForm" class="auth-form" novalidate>
         <label id="authNameWrap" hidden>Dein Vorname<input id="authName" autocomplete="given-name" placeholder="z. B. Paul"></label>
@@ -1333,7 +1349,6 @@
       </form>
       <div class="auth-or"><span>oder</span></div>
       <button type="button" class="btn auth-skip" id="authSkip">Ohne Konto weiter</button>
-      <p class="muted small auth-note">Ohne Konto bleiben deine Daten nur auf diesem Gerät. Du kannst dich später jederzeit unter Mehr → Konto anmelden.</p>
     </div>
   </dialog>
 

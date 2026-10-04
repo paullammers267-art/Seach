@@ -157,7 +157,7 @@
     el.querySelector('span').textContent = $('#authPw').value ? ['zu kurz (mind. 8 Zeichen)', 'okay', 'gut', 'stark'][s] : 'mindestens 8 Zeichen';
   }
   function openAuth(m = 'signin') {
-    if (!client) { A.showView('settings'); setTimeout(() => $('#accountCard').scrollIntoView({ block: 'center' }), 50); return; }
+    if (!client) { A.showView('prefs'); setTimeout(() => $('#accountCard').scrollIntoView({ block: 'center' }), 50); return; }
     setMode(m === 'first' ? 'signin' : m);
     $('#authSkip').hidden = !!ls.get(SKIP_KEY) && m !== 'first';
     if (!dlg.open) dlg.showModal();
@@ -250,7 +250,7 @@
     }
     if (!loggedIn()) {
       card.innerHTML = `<h2>Konto &amp; Cloud-Sync</h2>
-        <p class="muted small">Du bist nicht angemeldet – deine Daten liegen nur auf diesem Gerät.</p>
+        <p class="muted small">Nicht angemeldet – Daten nur auf diesem Gerät.</p>
         <div class="row"><button class="btn primary" data-auth="signin">Anmelden</button><button class="btn" data-auth="signup">Konto erstellen</button></div>
         ${c.fromFile ? '' : '<button class="link-btn small" id="sbReset">Anderen Supabase-Zugang eintragen</button>'}`;
       return;
@@ -309,12 +309,17 @@
   }
   // Texte, die „nur auf diesem Gerät“ versprechen, anpassen
   function renderPrivacy() {
-    const p = $$('#view-settings .card p.muted').find((x) => /Alles wird nur auf diesem Gerät|Deine Daten werden in deinem Konto/.test(x.textContent));
+    const p = $$('#view-prefs .card p.muted').find((x) => /Alles wird nur auf diesem Gerät|Deine Daten werden in deinem Konto/.test(x.textContent));
     if (p) p.textContent = loggedIn() ? 'Deine Daten werden in deinem Konto gesichert und auf deinen Geräten abgeglichen. Zusätzlich kannst du eine Sicherung als Datei speichern.'
       : 'Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherung kannst du den Vorrat auf ein anderes Gerät übertragen.';
   }
 
+  function renderMenuRow() {
+    const sub = $('#menuPrefsSub');
+    if (sub) sub.textContent = loggedIn() ? client.user.email : 'Konto, Darstellung, Erinnerungen';
+  }
   A.onRender(renderAccount);
+  A.onRender(renderMenuRow);
   A.onRender(renderAvatar);
   A.onRender(renderPrivacy);
   window.addEventListener('online', () => { if (loggedIn()) syncNow(); });

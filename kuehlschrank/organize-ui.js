@@ -19,7 +19,7 @@
   // =====================================================================
   // Kopfzeile: Untertitel, Suche, Profil, Schatten beim Scrollen
   // =====================================================================
-  const TAB_TITLES = { home: null, stock: 'Vorrat', shopping: 'Einkaufsliste', settings: 'Mehr & Einstellungen' };
+  const TAB_TITLES = { home: null, stock: 'Vorrat', shopping: 'Einkaufsliste', settings: 'Mehr', prefs: 'Einstellungen' };
   function renderHeader() {
     const v = A.view;
     let sub;
@@ -36,6 +36,13 @@
     if (A.view !== 'home') A.showView('home');
     setTimeout(() => { const s = $('#globalSearch'); s.scrollIntoView({ block: 'center' }); s.focus(); }, 30);
   });
+  /** Einstellungen öffnen und einen Abschnitt aufklappen (z. B. „prefWeather“) */
+  A.openPref = (id) => {
+    A.showView('prefs');
+    const d = id && document.getElementById(id);
+    if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ block: 'start', behavior: 'smooth' }), 60); }
+  };
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-pref]'); if (b) A.openPref(b.dataset.pref); });
   const onScroll = () => $('.topbar').classList.toggle('scrolled', window.scrollY > 4);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

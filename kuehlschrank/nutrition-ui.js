@@ -443,9 +443,7 @@
     const g = goal();
     const t = N.totals(dayEntries(today()));
     if (!st().food.length && !g) {
-      $('#homeFood').innerHTML = `<div class="card home-card"><button class="plain" data-goto="food"><div class="home-title">Kalorien</div>
-        <div class="home-line muted">Barcode scannen, Nährwerttabelle fotografieren oder „1 Apfel“ eintippen – ich zähle mit.</div></button>
-        <button class="btn small primary" data-goto="food">＋ Mahlzeit eintragen</button></div>`;
+      $('#homeFood').innerHTML = ''; // noch nichts eingetragen: keine Karte – Eintragen geht über „Neu“
       return;
     }
     const left = g ? g.kcal + burnedOn(today()) - t.kcal : null;

@@ -38,7 +38,7 @@
 
     // Termine
     const occ = P.occurrences(st().events, today, tomorrow);
-    cards.push(`<button class="card home-card" data-goto="calendar">
+    if (occ.length) cards.push(`<button class="card home-card" data-goto="calendar">
       <div class="home-title">Termine</div>
       ${occ.length ? occ.slice(0, 4).map((o) => `<div class="home-line"><b>${o.date === today ? 'Heute' : 'Morgen'}${o.event.time ? ' ' + o.event.time : ''}</b> ${eventEmoji(o.event)} ${esc(eventTitle(o.event, o.date))}</div>`).join('')
         : '<div class="muted">Heute und morgen keine Termine.</div>'}
@@ -48,7 +48,7 @@
     const items = st().items.filter((i) => i.location !== 'haushalt');
     const urgent = A.sortedItems().filter((i) => i.location !== 'haushalt' && i.expiry && L.daysUntil(i.expiry) <= 2);
     const meal = A.findRecipe(st().plan[today]);
-    cards.push(`<button class="card home-card" data-goto="stock">
+    if (items.length || meal) cards.push(`<button class="card home-card" data-goto="stock">
       <div class="home-title">Küche</div>
       ${urgent.length ? `<div class="home-line warn-text"><b>${urgent.length} Produkt${urgent.length > 1 ? 'e' : ''} bald verbrauchen:</b> ${esc(urgent.slice(0, 3).map((i) => i.name).join(', '))}${urgent.length > 3 ? ' …' : ''}</div>`
         : `<div class="home-line">${items.length ? `${items.length} Produkte, nichts läuft in den nächsten 2 Tagen ab.` : 'Noch keine Produkte erfasst.'}</div>`}
@@ -71,7 +71,7 @@
     const month = ym(today);
     const sum = P.summarize(P.monthEntries(st().expenses, month).filter((e) => !P.isIncome(e)));
     const b = P.budgetStatus(sum.total, st().settings.budget, month);
-    cards.push(`<button class="card home-card" data-goto="expenses">
+    if (sum.total > 0 || b) cards.push(`<button class="card home-card" data-goto="expenses">
       <div class="home-title">Ausgaben ${P.monthLabel(month).split(' ')[0]}</div>
       <div class="home-line"><b>${euro(sum.total)}</b>${b ? ` von ${euro(b.budget)} · ${b.over ? `<span class="warn-text">${euro(-b.left)} drüber</span>` : `noch ${euro(b.left)}${b.perDay != null ? ` (${euro(b.perDay)}/Tag)` : ''}`}` : ''}</div>
       ${b ? `<div class="meter ${b.over ? 'over' : ''}"><i style="width:${b.pct}%"></i></div>` : ''}

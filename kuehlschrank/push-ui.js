@@ -88,9 +88,9 @@
         ? '<p class="muted small">Auf dem iPhone kommen Push-Nachrichten nur, wenn die App installiert ist: in Safari auf <b>Teilen → „Zum Home-Bildschirm“</b>, dann die App vom Home-Bildschirm öffnen und hier aktivieren (ab iOS 16.4).</p>'
         : '<p class="muted small">Dieser Browser unterstützt keine Push-Nachrichten. Nutze Chrome, Edge, Firefox oder Safari (installiert).</p>';
     } else if (!c || !c.user) {
-      inner = '<p class="muted small">Für Push-Erinnerungen brauchst du ein Konto – der Server muss wissen, was bei dir fällig ist.</p><button class="btn" data-push="login">Anmelden</button>';
+      inner = '<p class="muted small">Dafür brauchst du ein Konto.</p><button class="btn" data-push="login">Anmelden</button>';
     } else if (!active()) {
-      inner = `<p class="muted small">Medikamente, Termine, Müllabfuhr, Fristen und mehr – als Nachricht aufs Handy, auch wenn die App geschlossen ist.</p>
+      inner = `<p class="muted small">Auch wenn die App geschlossen ist.</p>
         <button class="btn primary" data-push="on" ${busy ? 'disabled' : ''}>${busy ? 'Einen Moment …' : 'Push-Erinnerungen aktivieren'}</button>`;
     } else {
       inner = `<div class="push-on"><i></i><b>Aktiv auf diesem Gerät</b></div>
@@ -98,7 +98,7 @@
         <div class="row tight push-times"><label class="grow-label"><span>Morgen-Überblick</span><input type="time" id="pushMorning" value="${esc(p.morning || '07:30')}"></label>
           <label class="grow-label"><span>Müll am Vorabend</span><input type="time" id="pushEvening" value="${esc(p.evening || '18:00')}"></label></div>
         <div class="row tight"><button class="btn" data-push="test" ${busy ? 'disabled' : ''}>Test-Nachricht senden</button><button class="btn" data-push="off" ${busy ? 'disabled' : ''}>Ausschalten</button></div>
-        <p class="muted small">Der Server prüft alle 5 Minuten, was fällig ist – Nachrichten können daher bis zu 5 Minuten später kommen.</p>`;
+`;
     }
     box.innerHTML = `<b>Push-Erinnerungen</b>${inner}`;
   }
@@ -132,7 +132,7 @@
   A.notify = (title, body, tag) => (active() && !String(tag || '').startsWith('focus') ? Promise.resolve(false) : localNotify(title, body, tag));
 
   // Tipp auf eine Nachricht: passenden Bereich öffnen
-  const goto = (v) => { if (v && document.getElementById('view-' + v)) A.showView(v); };
+  const goto = (v) => { if (v === 'settings') v = 'prefs'; if (v && document.getElementById('view-' + v)) A.showView(v); };
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.type === 'goto') goto(e.data.view); });
   const qv = new URLSearchParams(location.search).get('view');
   if (qv) { goto(qv); history.replaceState(null, '', location.pathname); }

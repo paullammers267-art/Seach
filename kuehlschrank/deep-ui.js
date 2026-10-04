@@ -307,7 +307,7 @@
     }
     const j = st().journal[t];
     if (new Date().getHours() >= 19 && !(j && (j.text || (j.grateful || []).some(Boolean)))) {
-      parts.push(`<button class="card home-card" data-card="journal" data-goto="journal"><div class="home-title">Tagebuch</div><div class="home-line">${esc(D.promptOfDay(t))}</div><div class="home-line muted small">Zwei Sätze reichen.</div></button>`);
+      parts.push(`<button class="card home-card" data-card="journal" data-goto="journal"><div class="home-title">Tagebuch</div><div class="home-line">${esc(D.promptOfDay(t))}</div></button>`);
     }
     home.innerHTML = parts.join('');
   }

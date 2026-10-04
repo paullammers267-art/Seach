@@ -625,7 +625,8 @@
     const wd = new Date().getDay();
     if ((wd === 0 || wd === 1) && (st().workouts.length || st().tasks.length || st().history.length || st().expenses.length)) {
       const w = weekStats(wd === 1 ? 1 : 0), prev = weekStats(wd === 1 ? 2 : 1);
-      parts.push(`<div class="card home-card" data-card="review"><button class="plain" data-goto="achievements"><div class="home-title">${wd === 1 ? 'Deine letzte Woche' : 'Deine Woche'}</div></button>${reviewHtml(w, prev)}</div>`);
+      // nur zeigen, wenn in der Woche auch etwas passiert ist
+      if (w.workouts || w.tasksDone || w.spent || w.habitPct || w.kcalAvg || w.consumed || w.wasted) parts.push(`<div class="card home-card" data-card="review"><button class="plain" data-goto="achievements"><div class="home-title">${wd === 1 ? 'Deine letzte Woche' : 'Deine Woche'}</div></button>${reviewHtml(w, prev)}</div>`);
     }
     // Sicherung
     const amount = st().items.length + st().tasks.length + st().events.length + st().expenses.length + st().notes.length + (st().food || []).length;
@@ -640,6 +641,11 @@
   document.addEventListener('click', (e) => { if (e.target.closest('[data-backup]')) $('#btnExport').click(); });
 
   /** Ausgeblendete Karten verstecken (läuft als letzter Render-Schritt). */
+  // Aufgeräumte Startseite: „Gedanke des Tages“ einmalig ausblenden (lässt sich unter Einstellungen → Startseite wieder einschalten)
+  if (!st().settings.uiClean) {
+    st().settings.uiClean = 1;
+    if (!st().settings.homeHidden.includes('thought')) st().settings.homeHidden.push('thought');
+  }
   function applyHomeHidden() {
     if (A.view !== 'home') return;
     const hidden = st().settings.homeHidden;
