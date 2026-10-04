@@ -814,14 +814,17 @@
   $('#cookStepTimers').addEventListener('click', (e) => {
     const c = e.target.closest('[data-min]');
     if (!c) return;
-    timers.push({ label: `${cookRecipe.name}, Schritt ${cookIdx + 1}`, end: Date.now() + Number(c.dataset.min) * 60000 });
+    const t = { id: uid(), label: `${cookRecipe.name}, Schritt ${cookIdx + 1}`, end: Date.now() + Number(c.dataset.min) * 60000 };
+    timers.push(t);
+    if (window.App.alarm) { window.App.alarm.armed(); window.App.alarm.schedule(t.id, t.end, 'Timer abgelaufen', t.label, { view: 'recipes' }); }
     if (!timerTick) timerTick = setInterval(tickTimers, 1000);
     renderTimers();
   });
   $('#cookTimers').addEventListener('click', (e) => {
     const b = e.target.closest('[data-stop]');
     if (!b) return;
-    timers.splice(Number(b.dataset.stop), 1);
+    const [t] = timers.splice(Number(b.dataset.stop), 1);
+    if (t && window.App.alarm) { window.App.alarm.cancel(t.id); if (window.App.alarm.ringing && window.App.alarm.ringing.id === t.id) window.App.alarm.stop(); }
     renderTimers();
   });
   function renderTimers() {
@@ -833,7 +836,11 @@
   }
   function tickTimers() {
     for (const t of timers) {
-      if (!t.rang && t.end <= Date.now()) { t.rang = true; alarm(t.label); }
+      if (!t.rang && t.end <= Date.now()) {
+        t.rang = true;
+        if (window.App.alarm) window.App.alarm.ring(t.id, 'Timer abgelaufen', t.label, { view: 'recipes', onSnooze: (min) => { t.rang = false; t.end = Date.now() + min * 60000; window.App.alarm.schedule(t.id, t.end, 'Timer abgelaufen', t.label, { view: 'recipes' }); if (!timerTick) timerTick = setInterval(tickTimers, 1000); } });
+        else alarm(t.label);
+      }
     }
     if (!timers.length) { clearInterval(timerTick); timerTick = null; }
     renderTimers();

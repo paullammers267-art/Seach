@@ -304,27 +304,39 @@
   // =====================================================================
   // 🧰 Werkzeuge
   // =====================================================================
-  const timers = []; // { id, name, end, paused, left, rang }
+  // Timer bleiben gespeichert – auch wenn die App zwischendurch geschlossen wird
+  const TM_KEY = 'alltagsheld.timers';
+  const timers = (() => { try { return JSON.parse(localStorage.getItem(TM_KEY)) || []; } catch (e) { return []; } })(); // { id, name, end, paused, left, rang }
+  const persist = () => { try { localStorage.setItem(TM_KEY, JSON.stringify(timers)); } catch (e) { /* egal */ } };
   let tick = null;
+  const AL = () => A.alarm;
+  const scheduleTm = (t) => AL() && (t.paused || t.rang ? AL().cancel(t.id) : AL().schedule(t.id, t.end, 'Timer abgelaufen', t.name, { view: 'tools' }));
   function startTimer(name, minutes) {
-    timers.push({ id: A.uid(), name: name || `${fmt(minutes, 1)} Min`, end: Date.now() + minutes * 60000, total: minutes * 60 });
+    const t = { id: A.uid(), name: name || (minutes < 1 ? `${Math.round(minutes * 60)} Sek` : `${fmt(minutes, 1)} Min`), end: Date.now() + minutes * 60000, total: minutes * 60 };
+    timers.push(t);
+    if (AL()) AL().armed();
+    scheduleTm(t);
+    persist();
     if (!tick) tick = setInterval(tickTimers, 500);
     renderTimers();
     A.toast(`Timer ${name ? '„' + name + '“ ' : ''}läuft (${fmt(minutes, 1)} Min)`);
   }
+  A.startTimer = startTimer;
   function tickTimers() {
     for (const t of timers) {
       if (!t.paused && !t.rang && t.end <= Date.now()) {
         t.rang = true;
-        if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 800]);
-        A.beep(4, 880, 0.3);
-        A.notify('Timer abgelaufen', t.name, 'timer-' + t.id);
-        A.toast(`${t.name} – fertig!`);
+        persist();
+        // Länger als 2 Minuten her (App war zu): nur noch „Fertig!“ anzeigen, nicht mehr klingeln
+        if (Date.now() - t.end > 120000) continue;
+        if (AL()) AL().ring(t.id, 'Timer abgelaufen', t.name, { view: 'tools' });
+        else { A.beep(4, 880, 0.3); A.notify('Timer abgelaufen', t.name, 'timer-' + t.id); A.toast(`${t.name} – fertig!`); }
       }
     }
     if (!timers.length) { clearInterval(tick); tick = null; }
     renderTimers();
   }
+  if (timers.length) tick = setInterval(tickTimers, 500);
   function renderTimers() {
     const el = $('#tmList');
     if (!el) return;
@@ -348,10 +360,13 @@
     const row = e.target.closest('[data-tm]');
     if (!row) return;
     const t = timers.find((x) => x.id === row.dataset.tm);
-    if (e.target.closest('[data-tmx]')) timers.splice(timers.indexOf(t), 1);
+    if (e.target.closest('[data-tmx]')) { timers.splice(timers.indexOf(t), 1); if (AL()) { AL().cancel(t.id); if (AL().ringing && AL().ringing.id === t.id) AL().stop(); } }
     else if (e.target.closest('[data-tmp]')) {
       if (t.paused) { t.end = Date.now() + t.left * 1000; t.paused = false; } else { t.left = Math.max(0, (t.end - Date.now()) / 1000); t.paused = true; }
-    } else if (e.target.closest('[data-tmplus]')) { if (t.paused) t.left += 60; else t.end += 60000; }
+      scheduleTm(t);
+    } else if (e.target.closest('[data-tmplus]')) { if (t.paused) t.left += 60; else t.end += 60000; scheduleTm(t); }
+    persist();
+    if (timers.length && !tick) tick = setInterval(tickTimers, 500);
     renderTimers();
   });
 

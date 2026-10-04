@@ -251,6 +251,14 @@ export function dueMessages(data, nowMs, tz, windowMin = 6) {
 // ---------------------------------------------------------------------------
 // HTTP-Handler
 // ---------------------------------------------------------------------------
+/** Nachricht für einen abgelaufenen Timer (Zeile aus push_timers) */
+export function timerMessage(t) {
+  return {
+    title: t.title || 'Timer abgelaufen', body: t.body || '', view: t.view || 'tools', tag: `timer-${t.id}`,
+    alarm: t.alarm !== false, timer: { id: t.id, title: t.title || 'Timer abgelaufen', body: t.body || '' }, ttl: 600,
+  };
+}
+
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const json = (b, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
@@ -293,6 +301,20 @@ async function handler(req) {
   // Zeitplaner (pg_cron)
   if (!env('CRON_SECRET') || req.headers.get('x-cron-secret') !== env('CRON_SECRET')) return json({ error: 'forbidden' }, 403);
   const now = Date.now();
+
+  // Abgelaufene Timer: holen und gleichzeitig löschen (so kommt jeder nur einmal), bis 15 s im Voraus
+  let timersSent = 0;
+  const due = await db(`push_timers?fire_at=lte.${new Date(now + 15000).toISOString()}`, { method: 'DELETE', headers: { Prefer: 'return=representation' } }).catch(() => []);
+  if (due && due.length) {
+    const users = [...new Set(due.map((t) => t.user_id))];
+    const tsubs = await db(`push_subscriptions?select=*&user_id=in.(${users.join(',')})`);
+    for (const t of due) {
+      // älter als 10 Minuten (z. B. Server war kurz weg): nicht mehr nachträglich klingeln
+      if (now - Date.parse(t.fire_at) > 600000) continue;
+      timersSent += await deliver(tsubs.filter((s) => s.user_id === t.user_id), timerMessage(t));
+    }
+  }
+  if (body.timers) return json({ timers: (due || []).length, sent: timersSent });
   const subs = await db('push_subscriptions?select=*');
   const byUser = {};
   for (const s of subs) (byUser[s.user_id] = byUser[s.user_id] || []).push(s);
@@ -324,7 +346,7 @@ async function handler(req) {
     }
   }
   await db(`push_sent?sent_at=lt.${new Date(now - 3 * DAY).toISOString()}`, { method: 'DELETE' }).catch(() => {});
-  return json({ subscriptions: subs.length, users, sent });
+  return json({ subscriptions: subs.length, users, sent, timers: timersSent });
 }
 
 if (typeof Deno !== 'undefined') Deno.serve(handler);

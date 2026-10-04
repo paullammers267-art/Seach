@@ -10,7 +10,7 @@
   const DEV_KEY = 'alltagsheld.push';
   const TYPES = {
     morning: 'Morgen-Überblick', meds: 'Medikamente', tasks: 'Aufgaben mit Uhrzeit', events: 'Termine & Geburtstage', waste: 'Müllabfuhr am Vorabend',
-    deadlines: 'Fristen', contracts: 'Kündigungsfristen', parcels: 'Rückgabefristen', parking: 'Parkuhr',
+    deadlines: 'Fristen', contracts: 'Kündigungsfristen', parcels: 'Rückgabefristen', parking: 'Parkuhr', timers: 'Timer & Wecker',
   };
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* egal */ } }, remove: (k) => { try { localStorage.removeItem(k); } catch (e) { /* egal */ } } };
   const supported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -129,7 +129,9 @@
 
   // Doppelte Meldungen vermeiden: ist Push aktiv, übernimmt der Server – lokal nur noch der Fokus-Timer
   const localNotify = A.notify;
-  A.notify = (title, body, tag) => (active() && !String(tag || '').startsWith('focus') ? Promise.resolve(false) : localNotify(title, body, tag));
+  // Timer melden sich immer lokal (gleicher Tag wie die Server-Nachricht, daher nie doppelt)
+  A.notify = (title, body, tag) => (active() && !/^(focus|timer)/.test(String(tag || '')) ? Promise.resolve(false) : localNotify(title, body, tag));
+  A.pushActive = active;
 
   // Tipp auf eine Nachricht: passenden Bereich öffnen
   const goto = (v) => { if (v === 'settings') v = 'prefs'; if (v && document.getElementById('view-' + v)) A.showView(v); };

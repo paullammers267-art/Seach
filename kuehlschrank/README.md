@@ -134,7 +134,8 @@ den Trainingsstand und die Ausgaben des Monats. Das **＋** öffnet ein Schnellm
 - Strom, Gas, Wasser, Heizung: Verbrauch pro Tag, Trend, Hochrechnung aufs Jahr, Kosten mit eigenem Tarif
 
 ## 🧰 Werkzeuge
-- Mehrere Küchen-Timer, Stoppuhr mit Runden, Küchen-Umrechner (Tasse/EL/TL ↔ Gramm je Zutat), Backofen °C/°F/Umluft
+- Mehrere Küchen-Timer (bleiben auch nach dem Schließen der App erhalten), **Alarm bei Ablauf**: klingelt bis „Stopp“ mit +1/+5/+10 Min, Ton wählbar (Wecker, Glocke, Sanft) oder nur kurzer Ton; mit Push auch bei geschlossener App (Benachrichtigung mit „Stopp“ und „+5 Min“). Gilt auch für Timer im Kochmodus und den Fokus-Timer
+- Stoppuhr mit Runden, Küchen-Umrechner (Tasse/EL/TL ↔ Gramm je Zutat), Backofen °C/°F/Umluft
 - Rechnung teilen mit Trinkgeld (centgenau), Münze, Würfel, „Was koche ich?“, Auslosen aus eigener Liste
 
 ## 🏆 Erfolge, Wochenrückblick & mehr
@@ -213,9 +214,9 @@ Hinweis: Der kostenlose Supabase-Mailversand ist auf wenige E-Mails pro Stunde b
 
 ## Push-Erinnerungen (auch bei geschlossener App)
 
-Mit Konto kann der Server Erinnerungen schicken, auch wenn die App zu ist: Morgen-Überblick, Medikamente, Aufgaben mit Uhrzeit, Termine & Geburtstage, Müllabfuhr am Vorabend, Fristen, Kündigungs- und Rückgabefristen, Parkuhr. Einschalten unter **Mehr → Erinnerungen → Push-Erinnerungen** (iPhone: App vorher über Teilen → „Zum Home-Bildschirm“ installieren, ab iOS 16.4).
+Mit Konto kann der Server Erinnerungen schicken, auch wenn die App zu ist: Morgen-Überblick, Medikamente, Aufgaben mit Uhrzeit, Termine & Geburtstage, Müllabfuhr am Vorabend, Fristen, Kündigungs- und Rückgabefristen, Parkuhr, **abgelaufene Timer** (Küchen-Timer, Kochmodus, Fokus). Einschalten unter **Mehr → Erinnerungen → Push-Erinnerungen** (iPhone: App vorher über Teilen → „Zum Home-Bildschirm“ installieren, ab iOS 16.4).
 
-So funktioniert es: `supabase/functions/push-reminders/index.ts` läuft alle 5 Minuten (pg_cron), liest die gespeicherten App-Daten, berechnet in der Zeitzone des Geräts, was fällig ist, und verschickt verschlüsselte Web-Push-Nachrichten (RFC 8291/8292, ohne Zusatzpakete). Jede Nachricht wird nur einmal verschickt (`push_sent`), abgemeldete Geräte werden automatisch entfernt.
+So funktioniert es: `supabase/functions/push-reminders/index.ts` läuft alle 5 Minuten (pg_cron), liest die gespeicherten App-Daten, berechnet in der Zeitzone des Geräts, was fällig ist, und verschickt verschlüsselte Web-Push-Nachrichten (RFC 8291/8292, ohne Zusatzpakete). Jede Nachricht wird nur einmal verschickt (`push_sent`), abgemeldete Geräte werden automatisch entfernt. Timer trägt die App beim Start in `push_timers` ein; ein zweiter Zeitplaner (alle 30 Sekunden) verschickt fällige Timer als Alarm und löscht sie dabei, sodass jeder nur einmal kommt.
 
 Einrichtung:
 1. **Edge Functions → Deploy a new function → Via Editor**, Name `push-reminders`, Inhalt von `supabase/functions/push-reminders/index.ts` einfügen, deployen.
@@ -254,6 +255,7 @@ Lokal: `npx serve kuehlschrank` und http://localhost:3000 öffnen.
 | `deep.js`, `deep-ui.js` | Einkaufsliste nach Gängen, Ausgaben-Verlauf, Gewohnheits-Kalender, Erinnerungs-Export, Geburtstage, Tagebuch |
 | `auth.js`, `auth-ui.js`, `config.js` | Konto & Cloud-Sync mit Supabase (Anmeldung, Abgleich, Konflikte) |
 | `supabase/schema.sql` | Datenbank-Tabelle mit Zugriffsschutz für Supabase |
+| `alarm-ui.js` | Alarm bei abgelaufenen Timern (Klingeln, Schlummern, Push-Vormerkung) |
 | `push-ui.js`, `supabase/push.sql`, `supabase/functions/push-reminders/` | Push-Erinnerungen: Geräte-Anmeldung, Zeitplaner, Versand |
 | `sw.js`, `manifest.webmanifest` | Offline & Installation |
 

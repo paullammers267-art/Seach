@@ -52,3 +52,46 @@ select cron.schedule(
   );
   $$
 );
+
+-- ---------------------------------------------------------------------------
+-- Timer & Wecker: abgelaufene Timer auch bei geschlossener App melden
+-- (Küchen-Timer, Timer im Kochmodus, Fokus-Timer). Die App trägt das Ende ein, der Server schickt pünktlich.
+create table if not exists public.push_timers (
+  user_id    uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  id         text not null check (char_length(id) <= 64),
+  fire_at    timestamptz not null,
+  title      text not null default 'Timer abgelaufen' check (char_length(title) <= 120),
+  body       text not null default '' check (char_length(body) <= 300),
+  view       text not null default 'tools' check (char_length(view) <= 30),
+  alarm      boolean not null default true,
+  created_at timestamptz not null default now(),
+  primary key (user_id, id)
+);
+create index if not exists push_timers_fire_at on public.push_timers (fire_at);
+alter table public.push_timers enable row level security;
+drop policy if exists "Eigene Timer lesen"   on public.push_timers;
+drop policy if exists "Eigene Timer anlegen" on public.push_timers;
+drop policy if exists "Eigene Timer ändern"  on public.push_timers;
+drop policy if exists "Eigene Timer löschen" on public.push_timers;
+create policy "Eigene Timer lesen"   on public.push_timers for select to authenticated using ((select auth.uid()) = user_id);
+create policy "Eigene Timer anlegen" on public.push_timers for insert to authenticated with check ((select auth.uid()) = user_id and fire_at < now() + interval '2 days');
+create policy "Eigene Timer ändern"  on public.push_timers for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id and fire_at < now() + interval '2 days');
+create policy "Eigene Timer löschen" on public.push_timers for delete to authenticated using ((select auth.uid()) = user_id);
+
+-- Zeitplaner für Timer: alle 30 Sekunden (nur Timer, geht schnell)
+select cron.unschedule('alltagsheld-timers') where exists (select 1 from cron.job where jobname = 'alltagsheld-timers');
+select cron.schedule(
+  'alltagsheld-timers',
+  '30 seconds',
+  $$
+  select net.http_post(
+    url     := 'https://mthtdwahlhxmtczczvbn.supabase.co/functions/v1/push-reminders',
+    headers := jsonb_build_object(
+      'Content-Type',  'application/json',
+      'Authorization', 'Bearer DEIN_ANON_KEY',
+      'x-cron-secret', 'DEIN_CRON_SECRET'
+    ),
+    body    := '{"timers": true}'::jsonb
+  );
+  $$
+);

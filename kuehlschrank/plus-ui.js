@@ -291,6 +291,13 @@
       if (!on && fx.wake) { fx.wake.release().catch(() => {}); fx.wake = null; }
     } catch (e) { /* nicht unterstützt */ }
   }
+  // Ende der laufenden Phase beim Server vormerken – so kommt die Meldung auch bei geschlossener App
+  const focusEndText = () => (fx.phase === 'focus' ? `Geschafft! Jetzt ${phaseMin(PL.nextFocusPhase('focus', fx.done).phase)} Min Pause.` : 'Pause vorbei – weiter geht’s!');
+  function scheduleFocus() {
+    if (!A.alarm) return;
+    if (fx.endAt) A.alarm.schedule('focus', fx.endAt, 'Fokus-Timer', focusEndText(), { view: 'focus', alarm: false });
+    else A.alarm.cancel('focus');
+  }
   function tick() {
     if (secsLeft() > 0) { drawFocus(); return; }
     // Phase vorbei
@@ -306,7 +313,8 @@
     A.beep(was === 'focus' ? 3 : 2, was === 'focus' ? 660 : 880);
     const msg = was === 'focus' ? `Geschafft! Jetzt ${phaseMin(fx.phase)} Min Pause.` : 'Pause vorbei – weiter geht’s!';
     A.toast((was === 'focus' ? '🎉 ' : '🎯 ') + msg);
-    A.notify('Fokus-Timer', msg, 'focus' + Date.now());
+    A.notify('Fokus-Timer', msg, 'timer-focus');
+    scheduleFocus();
     drawFocus(); renderFocusStats();
   }
   function startFocus() {
@@ -317,12 +325,14 @@
       fx.endAt = Date.now() + secsLeft() * 1000;
       fx.timer = setInterval(tick, 500);
       wake(true);
+      if (A.alarm) A.alarm.armed();
     }
+    scheduleFocus();
     drawFocus();
   }
   function resetFocus() {
     clearInterval(fx.timer); fx.endAt = null; fx.phase = 'focus'; fx.done = 0; fx.remaining = phaseMin('focus') * 60;
-    wake(false); document.title = 'Alltagsheld'; drawFocus();
+    wake(false); document.title = 'Alltagsheld'; scheduleFocus(); drawFocus();
   }
   $('#focusStart').onclick = startFocus;
   $('#focusReset').onclick = resetFocus;
@@ -331,6 +341,7 @@
     fx.phase = PL.nextFocusPhase(fx.phase, fx.done).phase; // Überspringen zählt nicht als geschafft
     fx.remaining = phaseMin(fx.phase) * 60;
     fx.endAt = running ? Date.now() + fx.remaining * 1000 : null;
+    scheduleFocus();
     drawFocus();
   };
   document.addEventListener('visibilitychange', () => { if (!document.hidden && fx.endAt) { wake(true); tick(); } });

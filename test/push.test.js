@@ -118,6 +118,7 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
     { id: 's2', user_id: 'u1', endpoint: 'https://push.example/gone', p256dh: ua.getPublicKey('base64url'), auth: authSecret.toString('base64url'), tz: 'Europe/Berlin' },
   ];
   const sentKeys = new Set();
+  let pushTimers = [];
   const delivered = [];
   const realFetch = globalThis.fetch;
   globalThis.fetch = async (url, o = {}) => {
@@ -133,7 +134,15 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
     if (u.pathname === '/auth/v1/user') return reply(200, { id: 'u1' });
     if (u.pathname === '/rest/v1/push_subscriptions') {
       if ((o.method || 'GET') === 'DELETE') { subs = subs.filter((s) => `eq.${s.id}` !== u.searchParams.get('id')); return reply(204); }
-      return reply(200, subs.filter((s) => !u.searchParams.get('user_id') || u.searchParams.get('user_id') === `eq.${s.user_id}`));
+      const f = u.searchParams.get('user_id');
+      return reply(200, subs.filter((s) => !f || f === `eq.${s.user_id}` || (f.startsWith('in.(') && f.slice(4, -1).split(',').includes(s.user_id))));
+    }
+    if (u.pathname === '/rest/v1/push_timers') {
+      assert.equal(o.method, 'DELETE');
+      const until = Date.parse(u.searchParams.get('fire_at').slice(4));
+      const due = pushTimers.filter((t) => Date.parse(t.fire_at) <= until);
+      pushTimers = pushTimers.filter((t) => !due.includes(t));
+      return reply(200, due);
     }
     if (u.pathname === '/rest/v1/calendar_members') return reply(200, [{ user_id: 'u1', calendar_id: 'c1' }]);
     if (u.pathname === '/rest/v1/shared_events') return reply(200, [{ id: 'se1', calendar_id: 'c1', data: { title: 'Grillen', date: '2026-10-03', time: '09:00', remind: 60 } }]);
@@ -152,7 +161,7 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
     const cron = () => handler(new Request('https://f/push', { method: 'POST', headers: { 'x-cron-secret': 'geheim' }, body: '{}' }));
     assert.equal((await handler(new Request('https://f/push', { method: 'POST', body: '{}' }))).status, 403, 'ohne Geheimnis kein Versand');
     let r = await (await cron()).json();
-    assert.deepEqual(r, { subscriptions: 2, users: 1, sent: 2 });
+    assert.deepEqual(r, { subscriptions: 2, users: 1, sent: 2, timers: 0 });
     assert.equal(delivered[1].body, 'Grillen – heute um 09:00 Uhr', 'Termin aus gemeinsamem Kalender');
     assert.deepEqual(delivered[0], { key: 'med:m@2026-10-03T08:00', title: 'Medikament', body: 'Ramipril – 08:00 Uhr', view: 'meds', tag: 'med:m@2026-10-03T08:00' });
     assert.deepEqual(subs.map((s) => s.id), ['s1'], 'abgemeldetes Gerät entfernt');
@@ -161,5 +170,16 @@ test('Server-Ablauf: Zeitplaner, keine Doppelten, abgemeldete Geräte, Test-Nach
     const t = await (await handler(new Request('https://f/push', { method: 'POST', headers: { Authorization: 'Bearer user-token' }, body: '{"test":true}' }))).json();
     assert.deepEqual(t, { devices: 1, sent: 1 });
     assert.match(delivered[2].body, /Push funktioniert/);
+
+    // Timer: fällige (auch 10 s im Voraus) werden genau einmal als Alarm verschickt, spätere bleiben liegen
+    pushTimers = [
+      { user_id: 'u1', id: 'k1', fire_at: '2026-10-03T06:01:10Z', title: 'Timer abgelaufen', body: 'Nudeln', view: 'tools', alarm: true },
+      { user_id: 'u1', id: 'k2', fire_at: '2026-10-03T06:05:00Z', title: 'Timer abgelaufen', body: 'Eier', view: 'tools', alarm: true },
+    ];
+    const tm = () => handler(new Request('https://f/push', { method: 'POST', headers: { 'x-cron-secret': 'geheim' }, body: '{"timers":true}' }));
+    assert.deepEqual(await (await tm()).json(), { timers: 1, sent: 1 });
+    assert.deepEqual(delivered[3], { title: 'Timer abgelaufen', body: 'Nudeln', view: 'tools', tag: 'timer-k1', alarm: true, timer: { id: 'k1', title: 'Timer abgelaufen', body: 'Nudeln' }, ttl: 600 });
+    assert.deepEqual(await (await tm()).json(), { timers: 0, sent: 0 }, 'nicht doppelt');
+    assert.deepEqual(pushTimers.map((t) => t.id), ['k2']);
   } finally { globalThis.fetch = realFetch; Date.now = realNow; delete globalThis.Deno; }
 });
