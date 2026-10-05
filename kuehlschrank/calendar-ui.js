@@ -34,10 +34,11 @@
   try { cache = { ...cache, ...JSON.parse(ls.get(CACHE_KEY) || '{}') }; } catch (e) { /* leer */ }
   const client = () => (A.authClient ? A.authClient() : null);
   const logged = () => { const c = client(); return !!(c && c.user); };
-  let loading = false, notSetup = false;
+  let loading = false, notSetup = false, retryAt = 0; // Server noch nicht eingerichtet: nur selten erneut fragen
   async function loadShared(force) {
     if (!logged()) { if (cache.calendars.length) { cache = { calendars: [], events: [], members: {}, at: 0 }; ls.remove(CACHE_KEY); } return; }
     if (loading || (!force && Date.now() - cache.at < 60000 && cache.me === client().user.id)) return;
+    if (!force && Date.now() < retryAt) return;
     loading = true;
     try {
       const c = client();
@@ -49,11 +50,12 @@
       const members = {};
       for (const m of mem || []) (members[m.calendar_id] = members[m.calendar_id] || []).push(m);
       cache = { calendars: cals || [], events: evs || [], members, at: Date.now(), me: c.user.id };
-      notSetup = false;
+      notSetup = false; retryAt = 0;
       ls.set(CACHE_KEY, JSON.stringify(cache));
       A.render();
     } catch (e) {
-      notSetup = /does not exist|relation|404|PGRST/i.test(String(e.message) + JSON.stringify(e.raw || ''));
+      notSetup = /does not exist|relation|404|PGRST/i.test(String(e.message) + JSON.stringify(e.raw || '') + (e.status || ''));
+      retryAt = Date.now() + (notSetup ? 30 * 60000 : 2 * 60000);
     } finally { loading = false; }
   }
   const calById = (id) => cache.calendars.find((c) => c.id === id);

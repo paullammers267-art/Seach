@@ -127,8 +127,10 @@
 
   // ---------- Push vom Server (wenn die App geschlossen ist) ----------
   const pending = {}; // id -> letzte Anfrage, damit schnelle Änderungen in Reihenfolge ankommen
+  let missing = false; // Tabelle push_timers fehlt (push.sql noch nicht ausgeführt) → bis zum Neuladen nicht mehr fragen
   function queue(id, fn) {
-    const p = (pending[id] || Promise.resolve()).then(fn).catch(() => { /* offline: dann eben nur lokal */ });
+    if (missing) return Promise.resolve(false);
+    const p = (pending[id] || Promise.resolve()).then(fn).catch((e) => { if (e && e.status === 404) missing = true; /* sonst offline: dann eben nur lokal */ });
     pending[id] = p;
     return p;
   }
